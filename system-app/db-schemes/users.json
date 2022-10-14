@@ -1,0 +1,74 @@
+{
+  "title": "Сотрудники",
+  "properties": [
+    {
+      "title": "Имя",
+      "article": "first_name",
+      "type": "varchar(75)",
+      "null": false,
+      "default": null
+    },
+    {
+      "title": "Фамилия",
+      "article": "last_name",
+      "type": "varchar(75)",
+      "null": false,
+      "default": null
+    },
+    {
+      "title": "Отчество",
+      "article": "patronymic",
+      "type": "varchar(75)",
+      "null": true,
+      "default": null
+    },
+    {
+      "title": "Email",
+      "article": "email",
+      "type": "varchar(255)",
+      "null": false,
+      "default": null
+    },
+    {
+      "title": "Телефон",
+      "article": "phone",
+      "type": "varchar(75)",
+      "null": true,
+      "default": null
+    },
+    {
+      "title": "Пароль",
+      "article": "password",
+      "type": "varchar(255)",
+      "null": false,
+      "default": null
+    },
+    {
+      "title": "ID роли",
+      "article": "role_id",
+      "type": "int",
+      "null": false,
+      "default": null
+    },
+    {
+      "title": "Активность (Y/N)",
+      "article": "is_active",
+      "type": "char(1)",
+      "null": true,
+      "default": "Y"
+    }
+  ],
+  "rows_key": "email",
+  "rows": [
+    {
+      "first_name": "Поддержка",
+      "last_name": "OxBox",
+      "email": "support@oxbox.ru",
+      "password": "bf848c4f37c93a1a7dd19b1c81d55915",
+      "phone": "78005114825",
+      "role_id": 1,
+      "is_system": "Y",
+      "is_active": "Y"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "title": "Меню",
+  "properties": [
+    {
+      "title": "Заголовок",
+      "article": "title",
+      "type": "varchar(75)",
+      "null": false,
+      "default": null
+    },
+    {
+      "title": "Артикул",
+      "article": "article",
+      "type": "varchar(75)",
+      "null": false,
+      "default": null
+    },
+    {
+      "title": "Иконка",
+      "article": "icon",
+      "type": "varchar(255)",
+      "null": true,
+      "default": null
+    },
+    {
+      "title": "Позиция (от меньшего к большему)",
+      "article": "order_position",
+      "type": "tinyint",
+      "null": true,
+      "default": 0
+    },
+    {
+      "title": "ID родителя",
+      "article": "parent_id",
+      "type": "int",
+      "null": true,
+      "default": null
+    }
+  ],
+  "rows_key": "id",
+  "rows": [
+    {
+      "id": 1,
+      "title": "Сотрудники",
+      "article": "users",
+      "order_position": 0,
+      "parent_id": null,
+      "is_system": "Y"
+    },
+    {
+      "id": 2,
+      "title": "Клиенты",
+      "article": "clients",
+      "order_position": 0,
+      "parent_id": null,
+      "is_system": "Y"
+    },
+    {
+      "id": 3,
+      "title": "Услуги",
+      "article": "services",
+      "order_position": 0,
+      "parent_id": null,
+      "is_system": "Y"
+    }
+  ]
+}

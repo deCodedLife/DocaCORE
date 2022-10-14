@@ -1,0 +1,39 @@
+{
+  "required_permissions": [],
+  "required_modules": [],
+  "structure": [
+    {
+      "title": "Шапка",
+      "type": "header",
+      "size": 3,
+      "settings": {
+        "title": "Сотрудники",
+        "description": ""
+      },
+      "components": {
+        "buttons": [
+          {
+            "type": "href",
+            "settings": {
+              "title": "Добавить сотрудника",
+              "page": "users/add",
+              "icon": "",
+              "background": "dark"
+            },
+            "required_permissions": [],
+            "required_modules": []
+          }
+        ]
+      }
+    },
+    {
+      "title": "Список сотрудников",
+      "type": "list",
+      "size": 3,
+      "settings": {
+        "object": "users"
+      },
+      "components": {}
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+    "name": "root/restobox.mewbas.com",
+    "authors": [
+        {
+            "name": "VladislavTS",
+            "email": "vladislav.tsyrdea@gmail.com"
+        }
+    ],
+    "require": {
+	    "firebase/php-jwt": "^5.2",
+        "envms/fluentpdo": "^2.2.0"
+    }
+}

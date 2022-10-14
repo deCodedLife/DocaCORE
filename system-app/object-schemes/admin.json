@@ -1,0 +1,21 @@
+{
+  "title": "Административные команды",
+  "table": "",
+  "is_trash": false,
+  "properties": [
+    {
+      "title": "Токен",
+      "article": "token",
+      "data_type": "string",
+      "use_in_commands": [ "update-db" ],
+      "require_in_commands": [ "update-db" ]
+    },
+    {
+      "title": "Тестовый режим",
+      "article": "is_test",
+      "data_type": "boolean",
+      "use_in_commands": [ "update-db" ],
+      "require_in_commands": [ "update-db" ]
+    }
+  ]
+}
