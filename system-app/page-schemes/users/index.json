@@ -5,7 +5,7 @@
     {
       "title": "Шапка",
       "type": "header",
-      "size": 3,
+      "size": 4,
       "settings": {
         "title": "Сотрудники",
         "description": ""
@@ -23,13 +23,28 @@
             "required_permissions": [],
             "required_modules": []
           }
+        ],
+        "filters": [
+          {
+            "title": "Роль",
+            "type": "list",
+            "settings": {
+              "is_search": false,
+              "recipient_property": "role_id",
+              "donor_object": "roles",
+              "donor_property_title": "title",
+              "donor_property_value": "id"
+            },
+            "required_permissions": [],
+            "required_modules": []
+          }
         ]
       }
     },
     {
       "title": "Список сотрудников",
       "type": "list",
-      "size": 3,
+      "size": 4,
       "settings": {
         "object": "users"
       },

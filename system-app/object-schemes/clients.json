@@ -1,6 +1,6 @@
 {
-  "title": "Сотрудники",
-  "table": "users",
+  "title": "Клиенты",
+  "table": "clients",
   "search": "",
   "is_trash": true,
   "properties": [
@@ -54,56 +54,21 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update", "sign-in" ],
-      "require_in_commands": [ "add", "sign-in" ]
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": []
     },
     {
-      "title": "Пароль",
-      "article": "password",
-      "data_type": "password",
-      "field_type": "password",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "required_permissions": [],
-      "required_modules": [],
-      "use_in_commands": [ "add", "update", "sign-in" ],
-      "require_in_commands": [ "add", "sign-in" ]
-    },
-    {
-      "title": "ID роли",
-      "article": "role_id",
-      "data_type": "integer",
-      "field_type": "list",
-      "settings": {
-        "is_multiply": false,
-        "is_search": false
-      },
+      "title": "Телефон",
+      "article": "phone",
+      "data_type": "phone",
+      "field_type": "phone",
       "is_default_in_list": true,
-      "is_unique": false,
+      "is_unique": true,
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
       "use_in_commands": [ "add", "update" ],
-      "require_in_commands": [ "add" ],
-      "list-donor": {
-        "table": "roles",
-        "properties_title": "title"
-      }
-    }
-  ],
-  "action_buttons": [
-    {
-      "type": "href",
-      "settings": {
-        "title": "Редактировать сотрудника",
-        "page": "users/update",
-        "is_row_id_in_page": true,
-        "icon": "",
-        "background": "dark"
-      },
-      "required_permissions": [],
-      "required_modules": []
+      "require_in_commands": []
     }
   ]
 }

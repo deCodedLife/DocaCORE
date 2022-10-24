@@ -1,5 +1,5 @@
 {
-  "title": "Пользователи",
+  "title": "Клиенты",
   "properties": [
     {
       "title": "Имя",
@@ -37,20 +37,6 @@
       "default": null
     },
     {
-      "title": "Пароль",
-      "article": "password",
-      "type": "varchar(255)",
-      "is_required": true,
-      "default": null
-    },
-    {
-      "title": "ID роли",
-      "article": "role_id",
-      "type": "int",
-      "is_required": true,
-      "default": null
-    },
-    {
       "title": "Дата и время создания",
       "article": "created_at",
       "type": "datetime",
@@ -65,17 +51,6 @@
       "default": "Y"
     }
   ],
-  "rows_key": "email",
-  "rows": [
-    {
-      "first_name": "Поддержка",
-      "last_name": "OxBox",
-      "email": "support@oxbox.ru",
-      "password": "bf848c4f37c93a1a7dd19b1c81d55915",
-      "phone": "78005114825",
-      "role_id": 1,
-      "is_system": "Y",
-      "is_active": "Y"
-    }
-  ]
+  "rows_key": "",
+  "rows": []
 }

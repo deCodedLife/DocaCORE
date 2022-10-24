@@ -16,6 +16,20 @@
       "data_type": "boolean",
       "use_in_commands": [ "update-db" ],
       "require_in_commands": [ "update-db" ]
+    },
+    {
+      "title": "Тип схемы (command, db, object, page)",
+      "article": "scheme_type",
+      "data_type": "string",
+      "use_in_commands": [ "get-schemes" ],
+      "require_in_commands": []
+    },
+    {
+      "title": "Название схемы",
+      "article": "scheme_name",
+      "data_type": "string",
+      "use_in_commands": [ "get-schemes" ],
+      "require_in_commands": []
     }
   ]
 }

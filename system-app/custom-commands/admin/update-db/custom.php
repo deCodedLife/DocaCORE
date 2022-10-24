@@ -39,4 +39,4 @@ $result = updateDatabaseSchemes(
 );
 
 
-$API->returnResponse( $result );
+$response[ "data" ] = $result;

@@ -221,6 +221,9 @@ class API {
         if ( $requestData->limit && ( gettype( $requestData->limit ) === "integer" ) )
             $processedRequest[ "limit" ] = $requestData->limit;
 
+        if ( $requestData->is_list && ( gettype( $requestData->is_list ) === "boolean" ) )
+            $processedRequest[ "is_list" ] = $requestData->is_list;
+
 
         /**
          * Обход св-в в схеме объекта
@@ -383,6 +386,8 @@ class API {
                         case "string":
 
                             if (
+                                ( $objectProperty[ "data_type" ] === "date" ) ||
+                                ( $objectProperty[ "data_type" ] === "datetime" ) ||
                                 ( $objectProperty[ "data_type" ] === "password" ) ||
                                 ( $objectProperty[ "data_type" ] === "email" ) ||
                                 ( $objectProperty[ "data_type" ] === "phone" ) ||
@@ -527,12 +532,13 @@ class API {
     /**
      * Обработка ответа на запросы типа get
      *
-     * @param $rows          array   Строки для вывода
-     * @param $objectScheme  object  Схема объекта
+     * @param $rows          array    Строки для вывода
+     * @param $objectScheme  object   Схема объекта
+     * @param $is_list       boolean  Выводятся ли записи в списке
      *
      * @return array
      */
-    public function getResponseBuilder ( $rows, $objectScheme ) {
+    public function getResponseBuilder ( $rows, $objectScheme, $is_list = false ) {
 
         /**
          * Ответ на запрос
@@ -544,6 +550,13 @@ class API {
          * Обработка записей
          */
         foreach ( $rows as $row ) {
+
+            /**
+             * Обработка системных параметров
+             */
+
+            if ( $row[ "id" ] ) $row[ "id" ] = (int) $row[ "id" ];
+
 
             /**
              * Обработка нестандартных типов данных
@@ -692,6 +705,25 @@ class API {
             unset( $row[ "password" ] );
             unset( $row[ "is_active" ] );
 
+
+            /**
+             * Вывод кнопок в списке
+             */
+
+            if ( $is_list && $objectScheme[ "action_buttons" ] ) {
+
+                foreach ( $objectScheme[ "action_buttons" ] as $actionButton ) {
+
+                    /**
+                     * Добавление кнопки в запись
+                     */
+                    $row[ "buttons" ][] = $this->buildActionButton( $actionButton, $row );
+
+                } // foreach. $objectScheme[ "action_buttons" ]
+
+            } // if. $is_list && $objectScheme[ "action_buttons" ]
+
+
             $response[] = $row;
 
         } // foreach. $rows
@@ -700,6 +732,52 @@ class API {
         return $response;
 
     } // function. getResponseBuilder
+
+
+    /**
+     * Сборка кнопки для вывода списка
+     *
+     * @param $button  object  Схема кнопки
+     * @param $row     object  Запись, в которой находится кнопка
+     */
+    private function buildActionButton ( $button, $row ) {
+
+        /**
+         * Обработка типа кнопки
+         */
+        switch ( $button[ "type" ] ) {
+
+            case "href":
+
+                $button[ "settings" ][ "page" ] = $this->generatingStringFromVariables(
+                    $button[ "settings" ][ "page" ], $row
+                );
+
+                break;
+
+            case "script":
+
+                /**
+                 * Обход св-в запроса
+                 */
+
+                foreach ( $button[ "settings" ][ "data" ] as $buttonPropertyKey => $buttonPropertyValue ) {
+
+                    if ( $buttonPropertyValue[ 0 ] === ":" )
+                        $button[ "settings" ][ "data" ][ $buttonPropertyKey ] = $this->generatingStringFromVariables(
+                            [ $buttonPropertyValue ], $row
+                        );
+
+                } // foreach. $button[ "settings" ][ "data" ]
+
+                break;
+
+        } // switch. $button[ "type" ]
+
+
+        return $button;
+
+    } // function. buildActionButton
 
 
     /**
@@ -988,6 +1066,73 @@ class API {
         return true;
 
     } // function. validateModules
+
+
+    /**
+     * Формирование строк из переменных.
+     * Позволяет собирать строки с использованием переменных
+     *
+     * @param $string     mixed   Строка
+     * @param $rowDetail  object  Детальная информация о записи
+     *
+     * @return string
+     */
+    public function generatingStringFromVariables ( $string, $rowDetail ) {
+
+        /**
+         * Сформированная строка
+         */
+        $responseString = "";
+
+
+        /**
+         * Отмена обработки обычной строки
+         */
+        if ( gettype( $string ) === "string" ) return $string;
+
+
+        /**
+         * Обработка схемы строки
+         */
+
+        foreach ( $string as $stringComponent ) {
+
+            if ( $stringComponent[ 0 ] === ":" ) {
+
+                /**
+                 * Обработка переменной в строке
+                 */
+
+                /**
+                 * Получение переменной в строке
+                 */
+                $stringVariable = substr( $stringComponent, 1 );
+
+
+                /**
+                 * Формирование строки
+                 */
+                if ( $rowDetail[ $stringVariable ] )
+                    $responseString .= $rowDetail[ $stringVariable ];
+                else $responseString .= "_";
+
+
+                continue;
+
+            } // if. $stringComponent[ 0 ] === ":"
+
+
+            /**
+             * Добавление простого текста в строку
+             */
+            $responseString .= $stringComponent;
+
+        } // foreach. $string
+
+
+        return $responseString;
+
+    } // function. generatingStringFromVariables
 
 } // class. API
 

@@ -43,14 +43,6 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
      */
     if ( $propertyValue === null ) continue;
 
-    /**
-     * Игнорирование св-в, которые не авто-заполняются
-     */
-    if (
-        !$schemeProperty[ "is_autofill" ] &&
-        ( $schemeProperty[ "article" ] !== "id" )
-    ) continue;
-
 
     if ( $schemeProperty[ "join" ] ) {
 
@@ -64,29 +56,8 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
     } else {
 
         /**
-         * Обработка нестандартных параметров
+         * Обновление фильтра записей
          */
-        switch ( $propertyArticle ) {
-
-            case "created_at":
-                $requestSettings[ "filter" ][ "created_at >= ?" ] = $propertyValue . " 00:00:00";
-                $requestSettings[ "filter" ][ "created_at <= ?" ] = $propertyValue . " 23:59:59";
-                break;
-            case "start_at":
-                $propertyArticle = "start_at >= ?";
-                break;
-            case "end_at":
-                $propertyArticle = "start_at <= ?";
-                break;
-
-        } // switch. $propertyArticle
-
-
-        /**
-         * Статичный параметр
-         */
-
-        if ( $propertyArticle === "created_at" ) continue;
         $requestSettings[ "filter" ][ $propertyArticle ] = $propertyValue;
 
     } // if. $schemeProperty[ "join" ]
@@ -176,7 +147,7 @@ try {
      * Обработка ответа
      */
 
-    $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme );
+    $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->is_list );
 
 } catch ( PDOException $e ) {
 

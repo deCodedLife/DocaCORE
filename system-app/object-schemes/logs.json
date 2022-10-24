@@ -1,0 +1,132 @@
+{
+  "title": "Логи",
+  "table": "users",
+  "search": "",
+  "is_trash": true,
+  "properties": [
+    {
+      "title": "Таблица",
+      "article": "table_name",
+      "data_type": "string",
+      "field_type": "string",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [ "add" ]
+    },
+    {
+      "title": "Статус события",
+      "article": "status",
+      "data_type": "string",
+      "field_type": "string",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [ "add" ]
+    },
+    {
+      "title": "Описание события",
+      "article": "description",
+      "data_type": "string",
+      "field_type": "string",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [ "add" ]
+    },
+    {
+      "title": "IP пользователя",
+      "article": "ip",
+      "data_type": "string",
+      "field_type": "string",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": []
+    },
+    {
+      "title": "ID записи",
+      "article": "row_id",
+      "data_type": "integer",
+      "field_type": "integer",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [ "add" ]
+    },
+    {
+      "title": "ID пользователя",
+      "article": "user_id",
+      "data_type": "integer",
+      "field_type": "list",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [],
+      "list-donor": {
+        "table": "users",
+        "properties_title": "last_name"
+      }
+    },
+    {
+      "title": "ID клиента",
+      "article": "client_id",
+      "data_type": "integer",
+      "field_type": "list",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [],
+      "list-donor": {
+        "table": "clients",
+        "properties_title": "last_name"
+      }
+    },
+    {
+      "title": "ID филиала",
+      "article": "store_id",
+      "data_type": "integer",
+      "field_type": "list",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [],
+      "list-donor": {
+        "table": "stores",
+        "properties_title": "title"
+      }
+    }
+  ]
+}

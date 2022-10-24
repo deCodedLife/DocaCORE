@@ -5,35 +5,35 @@
       "title": "Заголовок",
       "article": "title",
       "type": "varchar(75)",
-      "null": false,
+      "is_required": true,
       "default": null
     },
     {
-      "title": "Артикул",
-      "article": "article",
-      "type": "varchar(75)",
-      "null": false,
+      "title": "Ссылка",
+      "article": "href",
+      "type": "varchar(255)",
+      "is_required": true,
       "default": null
     },
     {
       "title": "Иконка",
       "article": "icon",
       "type": "varchar(255)",
-      "null": true,
+      "is_required": false,
       "default": null
     },
     {
       "title": "Позиция (от меньшего к большему)",
       "article": "order_position",
       "type": "tinyint",
-      "null": true,
+      "is_required": false,
       "default": 0
     },
     {
       "title": "ID родителя",
       "article": "parent_id",
       "type": "int",
-      "null": true,
+      "is_required": false,
       "default": null
     }
   ],
@@ -41,6 +41,14 @@
   "rows": [
     {
       "id": 1,
+      "title": "Панель управления",
+      "article": "dashboard",
+      "order_position": 0,
+      "parent_id": null,
+      "is_system": "Y"
+    },
+    {
+      "id": 2,
       "title": "Сотрудники",
       "article": "users",
       "order_position": 0,
@@ -48,7 +56,7 @@
       "is_system": "Y"
     },
     {
-      "id": 2,
+      "id": 3,
       "title": "Клиенты",
       "article": "clients",
       "order_position": 0,
@@ -56,7 +64,7 @@
       "is_system": "Y"
     },
     {
-      "id": 3,
+      "id": 4,
       "title": "Услуги",
       "article": "services",
       "order_position": 0,

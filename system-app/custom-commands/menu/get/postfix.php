@@ -20,7 +20,7 @@ foreach ( $response[ "data" ] as $menuItem ) {
         $responseMenu[] = [
             "id" => $menuItem[ "id" ],
             "title" => $menuItem[ "title" ],
-            "article" => $menuItem[ "article" ],
+            "href" => $menuItem[ "href" ],
             "icon" => $menuItem[ "icon" ],
             "children" => []
         ];
@@ -45,7 +45,7 @@ foreach ( $response[ "data" ] as $menuItem ) {
             $responseMenu[ $responseMenuItemKey ][ "children" ][] = [
                 "id" => $menuItem[ "id" ],
                 "title" => $menuItem[ "title" ],
-                "article" => $menuItem[ "article" ],
+                "href" => $menuItem[ "href" ],
                 "icon" => $menuItem[ "icon" ],
                 "children" => []
             ];

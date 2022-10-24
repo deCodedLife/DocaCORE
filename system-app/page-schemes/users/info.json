@@ -7,7 +7,7 @@
       "type": "header",
       "size": 4,
       "settings": {
-        "title": "Сотрудники",
+        "title": [ ":last_name", " ", ":first_name", " ", ":patronymic" ],
         "description": ""
       },
       "components": {
@@ -27,12 +27,12 @@
       }
     },
     {
-      "title": "Форма добавления сотрудника",
-      "type": "form",
+      "title": "Детальная информация о сотруднике",
+      "type": "info",
       "size": 4,
       "settings": {
         "object": "users",
-        "command": "add",
+        "command": "update",
         "joined_property": "",
         "areas": [
           {
@@ -55,21 +55,7 @@
           }
         ]
       },
-      "components": {
-        "buttons": [
-          {
-            "type": "submit",
-            "settings": {
-              "title": "Добавить",
-              "href": "users",
-              "icon": "",
-              "background": "dark"
-            },
-            "required_permissions": [],
-            "required_modules": []
-          }
-        ]
-      }
+      "components": {}
     }
   ]
 }

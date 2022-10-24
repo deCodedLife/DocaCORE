@@ -45,7 +45,7 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 
     if ( $propertyValue ) {
 
-        if ( !$schemeProperty[ "join" ] ) $values[ $propertyName ] = $propertyValue;
+        if ( !$schemeProperty[ "join" ] ) $insertValues[ $propertyName ] = $propertyValue;
         else $join_insertValues[ $propertyName ] = [
             "connection_table" => $schemeProperty[ "join" ][ "connection_table" ],
             "filter_property" => $schemeProperty[ "join" ][ "filter_property" ],

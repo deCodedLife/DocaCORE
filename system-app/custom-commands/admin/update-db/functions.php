@@ -190,7 +190,7 @@ function updateDatabaseSchemes ( $dbSchemes ) {
             "title" => "Системное поле",
             "article" => "is_system",
             "type" => "char(1)",
-            "null" => true,
+            "is_required" => true,
             "default" => "N"
         ];
 
@@ -216,8 +216,8 @@ function updateDatabaseSchemes ( $dbSchemes ) {
 
             $tablePropertyTitle = $tablePropertyScheme[ "article" ] . " " . $tablePropertyScheme[ "type" ];
 
-            if ( $tablePropertyScheme[ "null" ] === true ) $tablePropertyTitle .= " NULL";
-            else $tablePropertyTitle .= " NOT NULL";
+            if ( $tablePropertyScheme[ "is_required" ] === true ) $tablePropertyTitle .= " NOT NULL";
+            else $tablePropertyTitle .= " NULL";
 
 
             if ( !isset( $currentTableStructure[ $tablePropertyScheme[ "article" ] ] ) ) {
@@ -270,7 +270,7 @@ function updateDatabaseSchemes ( $dbSchemes ) {
                  */
                 if (
                     ( $tablePropertyScheme[ "type" ] != $currentPropertyStructure[ "Type" ] ) ||
-                    ( $tablePropertyScheme[ "null" ] != $currentPropertyStructure[ "Null" ] )
+                    ( $tablePropertyScheme[ "is_required" ] == $currentPropertyStructure[ "Null" ] )
                 ) {
 
                     /**

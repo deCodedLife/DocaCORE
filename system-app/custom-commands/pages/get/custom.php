@@ -1,9 +1,20 @@
 <?php
 
 /**
+ * Подключение вспомогательных функций
+ */
+require_once( "functions/component-types.php" );
+require_once( "functions/block-types.php" );
+
+
+/**
+ * Сформированная структура страницы
+ */
+$response[ "data" ] = [];
+
+/**
  * Детальная информация о странице
  */
-
 $pageDetail = [
 
     /**
@@ -12,23 +23,30 @@ $pageDetail = [
     "url" => explode( "/", $requestData->page ),
 
     /**
-     * Раздел страницы
-     */
-    "section" => "",
-
-    /**
      * Название схемы страницы
      */
     "scheme_name" => "index.json",
 
     /**
-     * Запрашиваемая запись
+     * ID запрашиваемой записи
      */
-    "row_id" => null
+    "row_id" => null,
+
+    /**
+     * Детальная информация о запрошенной записи
+     */
+    "row_detail" => null
 
 ]; // $pageDetail
 
+/**
+ * Получение раздела страницы
+ */
 $pageDetail[ "section" ] = $pageDetail[ "url" ][ 0 ];
+
+/**
+ * Получение схемы и записи страницы
+ */
 if ( isset( $pageDetail[ "url" ][ 1 ] ) ) $pageDetail[ "scheme_name" ] = $pageDetail[ "url" ][ 1 ] . ".json";
 if ( isset( $pageDetail[ "url" ][ 2 ] ) ) $pageDetail[ "row_id" ] = $pageDetail[ "url" ][ 2 ];
 
@@ -43,14 +61,16 @@ $publicSchemePath = $API::$configs[ "paths" ][ "public_page_schemes" ] . "/" . $
 $systemSchemePath = $API::$configs[ "paths" ][ "system_page_schemes" ] . "/" . $pageDetail[ "scheme_path" ];
 
 
+
+
 /**
  * Подключение схемы страницы
  */
 
 $pageScheme = [];
 
-if ( file_exists( $systemSchemePath ) ) $pageScheme = file_get_contents( $systemSchemePath );
-elseif ( file_exists( $publicSchemePath ) ) $pageScheme = file_get_contents( $publicSchemePath );
+if ( file_exists( $publicSchemePath ) ) $pageScheme = file_get_contents( $publicSchemePath );
+elseif ( file_exists( $systemSchemePath ) ) $pageScheme = file_get_contents( $systemSchemePath );
 else $API->returnResponse( "Отсутствует схема страницы", 500 );
 
 
@@ -70,9 +90,13 @@ try {
 
 
 /**
- * Сформированная структура страницы
+ * Получение детальной информации о запрошенной записи
  */
-$response[ "data" ] = [];
+if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
+    $pageDetail[ "row_detail" ] = $API->DB->from( $pageDetail[ "section" ] )
+        ->where( "id", $pageDetail[ "row_id" ] )
+        ->limit( 1 )
+        ->fetch();
 
 
 /**
@@ -103,53 +127,61 @@ foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
 
     switch ( $structureBlock[ "type" ] ) {
 
+        case "header":
+
+            /**
+             * Шапка страницы: https://tppr.me/kLiXG
+             */
+
+
+            /**
+             * Формирование заголовка
+             */
+            $responseBlock[ "settings" ][ "title" ] = $API->generatingStringFromVariables(
+                $structureBlock[ "settings" ][ "title" ], $pageDetail[ "row_detail" ]
+            );
+
+            break;
+
         case "list":
 
             /**
-             * Заголовки списка.
-             * Используются для вывода в админке
+             * Списки: https://tppr.me/JELn0
              */
-            $listHeaders = [];
 
 
             /**
-             * Проверка обязательных св-в
+             * Получение заголовков списка
              */
-            if ( !$structureBlock[ "settings" ][ "object" ] ) {
-                $isContinue = true; break;
-            }
-
-
-            /**
-             * Загрузка схемы объекта
-             */
-
-            $objectScheme = $API->loadObjectScheme( $structureBlock[ "settings" ][ "object" ] );
-
-            if ( !$objectScheme ) {
-                $isContinue = true; break;
-            }
-
-
-            /**
-             * Формирование заголовков списка
-             */
-
-            foreach ( $objectScheme[ "properties" ] as $property ) {
-
-                if ( $property[ "is_default_in_list" ] ) $listHeaders[] = [
-                    "title" => $property[ "title" ],
-                    "article" => $property[ "article" ],
-                    "type" => $property[ "field_type" ]
-                ];
-
-            } // foreach. $objectScheme[ "properties" ]
-
+            $listHeaders = processingBlockType_list( $structureBlock );
+            if ( !$listHeaders ) { $isContinue = true; break; }
 
             /**
              * Указание заголовков списка
              */
             $responseBlock[ "settings" ][ "headers" ] = $listHeaders;
+
+            break;
+
+        case "form":
+        case "info":
+
+            /**
+             * Формы: https://tppr.me/469PZ,
+             * Детальная информация о записи
+             */
+
+
+            /**
+             * Получение областей формы
+             */
+            $formAreas = processingBlockType_form( $structureBlock );
+            if ( !$formAreas ) { $isContinue = true; break; }
+
+            /**
+             * Указание областей формы
+             */
+            $responseBlock[ "settings" ][ "areas" ] = $formAreas;
 
             break;
 
@@ -159,13 +191,13 @@ foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
 
 
     /**
-     * Обработка типов компонентов
+     * Обход типов компонентов
      */
 
     foreach ( $structureBlock[ "components" ] as $structureComponentType => $structureComponents ) {
 
         /**
-         * Обработка типов компонентов
+         * Обработка компонентов
          */
 
         foreach ( $structureComponents as $structureComponent ) {
@@ -177,6 +209,22 @@ foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
                 "type" => $structureComponent[ "type" ],
                 "settings" => $structureComponent[ "settings" ]
             ];
+
+
+            /**
+             * Обработка типов компонентов
+             */
+
+            switch ( $structureComponentType ) {
+
+                case "filters":
+
+                    $responseComponent[ "settings" ][ "list" ] = processingComponentType_filter( $structureComponent );
+
+                    break;
+
+            } // switch. $structureComponentType
+
 
             /**
              * Добавление компонента в блок страницы
