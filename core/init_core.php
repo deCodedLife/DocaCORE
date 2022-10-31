@@ -1089,6 +1089,7 @@ class API {
          * Отмена обработки обычной строки
          */
         if ( gettype( $string ) === "string" ) return $string;
+        if ( gettype( $string ) === "integer" ) return (int) $string;
 
 
         /**
@@ -1129,6 +1130,9 @@ class API {
 
         } // foreach. $string
 
+
+        if ( ctype_digit( $responseString ) )
+            $responseString = (int) $responseString;
 
         return $responseString;
 

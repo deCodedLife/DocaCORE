@@ -42,7 +42,7 @@
     {
       "id": 1,
       "title": "Панель управления",
-      "article": "dashboard",
+      "href": "dashboard",
       "order_position": 0,
       "parent_id": null,
       "is_system": "Y"
@@ -50,7 +50,7 @@
     {
       "id": 2,
       "title": "Сотрудники",
-      "article": "users",
+      "href": "users",
       "order_position": 0,
       "parent_id": null,
       "is_system": "Y"
@@ -58,7 +58,7 @@
     {
       "id": 3,
       "title": "Клиенты",
-      "article": "clients",
+      "href": "clients",
       "order_position": 0,
       "parent_id": null,
       "is_system": "Y"
@@ -66,7 +66,7 @@
     {
       "id": 4,
       "title": "Услуги",
-      "article": "services",
+      "href": "services",
       "order_position": 0,
       "parent_id": null,
       "is_system": "Y"

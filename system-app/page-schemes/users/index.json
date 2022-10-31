@@ -23,7 +23,17 @@
             "required_permissions": [],
             "required_modules": []
           }
-        ],
+        ]
+      }
+    },
+    {
+      "title": "Список сотрудников",
+      "type": "list",
+      "size": 4,
+      "settings": {
+        "object": "users"
+      },
+      "components": {
         "filters": [
           {
             "title": "Роль",
@@ -40,15 +50,6 @@
           }
         ]
       }
-    },
-    {
-      "title": "Список сотрудников",
-      "type": "list",
-      "size": 4,
-      "settings": {
-        "object": "users"
-      },
-      "components": {}
     }
   ]
 }
