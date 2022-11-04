@@ -1,0 +1,7 @@
+{
+  "title": "Расписание",
+  "type": "schedule",
+  "object_scheme": "visits",
+  "required_permissions": [],
+  "required_modules": []
+}

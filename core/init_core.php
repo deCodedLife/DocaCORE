@@ -679,13 +679,13 @@ class API {
                          * Получение детальной информации о связанной записи
                          */
                         $joinDetailRow = $this->DB->from( $property[ "join" ][ "donor_table" ] )
-                            ->select( null )->select( [ "id", $property[ "join" ][ "properties_title" ] ] )
+                            ->select( null )->select( [ "id", $property[ "join" ][ "property_article" ] ] )
                             ->where( [ "id" => $joinRow[ $property[ "join" ][ "filter_property" ] ] ] )
                             ->limit( 1 )
                             ->fetch();
 
                         $joinDetailInputValues[] = [
-                            "title" => $joinDetailRow[ $property[ "join" ][ "properties_title" ] ],
+                            "title" => $joinDetailRow[ $property[ "join" ][ "property_article" ] ],
                             "value" => (int) $joinDetailRow[ "id" ]
                         ];
 

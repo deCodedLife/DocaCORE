@@ -266,6 +266,12 @@ function updateDatabaseSchemes ( $dbSchemes ) {
 
 
                 /**
+                 * Перевод IS NULL в boolean тип
+                 */
+                if ( $currentPropertyStructure[ "Null" ] === "YES" ) $currentPropertyStructure[ "Null" ] = true;
+                else $currentPropertyStructure[ "Null" ] = false;
+
+                /**
                  * Проверка наличия изменений
                  */
                 if (

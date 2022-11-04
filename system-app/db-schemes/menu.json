@@ -70,6 +70,22 @@
       "order_position": 0,
       "parent_id": null,
       "is_system": "Y"
+    },
+    {
+      "id": 5,
+      "title": "Настройки",
+      "href": "",
+      "order_position": 0,
+      "parent_id": null,
+      "is_system": "Y"
+    },
+    {
+      "id": 6,
+      "title": "Роли",
+      "href": "roles",
+      "order_position": 0,
+      "parent_id": 5,
+      "is_system": "Y"
     }
   ]
 }

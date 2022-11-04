@@ -71,7 +71,7 @@
       "require_in_commands": [ "add", "sign-in" ]
     },
     {
-      "title": "ID роли",
+      "title": "Роль",
       "article": "role_id",
       "data_type": "integer",
       "field_type": "list",

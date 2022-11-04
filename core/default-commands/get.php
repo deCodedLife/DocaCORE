@@ -35,13 +35,23 @@ if ( $requestData->id && ( gettype( $requestData->id ) === "integer" ) )
 foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 
     $propertyArticle = $schemeProperty[ "article" ];
-    $propertyValue = $requestData->{$schemeProperty[ "article" ]};
+    $propertyValue = $requestData->{$propertyArticle};
 
 
     /**
      * Игнорирование пустых св-в
      */
     if ( $propertyValue === null ) continue;
+
+    /**
+     * Игнорирование св-в без автозаполнения
+     */
+    if ( !$schemeProperty[ "is_autofill" ] ) continue;
+
+    /**
+     * Добавление модификатора
+     */
+    if ( $schemeProperty[ "article_modifier" ] ) $propertyArticle .= " " . $schemeProperty[ "article_modifier" ];
 
 
     if ( $schemeProperty[ "join" ] ) {

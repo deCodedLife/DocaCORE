@@ -73,7 +73,7 @@ if ( $requestData->scheme_type && $requestData->scheme_name ) {
      * Подключение схемы
      */
     if ( file_exists( $schemePath ) ) $scheme = file_get_contents( $schemePath );
-    else $this->returnResponse( "Отсутствует схема", 500 );
+    else $API->returnResponse( "Отсутствует схема", 500 );
 
 
     /**
@@ -107,7 +107,7 @@ foreach ( $schemeTypes as $schemeType ) {
     /**
      * Директория типа схем
      */
-    $schemeDir = "";
+    $schemeDirPath = "";
 
 
     /**
@@ -116,40 +116,69 @@ foreach ( $schemeTypes as $schemeType ) {
     switch ( $schemeType ) {
 
         case "command":
-            $schemeDir = $API::$configs[ "paths" ][ "public_command_schemes" ];
+            $schemeDirPath = $API::$configs[ "paths" ][ "public_command_schemes" ];
             break;
 
         case "db":
-            $schemeDir = $API::$configs[ "paths" ][ "public_db_schemes" ];
+            $schemeDirPath = $API::$configs[ "paths" ][ "public_db_schemes" ];
             break;
 
         case "object":
-            $schemeDir = $API::$configs[ "paths" ][ "public_object_schemes" ];
+            $schemeDirPath = $API::$configs[ "paths" ][ "public_object_schemes" ];
             break;
 
         case "page":
-            $schemeDir = $API::$configs[ "paths" ][ "public_page_schemes" ];
+            $schemeDirPath = $API::$configs[ "paths" ][ "public_page_schemes" ];
             break;
 
     } // switch. $schemeType
 
-    if ( !$schemeDir ) continue;
+    if ( !$schemeDirPath ) continue;
 
 
     /**
      * Обход директории типа схем
      */
 
-    $schemeDir = dir( $schemeDir );
+    $schemeDir = dir( $schemeDirPath );
 
     while ( ( $schemeFile = $schemeDir->read() ) !== false ) {
 
         if ( ( $schemeFile === "." ) || ( $schemeFile === ".." ) ) continue;
 
+
         /**
-         * Обновление списка запрошенных схем
+         * Проверка, является ли схема файлом
          */
-        $result[ $schemeType ][] = $schemeFile;
+        if ( strpos( $schemeFile, "." ) ) {
+
+            /**
+             * Обновление списка запрошенных схем
+             */
+            $result[ $schemeType ][] = $schemeFile;
+
+        } else {
+
+            /**
+             * Обход внутренней директории схем
+             */
+
+            $schemeSubDir = dir( "$schemeDirPath/$schemeFile" );
+
+            while ( ( $schemeSubFile = $schemeSubDir->read() ) !== false ) {
+
+                if ( ( $schemeSubFile === "." ) || ( $schemeSubFile === ".." ) ) continue;
+
+
+                /**
+                 * Обновление списка запрошенных схем
+                 */
+                $result[ $schemeType ][ $schemeFile ][] = $schemeSubFile;
+
+            } // while. $schemeSubDir->read()
+
+
+        } // if. strpos( $schemeFile, "." )
 
     } // while. $schemeDir->read()
 

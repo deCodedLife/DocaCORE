@@ -16,6 +16,13 @@
       "default": null
     },
     {
+      "title": "Описание",
+      "article": "description",
+      "type": "varchar(255)",
+      "is_required": false,
+      "default": null
+    },
+    {
       "title": "ID группы",
       "article": "group_id",
       "type": "int",
@@ -23,6 +30,35 @@
       "default": 1
     }
   ],
-  "rows_key": "",
-  "rows": []
+  "rows_key": "id",
+  "rows": [
+    {
+      "id": 1,
+      "title": "Чтение",
+      "article": "employees_read",
+      "description": "Просмотр списка сотрудников",
+      "group_id": 2
+    },
+    {
+      "id": 2,
+      "title": "Редактирование",
+      "article": "employees_update",
+      "description": null,
+      "group_id": 2
+    },
+    {
+      "id": 3,
+      "title": "Регистрация",
+      "article": "employees_add",
+      "description": null,
+      "group_id": 2
+    },
+    {
+      "id": 4,
+      "title": "Удаление",
+      "article": "employees_remove",
+      "description": null,
+      "group_id": 2
+    }
+  ]
 }

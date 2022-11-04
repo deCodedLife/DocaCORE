@@ -158,8 +158,8 @@ function processingBlockType_form ( $structureBlock ) {
                     "is_required" => $isRequired
                 ];
 
-                if ( $fieldDetail[ "min-value" ] ) $blockField[ "min-value" ] = $fieldDetail[ "min-value" ];
-                if ( $fieldDetail[ "max-value" ] ) $blockField[ "max-value" ] = $fieldDetail[ "max-value" ];
+                if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];
+                if ( $fieldDetail[ "max_value" ] ) $blockField[ "max_value" ] = $fieldDetail[ "max_value" ];
 
 
                 /**

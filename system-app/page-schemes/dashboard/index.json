@@ -7,8 +7,37 @@
       "type": "header",
       "size": 4,
       "settings": {
-        "title": "Панель управления",
+        "title": "Расписание",
         "description": ""
+      },
+      "components": {}
+    },
+    {
+      "title": "Расписание врачей",
+      "type": "schedule",
+      "size": 4,
+      "settings": {
+        "object": "visits",
+        "performers_table": "users",
+        "performers_row_article": "user_id",
+        "performers_row_title": "first_name"
+      },
+      "components": {
+        "filters": [
+          {
+            "title": "Сотрудник",
+            "type": "list",
+            "settings": {
+              "is_search": false,
+              "recipient_property": "user_id",
+              "donor_object": "users",
+              "donor_property_title": "first_name",
+              "donor_property_value": "id"
+            },
+            "required_permissions": [],
+            "required_modules": []
+          }
+        ]
       }
     }
   ],

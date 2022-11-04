@@ -89,7 +89,7 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
 
 try {
 
-    $API->DB->update( $objectScheme[ "table" ] )
+    if ( $updateValues ) $API->DB->update( $objectScheme[ "table" ] )
         ->set( $updateValues )
         ->where( [
             "id" => $requestData->id,

@@ -4,8 +4,15 @@
     {
       "title": "Название",
       "article": "title",
-      "type": "varchar(255)",
+      "type": "varchar(75)",
       "is_required": true,
+      "default": null
+    },
+    {
+      "title": "Описание",
+      "article": "description",
+      "type": "varchar(255)",
+      "is_required": false,
       "default": null
     },
     {
@@ -21,6 +28,19 @@
     {
       "id": 1,
       "title": "Основное",
+      "description": null,
+      "parent_id": null
+    },
+    {
+      "id": 2,
+      "title": "Управление сотрудниками",
+      "description": "Доступ к сотрудникам",
+      "parent_id": 1
+    },
+    {
+      "id": 3,
+      "title": "Управление клиентами",
+      "description": "Доступ к клиентам",
       "parent_id": null
     }
   ]
