@@ -25,6 +25,15 @@
       "components": {
         "filters": [
           {
+            "title": "Дата",
+            "type": "date",
+            "settings": {
+              "recipient_property": "start_at"
+            },
+            "required_permissions": [],
+            "required_modules": []
+          },
+          {
             "title": "Сотрудник",
             "type": "list",
             "settings": {

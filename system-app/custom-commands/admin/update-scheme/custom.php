@@ -35,8 +35,6 @@ switch ( $requestData->scheme_type ) {
 
 } // switch. $requestData->scheme_type
 
-if ( !$schemeDir ) $API->returnResponse( [] );
-
 
 /**
  * Получение пути к схеме
