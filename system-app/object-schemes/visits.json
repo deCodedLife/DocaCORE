@@ -120,7 +120,7 @@
       "required_modules": [],
       "use_in_commands": [ "add", "update" ],
       "require_in_commands": [ "add" ],
-      "list-donor": {
+      "list_donor": {
         "table": "users",
         "properties_title": "last_name"
       }

@@ -45,4 +45,10 @@ $token = [
 $jwt_authorization = $API->JWT::encode( $token, $API::$configs[ "jwt_key" ] );
 
 
+/**
+ * Добавление уведомления
+ */
+$API->addNotification( "system_errors", "Авторизация", $userDetail[ "email" ] );
+
+
 $API->returnResponse( $jwt_authorization );

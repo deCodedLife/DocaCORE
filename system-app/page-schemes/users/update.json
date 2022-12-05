@@ -7,7 +7,7 @@
       "type": "header",
       "size": 4,
       "settings": {
-        "title": "Сотрудник",
+        "title": [ "Сотрудник" ],
         "description": ""
       },
       "components": {

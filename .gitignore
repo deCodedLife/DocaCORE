@@ -18,4 +18,4 @@ Thumbs.db
 uploads/*
 public-app/*
 
-core/api_configs.php
+core/app_configs.php

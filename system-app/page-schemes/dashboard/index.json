@@ -7,10 +7,64 @@
       "type": "header",
       "size": 4,
       "settings": {
-        "title": "Расписание",
+        "title": [ "Расписание" ],
         "description": ""
       },
-      "components": {}
+      "components": {
+        "buttons": [
+          {
+            "type": "href",
+            "settings": {
+              "title": "Добавить запись к врачу",
+              "page": "visits/add",
+              "icon": "",
+              "background": "dark"
+            },
+            "required_permissions": [],
+            "required_modules": []
+          }
+        ]
+      }
+    },
+    {
+      "title": "Аналитика пользователей",
+      "type": "analytic_widgets",
+      "size": 4,
+      "components": {
+        "filters": [
+          {
+            "title": "Период",
+            "type": "list",
+            "settings": {
+              "is_search": false,
+              "recipient_property": "period",
+              "list": [
+                {
+                  "title": "Все время",
+                  "value": "all"
+                },
+                {
+                  "title": "Сегодня",
+                  "value": "per_day"
+                },
+                {
+                  "title": "Неделя",
+                  "value": "per_week"
+                },
+                {
+                  "title": "Месяц",
+                  "value": "per_month"
+                }
+              ]
+            },
+            "required_permissions": [],
+            "required_modules": []
+          }
+        ]
+      },
+      "settings": {
+        "widgets_group": "users"
+      }
     },
     {
       "title": "Расписание врачей",
@@ -24,15 +78,6 @@
       },
       "components": {
         "filters": [
-          {
-            "title": "Дата",
-            "type": "date",
-            "settings": {
-              "recipient_property": "start_at"
-            },
-            "required_permissions": [],
-            "required_modules": []
-          },
           {
             "title": "Сотрудник",
             "type": "list",

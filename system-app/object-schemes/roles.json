@@ -54,6 +54,30 @@
         "insert_property": "role_id",
         "filter_property": "permission_id"
       }
+    },
+    {
+      "title": "Типы уведомлений",
+      "article": "notificationTypes",
+      "data_type": "array",
+      "field_type": "list",
+      "settings": {
+        "is_multiply": true,
+        "is_search": false
+      },
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [],
+      "join": {
+        "connection_table": "roles_notificationTypes",
+        "donor_table": "notificationTypes",
+        "property_article": "title",
+        "insert_property": "role_id",
+        "filter_property": "notificationType_id"
+      }
     }
   ]
 }

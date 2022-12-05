@@ -703,6 +703,7 @@ class API {
              * Очистка системных параметров
              */
             unset( $row[ "password" ] );
+            unset( $row[ "is_system" ] );
             unset( $row[ "is_active" ] );
 
 
@@ -1137,6 +1138,103 @@ class API {
         return $responseString;
 
     } // function. generatingStringFromVariables
+
+
+    /**
+     * Отправка веб-сокета.
+     * Инициализирует обновление блока на стороне админки
+     *
+     * @param $blockArticle  string  Артикул блока, в котором произошло событие
+     *
+     * @return boolean
+     */
+    public function sendWebsocket ( $blockArticle ) {
+
+        /**
+         * Формирование URL к админке
+         */
+        $adminURL = "wss://" . $this::$configs[ "company" ] . "." . $this::$configs[ "admin_url" ];
+
+        /**
+         * Указание блока, в котором произошло событие
+         */
+        $adminURL .= "/websockets/$blockArticle";
+
+
+        /**
+         * Отправка запроса на обновление блока
+         */
+
+        $ch = curl_init();
+        
+        curl_setopt( $ch, CURLOPT_URL, $adminURL );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        curl_exec( $ch );
+        curl_close( $ch );
+
+        return true;
+
+    } // function. sendWebsocket
+
+
+    /**
+     * Добавление уведомления
+     *
+     * @param $type         string  Тип
+     * @param $title        string  Название
+     * @param $description  string  Описание
+     * @param $status       string  Статус
+     *
+     * @return boolean
+     */
+    public function addNotification ( $type, $title, $description, $status = "info" ) {
+
+        /**
+         * Получение детальной информации о типе уведомлений
+         */
+
+        $notificationTypesDetail = $this->DB->from( "notificationTypes" )
+            ->where( [ "article" => $type ] )
+            ->limit( 1 )
+            ->fetch();
+
+        if ( !$notificationTypesDetail ) return false;
+
+
+        /**
+         * Получение ролей, которые получат уведомление
+         */
+        $notificationTypes_roles = $this->DB->from( "roles_notificationTypes" )
+            ->where( [ "notificationType_id" => $notificationTypesDetail[ "id" ] ] );
+
+
+        /**
+         * Добавление уведомлений
+         */
+
+        foreach ( $notificationTypes_roles as $notificationType_role ) {
+
+            $this->DB->insertInto( "notifications" )
+                ->values( [
+                    "title" => mb_substr( $title, 0, 75 ),
+                    "description" => mb_substr( $description, 0, 255 ),
+                    "status" => mb_substr( $status, 0, 15 ),
+                    "role_id" => $notificationType_role[ "role_id" ]
+                ] )
+                ->execute();
+
+
+            /**
+             * Отправка веб-сокета
+             */
+            $this->sendWebsocket( "notifications/" . $notificationType_role[ "role_id" ] );
+
+        } // foreach. $notificationTypes_roles
+
+
+        return true;
+
+    } // function. addNotification
 
 } // class. API
 

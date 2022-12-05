@@ -48,7 +48,7 @@ while ( $currentScheduleDate <= $scheduleTo ) {
     foreach ( $performersDetail as $performerId => $performerTitle ) {
 
         $resultSchedule[ $scheduleDate ][ $performerId ] = [
-            "performer_id" => (int) $performerId,
+            "performer_href" => "/$requestData->performers_table/info/$performerId",
             "performer_title" => $performerTitle,
             "schedule" => []
         ];

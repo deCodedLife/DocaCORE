@@ -21,15 +21,15 @@
       "title": "Тип схемы (command, db, object, page)",
       "article": "scheme_type",
       "data_type": "string",
-      "use_in_commands": [ "get-schemes", "update-scheme" ],
-      "require_in_commands": [ "update-scheme" ]
+      "use_in_commands": [ "get-schemes", "update-scheme", "remove-scheme" ],
+      "require_in_commands": [ "update-scheme", "remove-scheme" ]
     },
     {
       "title": "Название схемы",
       "article": "scheme_name",
       "data_type": "string",
-      "use_in_commands": [ "get-schemes", "update-scheme" ],
-      "require_in_commands": [ "update-scheme" ]
+      "use_in_commands": [ "get-schemes", "update-scheme", "remove-scheme" ],
+      "require_in_commands": [ "update-scheme", "remove-scheme" ]
     },
     {
       "title": "Тело схемы",

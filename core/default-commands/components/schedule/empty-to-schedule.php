@@ -64,6 +64,22 @@ foreach ( $resultSchedule as $scheduleDateKey => $scheduleDateDetail ) {
                 "status" => "available"
             ];
 
+
+        /**
+         * Сортировка ячеек по шагам
+         */
+        ksort( $resultSchedule[ $scheduleDateKey ][ $schedulePerformerKey ][ "schedule" ] );
+
+
+        /**
+         * Очистка графика сотрудников от ключей с шагами
+         */
+        $resultSchedule[ $scheduleDateKey ][ $schedulePerformerKey ][ "schedule" ] = array_values(
+            $resultSchedule[ $scheduleDateKey ][ $schedulePerformerKey ][ "schedule" ]
+        );
+
     } // foreach. $scheduleDateDetail
 
 } // foreach. $resultSchedule
+
+

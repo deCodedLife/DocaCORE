@@ -10,29 +10,15 @@
         "title": [ "Роли" ],
         "description": ""
       },
-      "components": {
-        "buttons": [
-          {
-            "type": "href",
-            "settings": {
-              "title": "Назад",
-              "page": "roles",
-              "icon": "",
-              "background": "dark"
-            },
-            "required_permissions": [],
-            "required_modules": []
-          }
-        ]
-      }
+      "components": {}
     },
     {
-      "title": "Форма добавления роли",
+      "title": "Форма редактирования доступов",
       "type": "form",
       "size": 4,
       "settings": {
-        "object": "roles",
-        "command": "add",
+        "object": "settings",
+        "command": "update",
         "joined_property": "",
         "areas": [
           {
@@ -51,8 +37,8 @@
           {
             "type": "submit",
             "settings": {
-              "title": "Добавить",
-              "href": "roles",
+              "title": "Сохранить",
+              "href": "settings/1",
               "icon": "",
               "background": "dark"
             },

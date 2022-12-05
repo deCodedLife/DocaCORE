@@ -87,7 +87,7 @@
       "required_modules": [],
       "use_in_commands": [ "add", "update" ],
       "require_in_commands": [],
-      "list-donor": {
+      "list_donor": {
         "table": "users",
         "properties_title": "last_name"
       }
@@ -105,7 +105,7 @@
       "required_modules": [],
       "use_in_commands": [ "add", "update" ],
       "require_in_commands": [],
-      "list-donor": {
+      "list_donor": {
         "table": "clients",
         "properties_title": "last_name"
       }
@@ -123,7 +123,7 @@
       "required_modules": [],
       "use_in_commands": [ "add", "update" ],
       "require_in_commands": [],
-      "list-donor": {
+      "list_donor": {
         "table": "stores",
         "properties_title": "title"
       }

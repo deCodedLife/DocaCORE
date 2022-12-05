@@ -1,5 +1,5 @@
 {
-  "title": "Роли",
+  "title": "Уведомления",
   "properties": [
     {
       "title": "Название",
@@ -16,19 +16,6 @@
       "default": null
     }
   ],
-  "rows_key": "article",
-  "rows": [
-    {
-      "id": 1,
-      "title": "Техническая поддержка",
-      "article": "support",
-      "is_system": "Y"
-    },
-    {
-      "id": 2,
-      "title": "Директор",
-      "article": "director",
-      "is_system": "Y"
-    }
-  ]
+  "rows_key": "",
+  "rows": []
 }

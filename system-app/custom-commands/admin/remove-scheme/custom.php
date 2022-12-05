@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Обновление схем
+ * Удаление схем
  */
 
 
@@ -37,25 +37,22 @@ switch ( $requestData->scheme_type ) {
 
 
 /**
+ * Проверка на недопустимые символы
+ */
+if ( strpos( $requestData->scheme_name, ".." ) ) $API->returnResponse( false );
+if ( strpos( $requestData->scheme_name, "//" ) ) $API->returnResponse( false );
+
+
+/**
  * Получение пути к схеме
  */
 $schemePath = "$schemeDir/$requestData->scheme_name.json";
 
 
 /**
- * Добавление директории схемы
+ * Удаление схемы
  */
-
-$schemeNamePath = explode( "/", $requestData->scheme_name );
-
-if ( !is_dir( $schemeDir ) ) mkdir( $schemeDir );
-if ( count( $schemeNamePath ) > 1 ) mkdir( $schemeDir . "/" . $schemeNamePath[ 0 ] );
-
-
-/**
- * Обновление схемы
- */
-if ( !file_put_contents( $schemePath, $requestData->scheme_body ) ) $API->returnResponse( false );
+if ( !unlink( $schemePath ) ) $API->returnResponse( false );
 
 
 $API->returnResponse( true );

@@ -171,13 +171,13 @@ function processingBlockType_form ( $structureBlock ) {
                     /**
                      * Загрузка схемы объекта связанной таблицы
                      */
-                    $objectScheme = $API->loadObjectScheme( $fieldDetail[ "list-donor" ][ "table" ] );
+                    $objectScheme = $API->loadObjectScheme( $fieldDetail[ "list_donor" ][ "table" ] );
                     if ( !$objectScheme ) continue;
 
                     /**
                      * Получение данных из связанной таблицы
                      */
-                    $joinedTableRows = $API->DB->from( $fieldDetail[ "list-donor" ][ "table" ] );
+                    $joinedTableRows = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] );
                     if ( $objectScheme[ "is_trash" ] ) $joinedTableRows->where( "is_active", "Y" );
 
 
@@ -186,7 +186,7 @@ function processingBlockType_form ( $structureBlock ) {
                      */
                     foreach ( $joinedTableRows as $joinedTableRow )
                         $blockField[ "list" ][] = [
-                            "title" => $joinedTableRow[ $fieldDetail[ "list-donor" ][ "properties_title" ] ],
+                            "title" => $joinedTableRow[ $fieldDetail[ "list_donor" ][ "properties_title" ] ],
                             "value" => $joinedTableRow[ "id" ]
                         ];
 

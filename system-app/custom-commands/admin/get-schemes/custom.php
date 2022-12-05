@@ -104,6 +104,9 @@ if ( $requestData->scheme_type && $requestData->scheme_name ) {
 
 foreach ( $schemeTypes as $schemeType ) {
 
+    $result[ $schemeType ] = [];
+
+
     /**
      * Директория типа схем
      */

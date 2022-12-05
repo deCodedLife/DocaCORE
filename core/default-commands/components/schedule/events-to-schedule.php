@@ -43,7 +43,6 @@ function addEventIntoSchedule ( $event ) {
     /**
      * Заполнение информации об Исполнителе
      */
-    $resultSchedule[ $eventDate ][ $event[ $requestData->performers_article ] ][ "performer_id" ] = $event[ $requestData->performers_article ];
     $resultSchedule[ $eventDate ][ $event[ $requestData->performers_article ] ][ "performer_title" ] = $performersDetail[ $event[ $requestData->performers_article ] ];
 
 
