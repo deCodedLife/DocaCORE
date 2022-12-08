@@ -49,30 +49,6 @@
     },
     {
       "id": 2,
-      "title": "Сотрудники",
-      "href": "users",
-      "order_position": 0,
-      "parent_id": null,
-      "is_system": "Y"
-    },
-    {
-      "id": 3,
-      "title": "Клиенты",
-      "href": "clients",
-      "order_position": 0,
-      "parent_id": null,
-      "is_system": "Y"
-    },
-    {
-      "id": 4,
-      "title": "Услуги",
-      "href": "services",
-      "order_position": 0,
-      "parent_id": null,
-      "is_system": "Y"
-    },
-    {
-      "id": 5,
       "title": "Настройки",
       "href": "",
       "order_position": 0,
@@ -80,11 +56,11 @@
       "is_system": "Y"
     },
     {
-      "id": 6,
+      "id": 3,
       "title": "Роли",
       "href": "roles",
       "order_position": 0,
-      "parent_id": 5,
+      "parent_id": 2,
       "is_system": "Y"
     }
   ]

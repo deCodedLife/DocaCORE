@@ -28,6 +28,8 @@ function loadDatabaseSchemesDir ( $dbSchemesDirPath, $schemesType ) {
      * Обход директории схем Баз данных
      */
 
+    if ( !is_dir( $dbSchemesDirPath ) ) return false;
+
     $dbSchemesDir = opendir( $dbSchemesDirPath );
 
     while ( false !== ( $dbSchemeFile = readdir( $dbSchemesDir ) ) ) {
