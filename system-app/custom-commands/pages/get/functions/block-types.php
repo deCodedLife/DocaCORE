@@ -169,6 +169,12 @@ function processingBlockType_form ( $structureBlock ) {
                 if ( $fieldDetail[ "field_type" ] === "list" ) {
 
                     /**
+                     * Проверка обязательных полей
+                     */
+                    if ( !$fieldDetail[ "list_donor" ][ "table" ] ) continue;
+
+
+                    /**
                      * Загрузка схемы объекта связанной таблицы
                      */
                     $objectScheme = $API->loadObjectScheme( $fieldDetail[ "list_donor" ][ "table" ] );

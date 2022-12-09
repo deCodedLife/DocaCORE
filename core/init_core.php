@@ -167,7 +167,7 @@ class API {
          */
         if ( file_exists( $publicSchemePath ) ) $scheme = file_get_contents( $publicSchemePath );
         elseif ( file_exists( $systemSchemePath ) ) $scheme = file_get_contents( $systemSchemePath );
-        else $this->returnResponse( "Отсутствует схема объекта", 500 );
+        else $this->returnResponse( "Отсутствует схема объекта $objectSchemeArticle", 500 );
 
 
         /**
