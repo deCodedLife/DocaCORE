@@ -61,7 +61,7 @@ foreach ( $response[ "data" ] as $permissionItem ) {
         $isChecked = true;
 
 
-    $responsePermissions[ $permissionItem[ "group_id" ] ][ "permissions" ][] = [
+    $responsePermissions[ $permissionItem[ "group_id" ][ "value" ] ][ "permissions" ][] = [
         "id" => (int) $permissionItem[ "id" ],
         "title" => $permissionItem[ "title" ],
         "article" => $permissionItem[ "article" ],
