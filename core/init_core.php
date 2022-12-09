@@ -619,6 +619,16 @@ class API {
                         ->fetch();
 
 
+                    if (
+                        !$detailRow[ $property[ "list_donor" ][ "properties_title" ] ] ||
+                        !$detailRow[ "id" ]
+                    ) {
+
+                        $row[ $property[ "article" ] ] = null;
+                        continue;
+
+                    }
+
                     $row[ $property[ "article" ] ] = [
                         "title" => $detailRow[ $property[ "list_donor" ][ "properties_title" ] ],
                         "value" => (int) $detailRow[ "id" ]
