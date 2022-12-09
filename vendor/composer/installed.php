@@ -1,42 +1,68 @@
-<?php return array (
-  'root' => 
-  array (
-    'pretty_version' => '1.0.0+no-version-set',
-    'version' => '1.0.0.0',
-    'aliases' => 
-    array (
+<?php return array(
+    'root' => array(
+        'name' => 'root/restobox.mewbas.com',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => 'bf39575997bcfc2198de1e4eb698dedc90d76a46',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
     ),
-    'reference' => NULL,
-    'name' => 'root/restobox.mewbas.com',
-  ),
-  'versions' => 
-  array (
-    'envms/fluentpdo' => 
-    array (
-      'pretty_version' => 'v2.2.2',
-      'version' => '2.2.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '34e96920339a97fe3897647d0d7ce314348c840c',
+    'versions' => array(
+        'envms/fluentpdo' => array(
+            'pretty_version' => 'v2.2.2',
+            'version' => '2.2.2.0',
+            'reference' => '34e96920339a97fe3897647d0d7ce314348c840c',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../envms/fluentpdo',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'firebase/php-jwt' => array(
+            'pretty_version' => 'v5.4.0',
+            'version' => '5.4.0.0',
+            'reference' => 'd2113d9b2e0e349796e72d2a63cf9319100382d2',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../firebase/php-jwt',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'root/restobox.mewbas.com' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => 'bf39575997bcfc2198de1e4eb698dedc90d76a46',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'workerman/channel' => array(
+            'pretty_version' => 'v1.1.0',
+            'version' => '1.1.0.0',
+            'reference' => '3df772d0d20d4cebfcfd621c33d1a1ab732db523',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../workerman/channel',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'workerman/phpsocket.io' => array(
+            'pretty_version' => 'v1.1.16',
+            'version' => '1.1.16.0',
+            'reference' => 'f4dc14e69e9d0d8ce69c6180f93b76b7743f2304',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../workerman/phpsocket.io',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'workerman/workerman' => array(
+            'pretty_version' => 'v4.1.4',
+            'version' => '4.1.4.0',
+            'reference' => '83e007acf936e2233ac92d7368b87716f2bae338',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../workerman/workerman',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
     ),
-    'firebase/php-jwt' => 
-    array (
-      'pretty_version' => 'v5.4.0',
-      'version' => '5.4.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'd2113d9b2e0e349796e72d2a63cf9319100382d2',
-    ),
-    'root/restobox.mewbas.com' => 
-    array (
-      'pretty_version' => '1.0.0+no-version-set',
-      'version' => '1.0.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => NULL,
-    ),
-  ),
 );

@@ -7,6 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInitabdd67d17962e3d1508bdddf34fd5132
 {
     public static $prefixLengthsPsr4 = array (
+        'W' => 
+        array (
+            'Workerman\\' => 10,
+        ),
+        'P' => 
+        array (
+            'PHPSocketIO\\' => 12,
+        ),
         'F' => 
         array (
             'Firebase\\JWT\\' => 13,
@@ -15,9 +23,21 @@ class ComposerStaticInitabdd67d17962e3d1508bdddf34fd5132
         array (
             'Envms\\FluentPDO\\' => 16,
         ),
+        'C' => 
+        array (
+            'Channel\\' => 8,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'Workerman\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/workerman/workerman',
+        ),
+        'PHPSocketIO\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/workerman/phpsocket.io/src',
+        ),
         'Firebase\\JWT\\' => 
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
@@ -25,6 +45,10 @@ class ComposerStaticInitabdd67d17962e3d1508bdddf34fd5132
         'Envms\\FluentPDO\\' => 
         array (
             0 => __DIR__ . '/..' . '/envms/fluentpdo/src',
+        ),
+        'Channel\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/workerman/channel/src',
         ),
     );
 

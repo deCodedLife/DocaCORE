@@ -2,7 +2,7 @@
   "title": "Логи",
   "table": "users",
   "search": "",
-  "is_trash": true,
+  "is_trash": false,
   "properties": [
     {
       "title": "Таблица",

@@ -605,7 +605,9 @@ class API {
                 /**
                  * Списки
                  */
-                if ( $property[ "list_donor" ] ) {
+                if (
+                    $property[ "list_donor" ][ "table" ] && $property[ "list_donor" ][ "properties_title" ]
+                ) {
 
                     /**
                      * Получение детальной информации о записи
@@ -622,7 +624,7 @@ class API {
                         "value" => (int) $detailRow[ "id" ]
                     ];
 
-                } // if. $property[ "list_donor" ]
+                } // if. $property[ "list_donor" ][ "table" ] && $property[ "list_donor" ][ "properties_title" ]
 
 
                 /**
@@ -1141,40 +1143,44 @@ class API {
 
 
     /**
-     * Отправка веб-сокета.
-     * Инициализирует обновление блока на стороне админки
+     * Создание события.
+     * Используется как аналог веб-соккетов.
+     * В админке произойдет обновление указанного блока
      *
-     * @param $blockArticle  string  Артикул блока, в котором произошло событие
+     * @param $blockArticle  string   Артикул блока, в котором произошло событие
+     * @param $roleId        integer  ID роли, которой предназначено событие
      *
      * @return boolean
      */
-    public function sendWebsocket ( $blockArticle ) {
+    public function addEvent ( $blockArticle, $roleId = null ) {
 
         /**
-         * Формирование URL к админке
+         * Проверка обязательных параметров
          */
-        $adminURL = "wss://" . $this::$configs[ "company" ] . "." . $this::$configs[ "admin_url" ];
-
-        /**
-         * Указание блока, в котором произошло событие
-         */
-        $adminURL .= "/websockets/$blockArticle";
+        if ( !$blockArticle ) return false;
 
 
         /**
-         * Отправка запроса на обновление блока
+         * Удаление старых событий
          */
+        $this->DB->deleteFrom( "events" )
+            ->where( [
+                "table_name" => $blockArticle,
+                "role_id" => $roleId
+            ] )
+            ->execute();
 
-        $ch = curl_init();
-        
-        curl_setopt( $ch, CURLOPT_URL, $adminURL );
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-        curl_exec( $ch );
-        curl_close( $ch );
+
+        $this->DB->insertInto( "events" )
+            ->values( [
+                "table_name" => $blockArticle,
+                "role_id" => $roleId
+            ] )
+            ->execute();
 
         return true;
 
-    } // function. sendWebsocket
+    } // function. addEvent
 
 
     /**
@@ -1225,9 +1231,9 @@ class API {
 
 
             /**
-             * Отправка веб-сокета
+             * Создание события
              */
-            $this->sendWebsocket( "notifications/" . $notificationType_role[ "role_id" ] );
+            $this->addEvent( "notifications", $notificationType_role[ "role_id" ] );
 
         } // foreach. $notificationTypes_roles
 
