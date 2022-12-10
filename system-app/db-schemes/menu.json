@@ -45,6 +45,7 @@
       "href": "dashboard",
       "order_position": 0,
       "parent_id": null,
+      "icon": "garage",
       "is_system": "Y"
     },
     {
@@ -53,6 +54,7 @@
       "href": "",
       "order_position": 100,
       "parent_id": null,
+      "icon": "",
       "is_system": "Y"
     },
     {
@@ -61,6 +63,7 @@
       "href": "roles",
       "order_position": 200,
       "parent_id": 2,
+      "icon": "id-card",
       "is_system": "Y"
     }
   ]
