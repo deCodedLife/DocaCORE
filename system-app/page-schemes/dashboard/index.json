@@ -15,8 +15,8 @@
           {
             "type": "href",
             "settings": {
-              "title": "Добавить запись к врачу",
-              "page": "visits/add",
+              "title": "Добавить заявку",
+              "page": "orders/add",
               "icon": "",
               "background": "dark"
             },
@@ -27,47 +27,7 @@
       }
     },
     {
-      "title": "Аналитика пользователей",
-      "type": "analytic_widgets",
-      "size": 4,
-      "components": {
-        "filters": [
-          {
-            "title": "Период",
-            "type": "list",
-            "settings": {
-              "is_search": false,
-              "recipient_property": "period",
-              "list": [
-                {
-                  "title": "Все время",
-                  "value": "all"
-                },
-                {
-                  "title": "Сегодня",
-                  "value": "per_day"
-                },
-                {
-                  "title": "Неделя",
-                  "value": "per_week"
-                },
-                {
-                  "title": "Месяц",
-                  "value": "per_month"
-                }
-              ]
-            },
-            "required_permissions": [],
-            "required_modules": []
-          }
-        ]
-      },
-      "settings": {
-        "widgets_group": "users"
-      }
-    },
-    {
-      "title": "Расписание врачей",
+      "title": "Расписание",
       "type": "schedule",
       "size": 4,
       "settings": {
@@ -77,23 +37,7 @@
         "performers_row_title": "first_name",
         "row_href": "visits/add"
       },
-      "components": {
-        "filters": [
-          {
-            "title": "Сотрудник",
-            "type": "list",
-            "settings": {
-              "is_search": false,
-              "recipient_property": "user_id",
-              "donor_object": "users",
-              "donor_property_title": "first_name",
-              "donor_property_value": "id"
-            },
-            "required_permissions": [],
-            "required_modules": []
-          }
-        ]
-      }
+      "components": {}
     }
   ],
   "subpages": []
