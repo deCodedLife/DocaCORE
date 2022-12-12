@@ -7,35 +7,8 @@
       "type": "header",
       "size": 4,
       "settings": {
-        "title": [ "Расписание" ],
+        "title": [ "Панель управления" ],
         "description": ""
-      },
-      "components": {
-        "buttons": [
-          {
-            "type": "href",
-            "settings": {
-              "title": "Добавить заявку",
-              "page": "orders/add",
-              "icon": "",
-              "background": "dark"
-            },
-            "required_permissions": [],
-            "required_modules": []
-          }
-        ]
-      }
-    },
-    {
-      "title": "Расписание",
-      "type": "schedule",
-      "size": 4,
-      "settings": {
-        "object": "visits",
-        "performers_table": "users",
-        "performers_row_article": "user_id",
-        "performers_row_title": "first_name",
-        "row_href": "visits/add"
       },
       "components": {}
     }
