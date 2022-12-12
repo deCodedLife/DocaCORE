@@ -155,7 +155,8 @@ function processingBlockType_form ( $structureBlock ) {
                     "data_type" => $fieldDetail[ "data_type" ],
                     "field_type" => $fieldDetail[ "field_type" ],
                     "settings" => $fieldDetail[ "settings" ],
-                    "is_required" => $isRequired
+                    "is_required" => $isRequired,
+                    "is_disabled" => $fieldDetail[ "is_disabled" ]
                 ];
 
                 if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];
@@ -166,12 +167,21 @@ function processingBlockType_form ( $structureBlock ) {
                  * Обработка связанных таблиц
                  */
 
-                if ( $fieldDetail[ "field_type" ] === "list" ) {
+                if (
+                    ( $fieldDetail[ "list_donor" ][ "table" ] || $fieldDetail[ "join" ][ "donor_table" ] ) &&
+                    ( $fieldDetail[ "field_type" ] === "list" )
+                ) {
 
                     /**
-                     * Проверка обязательных полей
+                     * Определение типа связанной таблицы
+                     * (list_donor / join)
                      */
-                    if ( !$fieldDetail[ "list_donor" ][ "table" ] ) continue;
+                    if ( !$fieldDetail[ "list_donor" ][ "table" ] ) {
+
+                        $fieldDetail[ "list_donor" ][ "table" ] = $fieldDetail[ "join" ][ "donor_table" ];
+                        $fieldDetail[ "list_donor" ][ "properties_title" ] = $fieldDetail[ "join" ][ "property_article" ];
+
+                    } // if. !$fieldDetail[ "list_donor" ][ "table" ]
 
 
                     /**

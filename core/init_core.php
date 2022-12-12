@@ -373,6 +373,7 @@ class API {
 
                     switch ( gettype( $requestProperty ) ) {
 
+                        case "integer":
                         case "float":
                         case "double":
 

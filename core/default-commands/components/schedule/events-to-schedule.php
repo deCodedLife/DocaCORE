@@ -56,6 +56,7 @@ function addEventIntoSchedule ( $event ) {
             "id" => $event[ "id" ],
             "start_at" => $event[ "start_at" ],
             "end_at" => $event[ "end_at" ],
+            "description" => $event[ "start_at" ] . "-" . $event[ "end_at" ],
             "color" => $event[ "color" ]
         ]
     ];
