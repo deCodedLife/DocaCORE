@@ -9,11 +9,12 @@
 /**
  * Добавление события в расписание
  *
- * @param $event  object  Событие
+ * @param $event        object   Событие
+ * @param $performerId  integer  ID Исполнителя
  *
  * @return boolean
  */
-function addEventIntoSchedule ( $event ) {
+function addEventIntoSchedule ( $event, $performerId ) {
 
     global $requestData;
     global $resultSchedule;
@@ -43,13 +44,13 @@ function addEventIntoSchedule ( $event ) {
     /**
      * Заполнение информации об Исполнителе
      */
-    $resultSchedule[ $eventDate ][ $event[ $requestData->performers_article ] ][ "performer_title" ] = $performersDetail[ $event[ $requestData->performers_article ] ];
+    $resultSchedule[ $eventDate ][ $performerId ][ "performer_title" ] = $performersDetail[ $performerId ];
 
 
     /**
      * Добавление события в расписание
      */
-    $resultSchedule[ $eventDate ][ $event[ $requestData->performers_article ] ][ "schedule" ][ $eventStartStep ] = [
+    $resultSchedule[ $eventDate ][ $performerId ][ "schedule" ][ $eventStartStep ] = [
         "steps" => [ $eventStartStep, $eventEndStep ],
         "status" => "busy",
         "event" => [
@@ -90,7 +91,20 @@ foreach ( $response[ "data" ] as $event ) {
             /**
              * Добавление события в расписание
              */
-            addEventIntoSchedule( $event );
+            addEventIntoSchedule( $event, $event[ $requestData->performers_article ] );
+
+            break;
+
+        case "array":
+
+            foreach ( $event[ $requestData->performers_article ] as $performer ) {
+
+                /**
+                 * Добавление события в расписание
+                 */
+                addEventIntoSchedule( $event, $performer[ "value" ] );
+
+            } // foreach. $event[ $requestData->performers_article ]
 
             break;
 

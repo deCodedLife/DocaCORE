@@ -1,7 +1,0 @@
-{
-  "title": "Вывод",
-  "type": "get",
-  "object_scheme": "visits",
-  "required_permissions": [],
-  "required_modules": []
-}

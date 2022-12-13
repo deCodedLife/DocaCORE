@@ -62,6 +62,11 @@ if ( !$requestData->end_at ) $requestData->end_at = date(
  */
 $requestData->sort_by = "start_at";
 
+/**
+ * Снятие лимита
+ */
+$requestData->limit = 0;
+
 
 /**
  * @hook

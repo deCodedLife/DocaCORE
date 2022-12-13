@@ -129,6 +129,7 @@ try {
     if ( $objectScheme[ "is_trash" ] ) $requestSettings[ "filter" ][ "is_active" ] = "Y";
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
     if ( $requestData->select ) $rows->select( null )->select( $requestData->select );
+    
 
     $rows->where( $requestSettings[ "filter" ] );
 

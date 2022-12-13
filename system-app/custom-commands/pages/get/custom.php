@@ -219,6 +219,7 @@ foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
 
                 case "filters":
 
+                    $responseComponent[ "title" ] = $structureComponent[ "title" ];
                     $responseComponent[ "settings" ][ "list" ] = processingComponentType_filter( $structureComponent );
 
                     break;
