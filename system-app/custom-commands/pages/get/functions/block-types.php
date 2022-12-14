@@ -156,7 +156,8 @@ function processingBlockType_form ( $structureBlock ) {
                     "field_type" => $fieldDetail[ "field_type" ],
                     "settings" => $fieldDetail[ "settings" ],
                     "is_required" => $isRequired,
-                    "is_disabled" => $fieldDetail[ "is_disabled" ]
+                    "is_disabled" => $fieldDetail[ "is_disabled" ],
+                    "is_hook" => $fieldDetail[ "is_hook" ]
                 ];
 
                 if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];
@@ -207,6 +208,22 @@ function processingBlockType_form ( $structureBlock ) {
                         ];
 
                 } // if. $fieldDetail[ "field_type" ] === "list"
+
+                /**
+                 * Обработка кастомных списков
+                 */
+                if ( ( $fieldDetail[ "field_type" ] === "list" ) && $fieldDetail[ "custom_list" ] ) {
+
+                    foreach ( $fieldDetail[ "custom_list" ] as $listItem ) {
+
+                        $blockField[ "list" ][] = [
+                            "title" => $listItem[ "title" ],
+                            "value" => $listItem[ "value" ]
+                        ];
+
+                    } // foreach. $fieldDetail[ "custom_list" ]
+
+                } // if. ( $fieldDetail[ "field_type" ] === "list" ) && $fieldDetail[ "custom_list" ]
 
 
                 /**

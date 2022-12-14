@@ -374,6 +374,15 @@ class API {
                     switch ( gettype( $requestProperty ) ) {
 
                         case "integer":
+
+                            if (
+                                $objectProperty[ "data_type" ] == "array" &&
+                                (
+                                    ( $command === "get" ) ||
+                                    ( $command === "schedule" )
+                                )
+                            ) $is_error = false;
+
                         case "float":
                         case "double":
 
@@ -423,7 +432,7 @@ class API {
 
 
                     if ( $is_error ) $this->returnResponse(
-                        "Неверный тип параметра '{$objectProperty[ "title" ]}'",
+                        "Неверный тип параметра '{$objectProperty[ "title" ]}' ",
                         400
                     );
 

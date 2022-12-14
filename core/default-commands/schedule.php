@@ -50,6 +50,11 @@ $currentStep = $workdayStart;
 $performersDetail = [];
 
 /**
+ * Фильтр Исполнителей
+ */
+$performersFilter = [];
+
+/**
  * Дата начала и окончания графика по умолчанию
  */
 if ( !$requestData->start_at ) $requestData->start_at = date( "Y-m-d" );

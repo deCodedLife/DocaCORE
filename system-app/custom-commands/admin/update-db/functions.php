@@ -116,12 +116,18 @@ function readScheme ( $generatedTableScheme, $schemePath ) {
         $generatedTableScheme[ "rows_key" ] = $tableScheme[ "rows_key" ];
 
 
-        foreach ( $tableScheme[ "rows" ] as $row ) {
+        foreach ( $tableScheme[ "rows" ] as $rowKey => $row ) {
 
             /**
              * Проверка на наличие обязательных св-в
              */
             if ( !$row[ $tableScheme[ "rows_key" ] ] ) continue;
+
+            /**
+             * Запретить затирание св-в title
+             */
+            if ( $generatedTableScheme[ "rows" ][ $rowKey ][ "title" ] )
+                $row[ "title" ] = $generatedTableScheme[ "rows" ][ $rowKey ][ "title" ];
 
             $generatedTableScheme[ "rows" ][] = $row;
 
