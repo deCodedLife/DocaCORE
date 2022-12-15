@@ -296,10 +296,10 @@ function processingBlockType_form ( $structureBlock ) {
 
                             if ( $joinedTableRow[ "value" ] != $blockField[ "value" ] ) continue;
 
-                            $blockField[ "value" ] = $API->DB->from( $fieldDetail[ "list-donor" ][ "table" ] )
+                            $blockField[ "value" ] = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] )
                                 ->where( "id", $blockField[ "value" ] )
                                 ->limit( 1 )
-                                ->fetch()[ $fieldDetail[ "list-donor" ][ "properties_title" ] ];
+                                ->fetch()[ $fieldDetail[ "list_donor" ][ "properties_title" ] ];
 
                         } // foreach. $blockField[ "list" ]
 
