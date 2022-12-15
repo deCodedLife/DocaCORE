@@ -156,12 +156,17 @@ function processingBlockType_form ( $structureBlock ) {
                     "field_type" => $fieldDetail[ "field_type" ],
                     "settings" => $fieldDetail[ "settings" ],
                     "is_required" => $isRequired,
-                    "is_disabled" => $fieldDetail[ "is_disabled" ],
-                    "is_hook" => $fieldDetail[ "is_hook" ]
+                    "is_disabled" => $fieldDetail[ "is_disabled" ]
                 ];
 
                 if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];
                 if ( $fieldDetail[ "max_value" ] ) $blockField[ "max_value" ] = $fieldDetail[ "max_value" ];
+
+
+                /**
+                 * Обработка хуков
+                 */
+                if ( $fieldDetail[ "is_hook" ] ) $blockField[ "hook" ] = $objectScheme[ "table" ];
 
 
                 /**
@@ -201,11 +206,56 @@ function processingBlockType_form ( $structureBlock ) {
                     /**
                      * Обновление списка
                      */
-                    foreach ( $joinedTableRows as $joinedTableRow )
+                    foreach ( $joinedTableRows as $joinedTableRow ) {
+
+                        /**
+                         * Название поля
+                         */
+                        $fieldTitle = $joinedTableRow[ $fieldDetail[ "list_donor" ][ "properties_title" ] ];
+
+
+                        /**
+                         * Нестандартные названия полей
+                         */
+                        switch ( $fieldDetail[ "list_donor" ][ "properties_title" ] ) {
+
+                            case "first_name":
+                            case "last_name":
+                            case "patronymic":
+
+                                /**
+                                 * Получение ФИО
+                                 */
+
+                                $fio = [
+                                    "first_name" => "",
+                                    "last_name" => "",
+                                    "patronymic" => ""
+                                ];
+
+                                foreach ( $objectScheme[ "properties" ] as $property ) {
+
+                                    if (
+                                        ( $property[ "article" ] === "first_name" ) ||
+                                        ( $property[ "article" ] === "last_name" ) ||
+                                        ( $property[ "article" ] === "patronymic" )
+                                    ) $fio[ $property[ "article" ] ] = $joinedTableRow[ $property[ "article" ] ];
+
+                                } // foreach. $objectScheme[ "properties" ]
+
+                                $fieldTitle = "${fio[ "last_name" ]} ${fio[ "first_name" ]} ${fio[ "patronymic" ]}";
+
+                                break;
+
+                        } // switch. $fieldDetail[ "list_donor" ][ "properties_title" ]
+
+
                         $blockField[ "list" ][] = [
-                            "title" => $joinedTableRow[ $fieldDetail[ "list_donor" ][ "properties_title" ] ],
+                            "title" => $fieldTitle,
                             "value" => $joinedTableRow[ "id" ]
                         ];
+
+                    } // foreach. $joinedTableRows
 
                 } // if. $fieldDetail[ "field_type" ] === "list"
 

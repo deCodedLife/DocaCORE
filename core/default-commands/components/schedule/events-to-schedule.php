@@ -16,9 +16,10 @@
  */
 function addEventIntoSchedule ( $event, $performerId ) {
 
-    global $requestData;
+    global $API;
     global $resultSchedule;
     global $performersDetail;
+    global $public_customCommandDirPath;
 
 
     /**
@@ -40,6 +41,26 @@ function addEventIntoSchedule ( $event, $performerId ) {
         date( "H:i", strtotime( $event[ "end_at" ] ) )
     );
 
+    /**
+     * Описание события.
+     * Выводится в ячейке события в Расписании
+     */
+    $eventDescription = [ $event[ "start_at" ] . "-" . $event[ "end_at" ] ];
+
+    /**
+     * Детальная информация о событии.
+     * Выводится при наведении на событие в админке
+     */
+    $eventDetails = [];
+
+
+    /**
+     * @hook
+     * Заполнение детальной информации о событии
+     */
+    if ( file_exists( $public_customCommandDirPath . "/hooks/event-details.php" ) )
+        require( $public_customCommandDirPath . "/hooks/event-details.php" );
+
 
     /**
      * Заполнение информации об Исполнителе
@@ -57,8 +78,9 @@ function addEventIntoSchedule ( $event, $performerId ) {
             "id" => $event[ "id" ],
             "start_at" => $event[ "start_at" ],
             "end_at" => $event[ "end_at" ],
-            "description" => $event[ "start_at" ] . "-" . $event[ "end_at" ],
-            "color" => $event[ "color" ]
+            "description" => $eventDescription,
+            "color" => $event[ "color" ],
+            "details" => $eventDetails
         ]
     ];
 

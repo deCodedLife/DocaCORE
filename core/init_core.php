@@ -730,10 +730,13 @@ class API {
 
 
             /**
-             * Вывод кнопок в списке
+             * Вывод кнопок и ссылок в списке
              */
 
             if ( $is_list && $objectScheme[ "action_buttons" ] ) {
+
+                $row[ "row_href_type" ] = "update";
+
 
                 foreach ( $objectScheme[ "action_buttons" ] as $actionButton ) {
 
