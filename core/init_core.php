@@ -1265,6 +1265,69 @@ class API {
 
     } // function. addNotification
 
+
+    /**
+     * Отправка запроса в API
+     *
+     * @param $object   string  Объект запроса
+     * @param $command  string  Команда запроса
+     * @param $body     array   Тело запроса
+     * @param $api_url  string  URL запроса
+     *
+     * @return mixed
+     */
+    public function sendRequest ( $object, $command, $body = [], $api_url = "" ) {
+
+        if ( !$api_url && $_SERVER[ "REQUEST_URI" ] ) $api_url = $_SERVER[ "REQUEST_URI" ];
+
+
+        /**
+         * Формирование заголовков запроса
+         */
+        $headers = [
+            "Content-Type: application/json",
+            "Timeout: 3"
+        ];
+
+
+        /**
+         * Формирование запроса
+         */
+
+        $data[ "object" ] = $object;
+        $data[ "command" ] = $command;
+        $data[ "data" ] = $body;
+
+        $data = json_encode( $data );
+
+
+        /**
+         * Отправка запроса в API
+         */
+
+        $curl = curl_init( "https://$api_url" );
+
+        curl_setopt_array( $curl, array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => "UTF-8",
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_CONNECTTIMEOUT => 30,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => "POST",
+            CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_POSTFIELDS     => $data,
+        ) );
+
+        $response = json_decode( curl_exec( $curl ) );
+
+
+        if ( !$response ) return false;
+        return $response->data;
+
+    } // function. sendRequest
+
 } // class. API
 
 $API = new API;

@@ -16,6 +16,7 @@
 function processingBlockType_list ( $structureBlock ) {
 
     global $API;
+    global $pageDetail;
 
 
     /**
@@ -23,6 +24,12 @@ function processingBlockType_list ( $structureBlock ) {
      * Используются для вывода в админке
      */
     $listHeaders = [];
+
+    /**
+     * Фильтр списка.
+     * Передается в get запрос
+     */
+    $listFilters = [];
 
 
     /**
@@ -41,6 +48,47 @@ function processingBlockType_list ( $structureBlock ) {
 
 
     /**
+     * Формирование фильтров списка
+     */
+
+    foreach ( $structureBlock[ "settings" ][ "filters" ] as $listFilter ) {
+
+        /**
+         * Подстановка переменных
+         */
+
+        if ( $listFilter[ "value" ][ 0 ] === ":" ) {
+
+            /**
+             * Обработка переменной
+             */
+
+            /**
+             * Получение переменной в строке
+             */
+            $stringVariable = substr( $listFilter[ "value" ], 1 );
+
+
+            /**
+             * Получение значения из списка
+             */
+            if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+
+            /**
+             * Формирование строки
+             */
+            $listFilter[ "value" ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+
+        } // if. $widgetFilter[ "value" ][ 0 ] === ":"
+
+
+        $listFilters[ $listFilter[ "property" ] ] = $listFilter[ "value" ];
+
+    } // foreach. $structureBlock[ "settings" ][ "filters" ]
+
+
+    /**
      * Формирование заголовков списка
      */
 
@@ -55,7 +103,10 @@ function processingBlockType_list ( $structureBlock ) {
     } // foreach. $objectScheme[ "properties" ]
 
 
-    return $listHeaders;
+    return [
+        "headers" => $listHeaders,
+        "filters" => $listFilters
+    ];
 
 } // function. processingBlockType_list
 
@@ -124,7 +175,7 @@ function processingBlockType_form ( $structureBlock ) {
             /**
              * Обработка полей формы
              */
-            foreach ( $block[ "fields" ] as $field ) {
+            foreach ( $block[ "fields" ] as $fieldKey => $field ) {
 
                 /**
                  * Сформированное поле формы
@@ -166,7 +217,8 @@ function processingBlockType_form ( $structureBlock ) {
                 /**
                  * Обработка хуков
                  */
-                if ( $fieldDetail[ "is_hook" ] ) $blockField[ "hook" ] = $objectScheme[ "table" ];
+                if ( $fieldDetail[ "is_hook" ] )
+                    $blockField[ "hook" ] = $objectScheme[ "table" ];
 
 
                 /**
@@ -193,14 +245,14 @@ function processingBlockType_form ( $structureBlock ) {
                     /**
                      * Загрузка схемы объекта связанной таблицы
                      */
-                    $objectScheme = $API->loadObjectScheme( $fieldDetail[ "list_donor" ][ "table" ] );
-                    if ( !$objectScheme ) continue;
+                    $propertyObjectScheme = $API->loadObjectScheme( $fieldDetail[ "list_donor" ][ "table" ] );
+                    if ( !$propertyObjectScheme ) continue;
 
                     /**
                      * Получение данных из связанной таблицы
                      */
                     $joinedTableRows = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] );
-                    if ( $objectScheme[ "is_trash" ] ) $joinedTableRows->where( "is_active", "Y" );
+                    if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( "is_active", "Y" );
 
 
                     /**
@@ -233,7 +285,7 @@ function processingBlockType_form ( $structureBlock ) {
                                     "patronymic" => ""
                                 ];
 
-                                foreach ( $objectScheme[ "properties" ] as $property ) {
+                                foreach ( $propertyObjectScheme[ "properties" ] as $property ) {
 
                                     if (
                                         ( $property[ "article" ] === "first_name" ) ||
@@ -241,7 +293,7 @@ function processingBlockType_form ( $structureBlock ) {
                                         ( $property[ "article" ] === "patronymic" )
                                     ) $fio[ $property[ "article" ] ] = $joinedTableRow[ $property[ "article" ] ];
 
-                                } // foreach. $objectScheme[ "properties" ]
+                                } // foreach. $propertyObjectScheme[ "properties" ]
 
                                 $fieldTitle = "${fio[ "last_name" ]} ${fio[ "first_name" ]} ${fio[ "patronymic" ]}";
 
@@ -282,28 +334,67 @@ function processingBlockType_form ( $structureBlock ) {
 
                 if ( $pageDetail[ "row_detail" ] ) {
 
+                    /**
+                     * Получение значения поля
+                     */
                     $blockField[ "value" ] = $pageDetail[ "row_detail" ][ $fieldDetail[ "article" ] ];
+
+                    /**
+                     * Обработка списков
+                     */
+                    if ( isset( $blockField[ "value" ]->value ) ) $blockField[ "value" ] = $blockField[ "value" ]->value;
+
+                    /**
+                     * Перевод значения в указанный в схеме тип
+                     */
                     settype( $blockField[ "value" ], $fieldDetail[ "data_type" ] );
 
 
                     /**
                      * Получение значения связанной таблицы
                      */
+                    if (
+                        !$blockField[ "value" ] &&
+                        ( $blockField[ "data_type" ] === "array" )
+                    ) {
 
-                    if ( $structureBlock[ "type" ] === "info" ) {
+                        /**
+                         * Схема св-ва
+                         */
+                        $objectSchemeProperty = $objectProperties[ $blockField[ "article" ] ];
 
-                        foreach ( $blockField[ "list" ] as $joinedTableRow ) {
+                        /**
+                         * Значения св-ва
+                         */
+                        $objectPropertyValues = $API->DB->from( $objectSchemeProperty[ "join" ][ "connection_table" ] )
+                            ->where( $objectSchemeProperty[ "join" ][ "insert_property" ], $pageDetail[ "row_detail" ][ "id" ] );
 
-                            if ( $joinedTableRow[ "value" ] != $blockField[ "value" ] ) continue;
 
-                            $blockField[ "value" ] = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] )
-                                ->where( "id", $blockField[ "value" ] )
-                                ->limit( 1 )
-                                ->fetch()[ $fieldDetail[ "list_donor" ][ "properties_title" ] ];
+                        /**
+                         * Добавление значений
+                         */
+                        foreach ( $objectPropertyValues as $objectPropertyValue )
+                            $blockField[ "value" ][] = $objectPropertyValue[
+                                $objectSchemeProperty[ "join" ][ "filter_property" ]
+                            ];
 
-                        } // foreach. $blockField[ "list" ]
+                    } // if. !$blockField[ "value" ]
 
-                    } // if. $structureBlock[ "type" ] === "info"
+
+                    /**
+                     * Добавление значения связанной таблицы
+                     */
+                    foreach ( $blockField[ "list" ] as $joinedTableRow ) {
+
+                        if ( !$fieldDetail[ "list_donor" ][ "table" ] ) continue;
+                        if ( $joinedTableRow[ "value" ] != $blockField[ "value" ] ) continue;
+
+                        $blockField[ "value" ] = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] )
+                            ->where( "id", $blockField[ "value" ] )
+                            ->limit( 1 )
+                            ->fetch()[ "id" ];
+
+                    } // foreach. $blockField[ "list" ]
 
 
                     /**
@@ -335,3 +426,71 @@ function processingBlockType_form ( $structureBlock ) {
     return $formAreas;
 
 } // function. processingBlockType_form
+
+
+/**
+ * Обработка виджетов аналитики
+ *
+ * @param $structureBlock  object  Структура блока
+ *
+ * @return mixed
+ */
+function processingBlockType_analyticWidgets ( $structureBlock ) {
+
+    global $API;
+    global $pageDetail;
+
+
+    /**
+     * Сформированные настройки виджета
+     */
+    $widgetSettings = [
+        "widgets_group" => $structureBlock[ "settings" ][ "widgets_group" ],
+        "filters" => []
+    ];
+
+
+    /**
+     * Формирование фильтров списка
+     */
+
+    foreach ( $structureBlock[ "settings" ][ "filters" ] as $widgetFilter ) {
+
+        /**
+         * Подстановка переменных
+         */
+
+        if ( $widgetFilter[ "value" ][ 0 ] === ":" ) {
+
+            /**
+             * Обработка переменной
+             */
+
+            /**
+             * Получение переменной в строке
+             */
+            $stringVariable = substr( $widgetFilter[ "value" ], 1 );
+
+
+            /**
+             * Получение значения из списка
+             */
+            if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+
+            /**
+             * Формирование строки
+             */
+            $widgetFilter[ "value" ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+
+        } // if. $widgetFilter[ "value" ][ 0 ] === ":"
+
+
+        $widgetSettings[ "filters" ][ $widgetFilter[ "property" ] ] = $widgetFilter[ "value" ];
+
+    } // foreach. $structureBlock[ "settings" ][ "filters" ]
+
+
+    return $widgetSettings;
+
+} // function. processingBlockType_analyticWidgets

@@ -8,6 +8,190 @@ require_once( "functions/block-types.php" );
 
 
 /**
+ * Генерация структурного блока
+ *
+ * @param $structureBlock  array  Схема структурного блока
+ *
+ * @return array
+ */
+function generateStructureBlock ( $structureBlock ) {
+
+    global $API;
+    global $pageDetail;
+
+
+    /**
+     * Сформированный блок страницы
+     */
+    $responseBlock = [
+        "type" => $structureBlock[ "type" ],
+        "size" => $structureBlock[ "size" ],
+        "settings" => $structureBlock[ "settings" ],
+        "components" => []
+    ];
+
+    /**
+     * Игнорирование блока
+     */
+    $isContinue = false;
+
+
+    /**
+     * Обработка типов блоков
+     */
+
+    switch ( $structureBlock[ "type" ] ) {
+
+        case "header":
+
+            /**
+             * Шапка страницы: https://tppr.me/kLiXG
+             */
+
+            /**
+             * Формирование заголовка
+             */
+            $responseBlock[ "settings" ][ "title" ] = $API->generatingStringFromVariables(
+                $structureBlock[ "settings" ][ "title" ], $pageDetail[ "row_detail" ]
+            );
+
+            break;
+
+        case "list":
+
+            /**
+             * Списки: https://tppr.me/JELn0
+             */
+
+
+            /**
+             * Получение структуры списка
+             */
+            $listStructure = processingBlockType_list( $structureBlock );
+            if ( !$listStructure[ "headers" ] ) { $isContinue = true; break; }
+
+            /**
+             * Указание заголовков списка
+             */
+            $responseBlock[ "settings" ][ "headers" ] = $listStructure[ "headers" ];
+            $responseBlock[ "settings" ][ "filters" ] = (object) $listStructure[ "filters" ];
+
+            break;
+
+        case "form":
+        case "info":
+
+            /**
+             * Формы: https://tppr.me/469PZ,
+             * Детальная информация о записи
+             */
+
+
+            /**
+             * Получение областей формы
+             */
+            $formAreas = processingBlockType_form( $structureBlock );
+            if ( !$formAreas ) { $isContinue = true; break; }
+
+            /**
+             * Указание областей формы
+             */
+            $responseBlock[ "settings" ][ "areas" ] = $formAreas;
+
+            break;
+
+        case "tabs":
+
+            /**
+             * Обработка табов
+             */
+            foreach ( $structureBlock[ "settings" ] as $tabKey => $tab ) {
+
+                /**
+                 * Обработка структуры таба
+                 */
+                foreach ( $tab[ "body" ] as $tabBlockKey => $tabBlock )
+                    $structureBlock[ "settings" ][ $tabKey ][ "body" ][ $tabBlockKey ] = generateStructureBlock( $tabBlock );
+
+            } // foreach. $structureBlock[ "settings" ]
+
+            $responseBlock[ "settings" ] = $structureBlock[ "settings" ];
+
+            break;
+
+        case "analytic_widgets":
+
+            /**
+             * Виджеты аналитики
+             */
+
+
+            /**
+             * Формирование виджетов
+             */
+            $responseBlock[ "settings" ] = processingBlockType_analyticWidgets( $structureBlock );
+
+            break;
+
+    } // switch. $structureBlock[ "type" ]
+
+    if ( $isContinue ) return [];
+
+
+    /**
+     * Обход типов компонентов
+     */
+
+    foreach ( $structureBlock[ "components" ] as $structureComponentType => $structureComponents ) {
+
+        /**
+         * Обработка компонентов
+         */
+
+        foreach ( $structureComponents as $structureComponent ) {
+
+            /**
+             * Сформированный компонент страницы
+             */
+            $responseComponent = [
+                "type" => $structureComponent[ "type" ],
+                "settings" => $structureComponent[ "settings" ]
+            ];
+
+
+            /**
+             * Обработка типов компонентов
+             */
+
+            switch ( $structureComponentType ) {
+
+                case "filters":
+
+                    $responseComponent[ "title" ] = $structureComponent[ "title" ];
+                    $responseComponent[ "settings" ][ "list" ] = processingComponentType_filter( $structureComponent );
+
+                    break;
+
+            } // switch. $structureComponentType
+
+
+            /**
+             * Добавление компонента в блок страницы
+             */
+            $responseBlock[ "components" ][ $structureComponentType ][] = $responseComponent;
+
+        } // foreach. $structureComponents
+
+    } // foreach. $structureBlock[ "components" ]
+
+
+    return $responseBlock;
+
+} // functions. generateStructureBlock
+
+
+
+/**
  * Сформированная структура страницы
  */
 $response[ "data" ] = [];
@@ -93,10 +277,12 @@ try {
  * Получение детальной информации о запрошенной записи
  */
 if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
-    $pageDetail[ "row_detail" ] = $API->DB->from( $pageDetail[ "section" ] )
-        ->where( "id", $pageDetail[ "row_id" ] )
-        ->limit( 1 )
-        ->fetch();
+    $pageDetail[ "row_detail" ] = (array) $API->sendRequest(
+        $pageDetail[ "section" ],
+        "get",
+        [ "id" => (int) $pageDetail[ "row_id" ] ],
+        "oxapi-v3.mewbas.com"
+    )[ 0 ];
 
 
 /**
@@ -105,136 +291,7 @@ if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
 
 foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
 
-    /**
-     * Сформированный блок страницы
-     */
-    $responseBlock = [
-        "type" => $structureBlock[ "type" ],
-        "size" => $structureBlock[ "size" ],
-        "settings" => $structureBlock[ "settings" ],
-        "components" => []
-    ];
-
-    /**
-     * Игнорирование блока
-     */
-    $isContinue = false;
-
-
-    /**
-     * Обработка типов блоков
-     */
-
-    switch ( $structureBlock[ "type" ] ) {
-
-        case "header":
-
-            /**
-             * Шапка страницы: https://tppr.me/kLiXG
-             */
-
-
-            /**
-             * Формирование заголовка
-             */
-            $responseBlock[ "settings" ][ "title" ] = $API->generatingStringFromVariables(
-                $structureBlock[ "settings" ][ "title" ], $pageDetail[ "row_detail" ]
-            );
-
-            break;
-
-        case "list":
-
-            /**
-             * Списки: https://tppr.me/JELn0
-             */
-
-
-            /**
-             * Получение заголовков списка
-             */
-            $listHeaders = processingBlockType_list( $structureBlock );
-            if ( !$listHeaders ) { $isContinue = true; break; }
-
-            /**
-             * Указание заголовков списка
-             */
-            $responseBlock[ "settings" ][ "headers" ] = $listHeaders;
-
-            break;
-
-        case "form":
-        case "info":
-
-            /**
-             * Формы: https://tppr.me/469PZ,
-             * Детальная информация о записи
-             */
-
-
-            /**
-             * Получение областей формы
-             */
-            $formAreas = processingBlockType_form( $structureBlock );
-            if ( !$formAreas ) { $isContinue = true; break; }
-
-            /**
-             * Указание областей формы
-             */
-            $responseBlock[ "settings" ][ "areas" ] = $formAreas;
-
-            break;
-
-    } // switch. $structureBlock[ "type" ]
-
-    if ( $isContinue ) continue;
-
-
-    /**
-     * Обход типов компонентов
-     */
-
-    foreach ( $structureBlock[ "components" ] as $structureComponentType => $structureComponents ) {
-
-        /**
-         * Обработка компонентов
-         */
-
-        foreach ( $structureComponents as $structureComponent ) {
-
-            /**
-             * Сформированный компонент страницы
-             */
-            $responseComponent = [
-                "type" => $structureComponent[ "type" ],
-                "settings" => $structureComponent[ "settings" ]
-            ];
-
-
-            /**
-             * Обработка типов компонентов
-             */
-
-            switch ( $structureComponentType ) {
-
-                case "filters":
-
-                    $responseComponent[ "title" ] = $structureComponent[ "title" ];
-                    $responseComponent[ "settings" ][ "list" ] = processingComponentType_filter( $structureComponent );
-
-                    break;
-
-            } // switch. $structureComponentType
-
-
-            /**
-             * Добавление компонента в блок страницы
-             */
-            $responseBlock[ "components" ][ $structureComponentType ][] = $responseComponent;
-
-        } // foreach. $structureComponents
-
-    } // foreach. $structureBlock[ "components" ]
+    $responseBlock = generateStructureBlock( $structureBlock );
 
 
     /**

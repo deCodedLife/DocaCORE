@@ -23,6 +23,12 @@ function addEventIntoSchedule ( $event, $performerId ) {
 
 
     /**
+     * Игнорирование записей, у сотрудников, которые не выводятся в расписании
+     */
+    if ( !$performersDetail[ $performerId ] ) return false;
+
+
+    /**
      * Получение даты события
      */
     $eventDate = date( "Y-m-d", strtotime( $event[ "start_at" ] ) );
