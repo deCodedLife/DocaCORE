@@ -7,24 +7,15 @@
 
 
 /**
- * Формирование фильтров
- */
-
-$filters = [];
-
-if ( $requestData->table_name ) $filters[ "table_name" ] = $requestData->table_name;
-if ( $requestData->role_id ) $filters[ "role_id" ] = $requestData->role_id;
-
-
-/**
  * Получение последнего события
  */
 
-$lastEvent = $API->DB->from( "events" )
-    ->where( $filters )
-    ->orderBy( "last_update_at desc" )
-    ->limit( 1 )
-    ->fetch();
+$lastEvent = mysqli_fetch_array(
+    mysqli_query(
+        $API->DB_connection,
+        "SELECT * FROM `events` WHERE table_name = '$requestData->table_name' AND ( role_id = '$requestData->role_id' OR role_id IS NULL ) LIMIT 1"
+    )
+);
 
 if ( !$lastEvent ) $API->returnResponse( 0 );
 

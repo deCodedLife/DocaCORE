@@ -24,24 +24,5 @@
     }
   ],
   "rows_key": "id",
-  "rows": [
-    {
-      "id": 1,
-      "title": "Основное",
-      "description": null,
-      "parent_id": null
-    },
-    {
-      "id": 2,
-      "title": "Управление сотрудниками",
-      "description": "Доступ к сотрудникам",
-      "parent_id": 1
-    },
-    {
-      "id": 3,
-      "title": "Управление клиентами",
-      "description": "Доступ к клиентам",
-      "parent_id": null
-    }
-  ]
+  "rows": []
 }

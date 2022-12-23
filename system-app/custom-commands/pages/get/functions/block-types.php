@@ -230,6 +230,10 @@ function processingBlockType_form ( $structureBlock ) {
                     ( $fieldDetail[ "field_type" ] === "list" )
                 ) {
 
+                    if ( $fieldDetail[ "joined_field" ] )
+                        $blockField[ "joined_field" ] = $fieldDetail[ "joined_field" ];
+
+
                     /**
                      * Определение типа связанной таблицы
                      * (list_donor / join)
@@ -259,6 +263,11 @@ function processingBlockType_form ( $structureBlock ) {
                      * Обновление списка
                      */
                     foreach ( $joinedTableRows as $joinedTableRow ) {
+
+                        /**
+                         * Сформированный пункт списка
+                         */
+                        $joinedRow = [];
 
                         /**
                          * Название поля
@@ -302,10 +311,20 @@ function processingBlockType_form ( $structureBlock ) {
                         } // switch. $fieldDetail[ "list_donor" ][ "properties_title" ]
 
 
-                        $blockField[ "list" ][] = [
+                        /**
+                         * Заполнение пункта списка
+                         */
+
+                        $joinedRow = [
                             "title" => $fieldTitle,
                             "value" => $joinedTableRow[ "id" ]
                         ];
+
+                        if ( $fieldDetail[ "joined_field" ] )
+                            $joinedRow[ "joined_field_value" ] = $joinedTableRow[ $fieldDetail[ "joined_field" ] ];
+
+
+                        $blockField[ "list" ][] = $joinedRow;
 
                     } // foreach. $joinedTableRows
 
@@ -343,6 +362,7 @@ function processingBlockType_form ( $structureBlock ) {
                      * Обработка списков
                      */
                     if ( isset( $blockField[ "value" ]->value ) ) $blockField[ "value" ] = $blockField[ "value" ]->value;
+                    if ( isset( $blockField[ "value" ][ 0 ]->value ) ) $blockField[ "value" ] = $blockField[ "value" ][ 0 ]->value;
 
                     /**
                      * Перевод значения в указанный в схеме тип

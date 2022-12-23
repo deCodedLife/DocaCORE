@@ -49,15 +49,17 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
          * Обработка связанных таблиц
          */
 
+        if ( $schemeProperty[ "join" ] ) $join_updateValues[ $propertyName ] = [
+            "connection_table" => $schemeProperty[ "join" ][ "connection_table" ],
+            "filter_property" => $schemeProperty[ "join" ][ "filter_property" ],
+            "insert_property" => $schemeProperty[ "join" ][ "insert_property" ],
+            "data" => []
+        ];
+
         if ( $propertyValue ) {
 
             if ( !$schemeProperty[ "join" ] ) $updateValues[ $propertyName ] = $propertyValue;
-            else $join_updateValues[ $propertyName ] = [
-                "connection_table" => $schemeProperty[ "join" ][ "connection_table" ],
-                "filter_property" => $schemeProperty[ "join" ][ "filter_property" ],
-                "insert_property" => $schemeProperty[ "join" ][ "insert_property" ],
-                "data" => $propertyValue
-            ];
+            else $join_updateValues[ $propertyName ][ "data" ] = $propertyValue;
 
         } // if. $propertyValue
 

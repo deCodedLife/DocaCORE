@@ -1070,12 +1070,29 @@ class API {
 
 
         /**
-         * Проверка на запрос прав
+         * Проверка требуемых доступов
          */
+
         if ( count( $permissions ) < 1 ) return true;
 
+        foreach ( $permissions as $permission ) {
 
-        return false;
+            $rolePermission = $this->DB->from( "permissions" )
+                ->leftJoin( "roles_permissions ON roles_permissions.permission_id = permissions.id" )
+                ->select( null )->select( [ "permissions.id" ] )
+                ->where( [
+                    "roles_permissions.role_id" => $this::$userDetail->role_id,
+                    "permissions.article" => $permission
+                ] )
+                ->limit( 1 )
+                ->fetch();
+
+            if ( !$rolePermission ) return false;
+
+        } // foreach. $permissions
+
+
+        return true;
 
     } // function. validatePermissions
 

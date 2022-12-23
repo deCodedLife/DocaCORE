@@ -151,6 +151,12 @@ function generateStructureBlock ( $structureBlock ) {
         foreach ( $structureComponents as $structureComponent ) {
 
             /**
+             * Проверка доступов
+             */
+            if ( !$API->validatePermissions( $structureComponent[ "required_permissions" ] ) ) continue;
+
+
+            /**
              * Сформированный компонент страницы
              */
             $responseComponent = [
@@ -169,6 +175,57 @@ function generateStructureBlock ( $structureBlock ) {
 
                     $responseComponent[ "title" ] = $structureComponent[ "title" ];
                     $responseComponent[ "settings" ][ "list" ] = processingComponentType_filter( $structureComponent );
+
+                    break;
+
+                case "buttons":
+
+                    /**
+                     * Сформированное тело запроса
+                     */
+                    $scriptBody = [];
+
+                    if ( $responseComponent[ "type" ] === "script" ) {
+
+                        foreach ( $structureComponent[ "settings" ][ "data" ] as $scriptPropertyKey => $scriptProperty ) {
+
+                            $scriptBody[ $scriptPropertyKey ] = $scriptProperty;
+
+
+                            if ( $scriptProperty[ 0 ] === ":" ) {
+
+                                /**
+                                 * Обработка переменной
+                                 */
+
+                                /**
+                                 * Получение переменной в строке
+                                 */
+                                $stringVariable = substr( $scriptProperty, 1 );
+
+
+                                /**
+                                 * Получение значения из списка
+                                 */
+                                if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                                    $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+
+                                /**
+                                 * Формирование строки
+                                 */
+                                $scriptBody[ $scriptPropertyKey ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+
+                            } // if. $widgetFilter[ "value" ][ 0 ] === ":"
+
+                        } // foreach. $structureComponent[ "settings" ][ "body" ]
+
+
+                        /**
+                         * Обновление схемы запроса
+                         */
+                        $responseComponent[ "settings" ][ "data" ] = $scriptBody;
+
+                    } // if. $responseComponent[ "type" ] === "script"
 
                     break;
 
@@ -275,6 +332,7 @@ try {
 
 /**
  * Получение детальной информации о запрошенной записи
+ * @todo Динамическая подстановка домена
  */
 if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
     $pageDetail[ "row_detail" ] = (array) $API->sendRequest(
@@ -291,9 +349,16 @@ if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
 
 foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
 
+    /**
+     * Проверка доступов
+     */
+    if ( !$API->validatePermissions( $structureBlock[ "required_permissions" ] ) ) continue;
+
+    /**
+     * Формирование блока
+     */
     $responseBlock = generateStructureBlock( $structureBlock );
-
-
+    
     /**
      * Добавление Блока страницы в ответ
      */
