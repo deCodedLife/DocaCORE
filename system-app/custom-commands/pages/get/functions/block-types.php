@@ -206,6 +206,7 @@ function processingBlockType_form ( $structureBlock ) {
                     "data_type" => $fieldDetail[ "data_type" ],
                     "field_type" => $fieldDetail[ "field_type" ],
                     "settings" => $fieldDetail[ "settings" ],
+                    "search" => $fieldDetail[ "search" ],
                     "is_required" => $isRequired,
                     "is_disabled" => $fieldDetail[ "is_disabled" ]
                 ];
@@ -361,8 +362,17 @@ function processingBlockType_form ( $structureBlock ) {
                     /**
                      * Обработка списков
                      */
-                    if ( isset( $blockField[ "value" ]->value ) ) $blockField[ "value" ] = $blockField[ "value" ]->value;
-                    if ( isset( $blockField[ "value" ][ 0 ]->value ) ) $blockField[ "value" ] = $blockField[ "value" ][ 0 ]->value;
+                    switch ( gettype( $blockField[ "value" ] ) ) {
+
+                        case "array":
+                            $blockField[ "value" ] = $blockField[ "value" ][ 0 ]->value;
+                            break;
+
+                        case "object":
+                            $blockField[ "value" ] = $blockField[ "value" ]->value;
+
+                    } // switch. gettype( $blockField[ "value" ] )
+                    
 
                     /**
                      * Перевод значения в указанный в схеме тип

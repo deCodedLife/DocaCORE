@@ -344,6 +344,18 @@ if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
 
 
 /**
+ * @hook
+ * Формирование страницы
+ */
+
+$formConstructorHookPath = $API::$configs[ "paths" ][ "public_custom_commands" ] . "/pages/get/hooks/" . $pageDetail[ "section" ] . "/";
+$formConstructorHookPath .= str_replace( ".json", ".php", $pageDetail[ "scheme_name" ] );
+
+if ( file_exists( $formConstructorHookPath ) )
+    require( $formConstructorHookPath );
+
+
+/**
  * Формирование структуры страницы
  */
 

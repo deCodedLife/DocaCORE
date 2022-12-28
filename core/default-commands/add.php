@@ -102,6 +102,16 @@ try {
 
     } // foreach. $join_insertValues
 
+
+    /**
+     * Добавление лога
+     */
+    $API->addLog( [
+        "table_name" => $objectScheme[ "table" ],
+        "description" => "Добавлена запись ${objectScheme[ "title" ]} № $insertId",
+        "row_id" => $insertId
+    ], $requestData );
+
 } catch ( PDOException $e ) {
 
     $API->returnResponse( $e->getMessage(), 500 );

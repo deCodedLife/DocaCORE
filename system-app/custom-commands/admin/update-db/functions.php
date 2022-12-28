@@ -136,7 +136,7 @@ function readScheme ( $generatedTableScheme, $schemePath ) {
             if ( $generatedTableScheme[ "rows" ][ $rowKey ][ "title" ] )
                 $row[ "title" ] = $generatedTableScheme[ "rows" ][ $rowKey ][ "title" ];
 
-            $generatedTableScheme[ "rows" ][] = $row;
+            $generatedTableScheme[ "rows" ][ $rowKey ] = $row;
 
         } // foreach. $tableScheme[ "rows" ]
 

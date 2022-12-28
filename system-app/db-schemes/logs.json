@@ -37,27 +37,6 @@
       "default": null
     },
     {
-      "title": "ID пользователя, с которым связано событие",
-      "article": "user_id",
-      "type": "int",
-      "is_required": false,
-      "default": null
-    },
-    {
-      "title": "ID клиента, с которым связано событие",
-      "article": "client_id",
-      "type": "int",
-      "is_required": false,
-      "default": null
-    },
-    {
-      "title": "ID филиала, в котором произошло событие",
-      "article": "store_id",
-      "type": "int",
-      "is_required": false,
-      "default": null
-    },
-    {
       "title": "Дата и время создания",
       "article": "created_at",
       "type": "datetime",

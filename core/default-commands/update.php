@@ -113,7 +113,7 @@ try {
             ->execute();
 
 
-        foreach ( $join[ "data" ] as $connection_table_value ) {
+        foreach ( $join[ "data" ] as $key => $connection_table_value ) {
 
             $API->DB->insertInto( $join[ "connection_table" ] )
                 ->values( [
@@ -125,6 +125,16 @@ try {
         } // foreach. $join[ "data" ]
 
     } // foreach. $join_updateValues
+
+
+    /**
+     * Добавление лога
+     */
+    $API->addLog( [
+        "table_name" => $objectScheme[ "table" ],
+        "description" => "Обновлена запись ${objectScheme[ "title" ]} № $requestData->id",
+        "row_id" => $requestData->id
+    ], $requestData );
 
 } catch ( PDOException $e ) {
 

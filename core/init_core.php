@@ -212,8 +212,13 @@ class API {
          * Обработка системных параметров
          */
 
-        if ( $requestData->id && ( gettype( $requestData->id ) === "integer" ) )
-            $processedRequest[ "id" ] = $requestData->id;
+        if (
+            $requestData->id &&
+            (
+                ( gettype( $requestData->id ) === "integer" ) ||
+                ( gettype( $requestData->id ) === "array" )
+            )
+        ) $processedRequest[ "id" ] = $requestData->id;
 
         if ( $requestData->page && ( gettype( $requestData->page ) === "integer" ) )
             $processedRequest[ "page" ] = $requestData->page;
@@ -397,6 +402,7 @@ class API {
 
                             if (
                                 ( $objectProperty[ "data_type" ] === "date" ) ||
+                                ( $objectProperty[ "data_type" ] === "time" ) ||
                                 ( $objectProperty[ "data_type" ] === "datetime" ) ||
                                 ( $objectProperty[ "data_type" ] === "password" ) ||
                                 ( $objectProperty[ "data_type" ] === "email" ) ||
@@ -1180,6 +1186,77 @@ class API {
         return $responseString;
 
     } // function. generatingStringFromVariables
+
+
+    /**
+     * Добавление лога
+     *
+     * @param $detail       array    Информация о логе
+     * @param $requestData  object   Запрос
+     *
+     * @return boolean
+     */
+    public function addLog ( $detail,  $requestData = [] ) {
+
+        /**
+         * Заполнение системных св-в
+         */
+        $detail[ "ip" ] = $_SERVER[ "REMOTE_ADDR" ];
+
+
+        /**
+         * Обработка строк
+         */
+        $detail[ "description" ] = substr( $detail[ "description" ], 0, 255 );
+
+
+        /**
+         * Заполнение данных о связанных Пользователях и Клиентах
+         */
+
+        $logDetail[ "users_id" ][] = $this::$userDetail->id;
+
+        if ( $requestData->user_id ) $logDetail[ "users_id" ][] = $requestData->user_id;
+        if ( $requestData->client_id ) $logDetail[ "clients_id" ][] = $requestData->client_id;
+
+        foreach ( $requestData->users_id as $userId ) $logDetail[ "users_id" ][] = $userId;
+        foreach ( $requestData->clients_id as $clientId ) $logDetail[ "clients_id" ][] = $clientId;
+
+
+        /**
+         * Добавление лога
+         */
+
+        $insertedLogId = $this->DB->insertInto( "logs" )
+            ->values( [
+                "table_name" => $detail[ "table_name" ],
+                "description" => $detail[ "description" ],
+                "row_id" => $detail[ "row_id" ],
+                "ip" => $detail[ "ip" ]
+            ] )
+            ->execute();
+
+        if ( !$insertedLogId ) return false;
+
+        foreach ( $logDetail[ "users_id" ] as $userId )
+            $this->DB->insertInto( "logs_users" )
+                ->values( [
+                    "log_id" => $insertedLogId,
+                    "user_id" => $userId
+                ] )
+                ->execute();
+
+        foreach ( $logDetail[ "clients_id" ] as $clientId )
+            $this->DB->insertInto( "logs_clients" )
+                ->values( [
+                    "log_id" => $insertedLogId,
+                    "client_id" => $clientId
+                ] )
+                ->execute();
+
+        return true;
+
+    } // function. addLog
 
 
     /**
