@@ -5,6 +5,19 @@
   "is_trash": true,
   "properties": [
     {
+      "title": "Аватар",
+      "article": "avatar",
+      "data_type": "string",
+      "field_type": "string",
+      "is_default_in_list": true,
+      "is_unique": false,
+      "is_autofill": true,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": []
+    },
+    {
       "title": "Имя",
       "article": "first_name",
       "data_type": "string",
