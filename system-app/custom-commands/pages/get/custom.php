@@ -339,7 +339,7 @@ if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
         $pageDetail[ "section" ],
         "get",
         [ "id" => (int) $pageDetail[ "row_id" ] ],
-        "oxapi-v3.mewbas.com"
+        $_SERVER[ "SERVER_NAME" ]
     )[ 0 ];
 
 
