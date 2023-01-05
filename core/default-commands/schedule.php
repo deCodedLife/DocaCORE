@@ -58,7 +58,7 @@ $performersFilter = [];
  */
 if ( !$requestData->start_at ) $requestData->start_at = date( "Y-m-d" );
 if ( !$requestData->end_at ) $requestData->end_at = date(
-    "Y-m-d", strtotime( "+30 days", strtotime( $requestData->start_at ) )
+    "Y-m-d", strtotime( "+7 days", strtotime( $requestData->start_at ) )
 );
 
 /**

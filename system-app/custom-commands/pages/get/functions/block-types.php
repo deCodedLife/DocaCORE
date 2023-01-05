@@ -365,7 +365,14 @@ function processingBlockType_form ( $structureBlock ) {
                     switch ( gettype( $blockField[ "value" ] ) ) {
 
                         case "array":
-                            $blockField[ "value" ] = $blockField[ "value" ][ 0 ]->value;
+
+                            $blockFieldValues = [];
+
+                            foreach ( $blockField[ "value" ] as $blockFieldValue )
+                                $blockFieldValues[] = $blockFieldValue->value;
+
+                            $blockField[ "value" ] = $blockFieldValues;
+                            
                             break;
 
                         case "object":
