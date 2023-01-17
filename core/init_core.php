@@ -519,6 +519,7 @@ class API {
                 if ( $objectProperty[ "custom_list" ] ) {
 
                     $is_error = true;
+                    if ( gettype( $requestProperty ) == "array" ) $is_error = false;
 
                     foreach ( $objectProperty[ "custom_list" ] as $customListItem )
                         if ( $requestProperty === $customListItem[ "value" ] ) $is_error = false;
@@ -635,6 +636,9 @@ class API {
                         ->fetch();
 
 
+                    /**
+                     * Игнорирование пустых записей
+                     */
                     if (
                         !$detailRow[ $property[ "list_donor" ][ "properties_title" ] ] ||
                         !$detailRow[ "id" ]
@@ -645,6 +649,10 @@ class API {
 
                     }
 
+
+                    /**
+                     * Добавление пункта списка
+                     */
                     $row[ $property[ "article" ] ] = [
                         "title" => $detailRow[ $property[ "list_donor" ][ "properties_title" ] ],
                         "value" => (int) $detailRow[ "id" ]
@@ -707,13 +715,28 @@ class API {
                          * Получение детальной информации о связанной записи
                          */
                         $joinDetailRow = $this->DB->from( $property[ "join" ][ "donor_table" ] )
-                            ->select( null )->select( [ "id", $property[ "join" ][ "property_article" ] ] )
                             ->where( [ "id" => $joinRow[ $property[ "join" ][ "filter_property" ] ] ] )
                             ->limit( 1 )
                             ->fetch();
 
+
+                        /**
+                         * Формирование заголовков пунктов списков
+                         */
+
+                        $rowTitle = $joinDetailRow[ $property[ "join" ][ "property_article" ] ];
+
+                        if ( $property[ "join" ][ "property_article" ] === "last_name" ) {
+
+                            $rowTitle = $joinDetailRow[ "last_name" ] . " ";
+                            if ( $joinDetailRow[ "first_name" ] ) $rowTitle .= mb_substr( $joinDetailRow[ "first_name" ], 0, 1 ) . ". ";
+                            if ( $joinDetailRow[ "patronymic" ] ) $rowTitle .= mb_substr( $joinDetailRow[ "patronymic" ], 0, 1 ) . ".";
+
+                        }
+
+
                         $joinDetailInputValues[] = [
-                            "title" => $joinDetailRow[ $property[ "join" ][ "property_article" ] ],
+                            "title" => $rowTitle,
                             "value" => (int) $joinDetailRow[ "id" ]
                         ];
 

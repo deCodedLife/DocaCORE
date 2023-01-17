@@ -73,6 +73,18 @@ foreach ( $response[ "data" ] as $permissionItem ) {
 
 
 /**
+ * Очистка пустых групп доступов
+ */
+
+foreach ( $responsePermissions as $responsePermissionKey => $responsePermission ) {
+
+    if ( !$responsePermission[ "permissions" ] )
+        unset( $responsePermissions[ $responsePermissionKey ] );
+
+} // foreach. $responsePermissions
+
+
+/**
  * Преобразование объекта доступов в массив
  */
 
