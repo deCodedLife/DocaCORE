@@ -8,7 +8,7 @@ $eventsList = [];
 /**
  * Фильтр событий
  */
-$eventFilter = [];
+if ( !isset( $eventFilter ) ) $eventFilter = [];
 
 
 /**

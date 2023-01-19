@@ -1,0 +1,21 @@
+{
+  "title": "Документы",
+  "properties": [
+    {
+      "title": "Название",
+      "article": "title",
+      "type": "varchar(255)",
+      "is_required": true,
+      "default": null
+    },
+    {
+      "title": "ID документа",
+      "article": "type_id",
+      "type": "int",
+      "is_required": false,
+      "default": null
+    }
+  ],
+  "rows_key": "",
+  "rows": []
+}
