@@ -133,6 +133,13 @@ require( "components/schedule/get-performers-detail.php" );
 require( "components/schedule/get-event-times.php" );
 
 /**
+ * @hook
+ * Получение событий
+ */
+if ( file_exists( $public_customCommandDirPath . "/hooks/get-event-times.php" ) )
+    require( $public_customCommandDirPath . "/hooks/get-event-times.php" );
+
+/**
  * Формирование списка временных отрезков
  */
 require( "components/schedule/get-steps.php" );
@@ -151,6 +158,14 @@ require( "components/schedule/events-to-schedule.php" );
  * Привязка свободных ячеек к расписанию
  */
 require( "components/schedule/empty-to-schedule.php" );
+
+
+/**
+ * @hook
+ * Сформированное расписание
+ */
+if ( file_exists( $public_customCommandDirPath . "/hooks/generated-schedule.php" ) )
+    require( $public_customCommandDirPath . "/hooks/generated-schedule.php" );
 
 
 $response[ "data" ] = [

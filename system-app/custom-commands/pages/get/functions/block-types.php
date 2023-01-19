@@ -531,3 +531,71 @@ function processingBlockType_analyticWidgets ( $structureBlock ) {
     return $widgetSettings;
 
 } // function. processingBlockType_analyticWidgets
+
+
+/**
+ * Обработка календарей
+ *
+ * @param $structureBlock  object  Структура блока
+ *
+ * @return mixed
+ */
+function processingBlockType_calendar ( $structureBlock ) {
+
+    global $API;
+    global $pageDetail;
+
+
+    /**
+     * Сформированные настройки
+     */
+    $settings = [
+        "object" => $structureBlock[ "settings" ][ "object" ],
+        "filters" => []
+    ];
+
+
+    /**
+     * Формирование фильтров
+     */
+
+    foreach ( $structureBlock[ "settings" ][ "filters" ] as $filter ) {
+
+        /**
+         * Подстановка переменных
+         */
+
+        if ( $filter[ "value" ][ 0 ] === ":" ) {
+
+            /**
+             * Обработка переменной
+             */
+
+            /**
+             * Получение переменной в строке
+             */
+            $stringVariable = substr( $filter[ "value" ], 1 );
+
+
+            /**
+             * Получение значения из списка
+             */
+            if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+
+            /**
+             * Формирование строки
+             */
+            $filter[ "value" ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+
+        } // if. $filter[ "value" ][ 0 ] === ":"
+
+
+        $settings[ "filters" ][ $filter[ "property" ] ] = $filter[ "value" ];
+
+    } // foreach. $structureBlock[ "settings" ][ "filters" ]
+
+
+    return $settings;
+
+} // function. processingBlockType_analyticWidgets

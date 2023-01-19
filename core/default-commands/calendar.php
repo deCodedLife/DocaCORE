@@ -44,6 +44,7 @@ foreach ( $events as $event ) {
 
 
     $eventsList[ $eventDate ][] = [
+        "id" => $event[ "id" ],
         "title" => "$eventTime_from - $eventTime_to",
         "from" => $eventTime_from,
         "to" => $eventTime_to,

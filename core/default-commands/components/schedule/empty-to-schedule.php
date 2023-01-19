@@ -81,5 +81,3 @@ foreach ( $resultSchedule as $scheduleDateKey => $scheduleDateDetail ) {
     } // foreach. $scheduleDateDetail
 
 } // foreach. $resultSchedule
-
-

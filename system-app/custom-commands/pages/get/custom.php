@@ -125,11 +125,17 @@ function generateStructureBlock ( $structureBlock ) {
              * Виджеты аналитики
              */
 
+            $responseBlock[ "settings" ] = processingBlockType_analyticWidgets( $structureBlock );
+
+            break;
+
+        case "calendar":
 
             /**
-             * Формирование виджетов
+             * Календарь
              */
-            $responseBlock[ "settings" ] = processingBlockType_analyticWidgets( $structureBlock );
+
+            $responseBlock[ "settings" ] = processingBlockType_calendar( $structureBlock );
 
             break;
 
