@@ -9,11 +9,18 @@
       "default": null
     },
     {
-      "title": "ID документа",
+      "title": "Тип",
       "article": "type_id",
       "type": "int",
       "is_required": false,
       "default": null
+    },
+    {
+      "title": "Активность (Y/N)",
+      "article": "is_active",
+      "type": "char(1)",
+      "is_required": false,
+      "default": "Y"
     }
   ],
   "rows_key": "",

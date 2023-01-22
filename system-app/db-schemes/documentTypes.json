@@ -16,6 +16,11 @@
       "default": null
     }
   ],
-  "rows_key": "",
-  "rows": []
+  "rows_key": "article",
+  "rows": [
+    {
+      "title": "Шаблон",
+      "article": "template"
+    }
+  ]
 }
