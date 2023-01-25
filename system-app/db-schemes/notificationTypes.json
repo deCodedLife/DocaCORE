@@ -16,6 +16,15 @@
       "default": null
     }
   ],
-  "rows_key": "",
-  "rows": []
+  "rows_key": "article",
+  "rows": [
+    {
+      "title": "Системные ошибки",
+      "article": "system_errors"
+    },
+    {
+      "title": "Системные предупреждения",
+      "article": "system_alerts"
+    }
+  ]
 }

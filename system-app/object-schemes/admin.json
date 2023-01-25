@@ -37,6 +37,13 @@
       "data_type": "string",
       "use_in_commands": [ "update-scheme" ],
       "require_in_commands": [ "update-scheme" ]
+    },
+    {
+      "title": "Обновление настроек",
+      "article": "settings",
+      "data_type": "array",
+      "use_in_commands": [ "update-settings" ],
+      "require_in_commands": [ "update-settings" ]
     }
   ]
 }

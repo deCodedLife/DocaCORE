@@ -1134,7 +1134,13 @@ class API {
      */
     public function validateModules ( $modules ) {
 
-        if ( $modules ) return false;
+        if ( !$modules ) return true;
+        if ( !$this::$configs[ "settings" ][ "modules" ] ) return false;
+
+        foreach ( $modules as $module )
+            if ( !in_array( $module, $this::$configs[ "settings" ][ "modules" ] ) ) return false;
+
+
         return true;
 
     } // function. validateModules

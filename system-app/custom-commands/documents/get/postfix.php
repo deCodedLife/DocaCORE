@@ -48,7 +48,7 @@ if ( $requestData->id ) {
 
     } // foreach. $documentBlocks
 
-
+    $response[ "data" ][ 0 ][ "type_id" ] = (int) $response[ "data" ][ 0 ][ "type_id" ][ "value" ];
     $response[ "data" ][ 0 ][ "structure" ] = $documentStructure;
 
 } // if. $requestData->id
