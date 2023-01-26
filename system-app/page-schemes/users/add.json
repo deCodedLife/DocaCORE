@@ -10,21 +10,7 @@
         "title": [ "Сотрудники" ],
         "description": ""
       },
-      "components": {
-        "buttons": [
-          {
-            "type": "href",
-            "settings": {
-              "title": "Назад",
-              "page": "users",
-              "icon": "",
-              "background": "dark"
-            },
-            "required_permissions": [],
-            "required_modules": []
-          }
-        ]
-      }
+      "components": {}
     },
     {
       "title": "Форма добавления сотрудника",

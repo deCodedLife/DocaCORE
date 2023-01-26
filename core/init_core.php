@@ -1401,7 +1401,7 @@ class API {
      */
     public function sendRequest ( $object, $command, $body = [], $api_url = "" ) {
 
-        if ( !$api_url && $_SERVER[ "REQUEST_URI" ] ) $api_url = $_SERVER[ "REQUEST_URI" ];
+        if ( !$api_url && $_SERVER[ "HTTP_HOST" ] ) $api_url = $_SERVER[ "HTTP_HOST" ];
 
 
         /**

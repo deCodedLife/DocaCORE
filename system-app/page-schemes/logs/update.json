@@ -7,26 +7,26 @@
       "type": "header",
       "size": 4,
       "settings": {
-        "title": [ ":last_name", " ", ":first_name", " ", ":patronymic" ],
+        "title": [ "Логи" ],
         "description": ""
       },
       "components": {}
     },
     {
-      "title": "Детальная информация о сотруднике",
+      "title": "Детальная информация",
       "type": "info",
       "size": 4,
       "settings": {
-        "object": "users",
-        "command": "update",
+        "object": "logs",
+        "command": "info",
         "joined_property": "",
         "areas": [
           {
             "size": 2,
             "blocks": [
               {
-                "title": "Основное",
-                "fields": [ "first_name", "last_name", "patronymic" ]
+                "title": "",
+                "fields": [ "table_name", "row_id", "status" ]
               }
             ]
           },
@@ -34,8 +34,17 @@
             "size": 2,
             "blocks": [
               {
-                "title": "Доступ",
-                "fields": [ "role_id", "email", "password" ]
+                "title": "",
+                "fields": [ "ip", "created_at" ]
+              }
+            ]
+          },
+          {
+            "size": 4,
+            "blocks": [
+              {
+                "title": "",
+                "fields": [ "description" ]
               }
             ]
           }
