@@ -195,6 +195,12 @@ function processingBlockType_form ( $structureBlock ) {
                 $isRequired = false;
                 if ( in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "require_in_commands" ] ) ) $isRequired = true;
 
+                /**
+                 * Проверка блокировки поля
+                 */
+                $isDisabled = false;
+                if ( !in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "use_in_commands" ] ) ) $isDisabled = true;
+
 
                 /**
                  * Формирование поля формы
@@ -208,7 +214,7 @@ function processingBlockType_form ( $structureBlock ) {
                     "settings" => $fieldDetail[ "settings" ],
                     "search" => $fieldDetail[ "search" ],
                     "is_required" => $isRequired,
-                    "is_disabled" => $fieldDetail[ "is_disabled" ]
+                    "is_disabled" => $isDisabled
                 ];
 
                 if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];
