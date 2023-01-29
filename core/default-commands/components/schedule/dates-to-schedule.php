@@ -49,7 +49,7 @@ while ( $currentScheduleDate <= $scheduleTo ) {
 
         $resultSchedule[ $scheduleDate ][ $performerId ] = [
             "performer_id" => (int) $performerId,
-            "performer_href" => "$requestData->performers_table/info/$performerId",
+            "performer_href" => "$requestData->performers_table/update/$performerId",
             "performer_title" => $performerTitle,
             "schedule" => []
         ];
