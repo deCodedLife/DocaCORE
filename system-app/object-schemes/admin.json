@@ -7,8 +7,8 @@
       "title": "Токен",
       "article": "token",
       "data_type": "string",
-      "use_in_commands": [ "update-db" ],
-      "require_in_commands": [ "update-db" ]
+      "use_in_commands": [ "update-db", "git-push-commit" ],
+      "require_in_commands": [ "update-db", "git-push-commit" ]
     },
     {
       "title": "Тестовый режим",
@@ -44,6 +44,13 @@
       "data_type": "array",
       "use_in_commands": [ "update-settings" ],
       "require_in_commands": [ "update-settings" ]
+    },
+    {
+      "title": "Коммит",
+      "article": "commit",
+      "data_type": "string",
+      "use_in_commands": [ "git-push-commit" ],
+      "require_in_commands": [ "git-push-commit" ]
     }
   ]
 }
