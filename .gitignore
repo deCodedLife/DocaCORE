@@ -17,7 +17,7 @@ Thumbs.db
 
 push-git.sh
 
-uploads/*
-public-app/*
+uploads
+public-app
 
 core/app_configs.php
