@@ -15,7 +15,7 @@ Thumbs.db
 *.mov
 *.wmv
 
-uploads/*
-public-app/*
+uploads
+public-app
 
 core/app_configs.php
