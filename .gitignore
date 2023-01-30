@@ -15,8 +15,6 @@ Thumbs.db
 *.mov
 *.wmv
 
-push-git.sh
-
 uploads/*
 public-app/*
 
