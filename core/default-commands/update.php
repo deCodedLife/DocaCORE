@@ -56,12 +56,12 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
             "data" => []
         ];
 
-        if ( $propertyValue ) {
+        if ( $propertyValue !== null ) {
 
             if ( !$schemeProperty[ "join" ] ) $updateValues[ $propertyName ] = $propertyValue;
             else $join_updateValues[ $propertyName ][ "data" ] = $propertyValue;
 
-        } // if. $propertyValue
+        } // if. $propertyValue !== null
 
 
         /**
