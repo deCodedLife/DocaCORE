@@ -339,7 +339,7 @@ try {
 /**
  * Проверка доступов
  */
-if ( !$API->validatePermissions( $pageDetail[ "required_permissions" ] ) )
+if ( !$API->validatePermissions( $pageScheme[ "required_permissions" ] ) )
     $API->returnResponse( "Нет доступа к странице", 403 );
 
 
