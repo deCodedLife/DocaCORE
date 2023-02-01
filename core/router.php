@@ -119,13 +119,6 @@ $requestData = $API->requestDataPreprocessor( $objectScheme, $API->request->data
  * Проверка прав
  */
 if ( !$API->validatePermissions( $commandScheme[ "required_permissions" ] ) )
-    $this->returnResponse( "Недостаточно прав", 403 );
-
-
-/**
- * Проверка прав
- */
-if ( !$API->validatePermissions( $commandScheme[ "required_permissions" ] ) )
     $API->returnResponse( "Недостаточно прав", 403 );
 
 /**
