@@ -337,6 +337,13 @@ try {
 
 
 /**
+ * Проверка доступов
+ */
+if ( !$API->validatePermissions( $pageDetail[ "required_permissions" ] ) )
+    $API->returnResponse( "Нет доступа к странице", 403 );
+
+
+/**
  * Получение детальной информации о запрошенной записи
  * @todo Динамическая подстановка домена
  */
