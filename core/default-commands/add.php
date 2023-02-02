@@ -60,7 +60,7 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
      * Проверка на уникальность
      */
 
-    if ( $schemeProperty[ "is_unique" ] ) {
+    if ( $schemeProperty[ "is_unique" ] && $propertyValue ) {
 
         $repeatedProperty = $API->DB->from( $objectScheme[ "table" ] )
             ->where( $propertyName, $propertyValue )
@@ -70,7 +70,7 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
         if ( $repeatedProperty && $propertyValue )
             $API->returnResponse( "Запись с таким $propertyName уже существует", 500 );
 
-    } // if. $schemeProperty[ "is_unique" ]
+    } // if. $schemeProperty[ "is_unique" ] && $propertyValue
 
 } // foreach. $objectScheme[ "properties" ] as $schemeProperty
 
