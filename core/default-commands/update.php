@@ -42,8 +42,6 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
         $propertyName = $schemeProperty[ "article" ];
         $propertyValue = $requestData->{$schemeProperty[ "article" ]};
 
-        if ( $propertyValue === "" ) $propertyValue = null;
-
 
         /**
          * Обработка связанных таблиц
