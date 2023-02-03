@@ -112,9 +112,19 @@ try {
     /**
      * Добавление лога
      */
+
+    $logDescription = "Добавлена запись ${objectScheme[ "title" ]} № $insertId";
+
+    /**
+     * @hook
+     * Формирование описания лога
+     */
+    if ( file_exists( $public_customCommandDirPath . "/hooks/log.php" ) )
+        require( $public_customCommandDirPath . "/hooks/log.php" );
+
     $API->addLog( [
         "table_name" => $objectScheme[ "table" ],
-        "description" => "Добавлена запись ${objectScheme[ "title" ]} № $insertId",
+        "description" => $logDescription,
         "row_id" => $insertId
     ], $requestData );
 
