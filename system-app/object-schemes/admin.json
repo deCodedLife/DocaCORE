@@ -14,7 +14,7 @@
       "title": "Тестовый режим",
       "article": "is_test",
       "data_type": "boolean",
-      "use_in_commands": [ "update-db" ],
+      "use_in_commands": [ "update-db", "git-push-commit" ],
       "require_in_commands": [ "update-db" ]
     },
     {
