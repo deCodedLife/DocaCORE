@@ -113,11 +113,12 @@ try {
      * Добавление лога
      */
 
+    $logData = $requestData;
     $logDescription = "Добавлена запись ${objectScheme[ "title" ]} № $insertId";
 
     /**
      * @hook
-     * Формирование описания лога
+     * Формирование описания логах
      */
     if ( file_exists( $public_customCommandDirPath . "/hooks/log.php" ) )
         require( $public_customCommandDirPath . "/hooks/log.php" );
@@ -126,7 +127,7 @@ try {
         "table_name" => $objectScheme[ "table" ],
         "description" => $logDescription,
         "row_id" => $insertId
-    ], $requestData );
+    ], $logData );
 
 } catch ( PDOException $e ) {
 
