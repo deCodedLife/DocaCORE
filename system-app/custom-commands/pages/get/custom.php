@@ -8,6 +8,17 @@ require_once( "functions/block-types.php" );
 
 
 /**
+ * @hook
+ * Формирование значений формы
+ */
+
+$formFieldValues = [];
+
+if ( file_exists( $public_customCommandDirPath . "/hooks/" . $requestData->page . "/field-values.php" ) )
+    require( $public_customCommandDirPath . "/hooks/" . $requestData->page . "/field-values.php" );
+
+
+/**
  * Генерация структурного блока
  *
  * @param $structureBlock  array  Схема структурного блока

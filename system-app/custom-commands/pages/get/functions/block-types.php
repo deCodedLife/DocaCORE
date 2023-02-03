@@ -122,6 +122,7 @@ function processingBlockType_form ( $structureBlock ) {
 
     global $API;
     global $pageDetail;
+    global $formFieldValues;
 
 
     /**
@@ -446,6 +447,13 @@ function processingBlockType_form ( $structureBlock ) {
                     if ( $fieldDetail[ "data_type" ] === "password" ) $blockField[ "value" ] = null;
 
                 } // if. $pageDetail[ "row_detail" ]
+
+
+                /**
+                 * Заполнение значения поля из хука
+                 */
+                if ( $formFieldValues[ $fieldDetail[ "article" ] ] )
+                    $blockField[ "value" ] = $formFieldValues[ $fieldDetail[ "article" ] ];
 
 
                 /**
