@@ -128,11 +128,22 @@ try {
     /**
      * Добавление лога
      */
+
+    $logData = $requestData;
+    $logDescription = "Обновлена запись ${objectScheme[ "title" ]} № $requestData->id";
+
+    /**
+     * @hook
+     * Формирование описания логах
+     */
+    if ( file_exists( $public_customCommandDirPath . "/hooks/log.php" ) )
+        require( $public_customCommandDirPath . "/hooks/log.php" );
+
     $API->addLog( [
         "table_name" => $objectScheme[ "table" ],
-        "description" => "Обновлена запись ${objectScheme[ "title" ]} № $requestData->id",
+        "description" => $logDescription,
         "row_id" => $requestData->id
-    ], $requestData );
+    ], $logData );
 
 } catch ( PDOException $e ) {
 

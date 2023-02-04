@@ -112,7 +112,6 @@ try {
     /**
      * Добавление лога
      */
-
     $logData = $requestData;
     $logDescription = "Добавлена запись ${objectScheme[ "title" ]} № $insertId";
 
