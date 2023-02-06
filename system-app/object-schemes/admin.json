@@ -7,8 +7,8 @@
       "title": "Токен",
       "article": "token",
       "data_type": "string",
-      "use_in_commands": [ "update-db", "git-push-commit" ],
-      "require_in_commands": [ "update-db", "git-push-commit" ]
+      "use_in_commands": [ "update-db", "git-push-commit", "update-sphinx" ],
+      "require_in_commands": [ "update-db", "git-push-commit", "update-sphinx" ]
     },
     {
       "title": "Тестовый режим",
