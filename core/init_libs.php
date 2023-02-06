@@ -44,3 +44,9 @@ $API->DB_connection = mysqli_connect(
     $API::$configs[ "db" ][ "password" ],
     $API::$configs[ "db" ][ "name" ]
 );
+
+
+/**
+ * Подключение Sphinx
+ */
+require_once( $API::$configs[ "paths" ][ "libs" ] . "/sphinx/api/sphinxapi.php" );
