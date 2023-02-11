@@ -34,12 +34,16 @@ function generateStructureBlock ( $structureBlock ) {
     /**
      * Сформированный блок страницы
      */
+
     $responseBlock = [
         "type" => $structureBlock[ "type" ],
         "size" => $structureBlock[ "size" ],
         "settings" => $structureBlock[ "settings" ],
         "components" => []
     ];
+
+    if ( $structureBlock[ "hook" ] ) $responseBlock[ "hook" ] = $structureBlock[ "hook" ];
+
 
     /**
      * Игнорирование блока
