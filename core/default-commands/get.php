@@ -156,9 +156,6 @@ try {
     /**
      * Обработка ответа
      */
-
-    if ( $requestData->is_list ) $requestData->context = "list";
-
     $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context );
 
 } catch ( PDOException $e ) {

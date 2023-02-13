@@ -226,9 +226,6 @@ class API {
         if ( $requestData->limit && ( gettype( $requestData->limit ) === "integer" ) )
             $processedRequest[ "limit" ] = $requestData->limit;
 
-        if ( $requestData->is_list && ( gettype( $requestData->is_list ) === "boolean" ) )
-            $processedRequest[ "is_list" ] = $requestData->is_list;
-
         if ( $requestData->context && ( gettype( $requestData->context ) === "string" ) )
             $processedRequest[ "context" ] = $requestData->context;
 
