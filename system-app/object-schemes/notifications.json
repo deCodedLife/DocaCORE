@@ -5,8 +5,8 @@
   "is_trash": false,
   "properties": [
     {
-      "title": "ID роли",
-      "article": "role_id",
+      "title": "Получатель",
+      "article": "user_id",
       "data_type": "integer",
       "field_type": "integer",
       "is_default_in_list": true,

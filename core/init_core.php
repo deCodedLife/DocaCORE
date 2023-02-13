@@ -1314,11 +1314,11 @@ class API {
      * В админке произойдет обновление указанного блока
      *
      * @param $blockArticle  string   Артикул блока, в котором произошло событие
-     * @param $roleId        integer  ID роли, которой предназначено событие
+     * @param $userId        integer  ID роли, которой предназначено событие
      *
      * @return boolean
      */
-    public function addEvent ( $blockArticle, $roleId = null ) {
+    public function addEvent ( $blockArticle, $userId = null ) {
 
         /**
          * Проверка обязательных параметров
@@ -1332,7 +1332,7 @@ class API {
         $this->DB->deleteFrom( "events" )
             ->where( [
                 "table_name" => $blockArticle,
-                "role_id" => $roleId
+                "user_id" => $userId
             ] )
             ->execute();
 
@@ -1340,7 +1340,7 @@ class API {
         $this->DB->insertInto( "events" )
             ->values( [
                 "table_name" => $blockArticle,
-                "role_id" => $roleId
+                "user_id" => $userId
             ] )
             ->execute();
 
@@ -1352,14 +1352,15 @@ class API {
     /**
      * Добавление уведомления
      *
-     * @param $type         string  Тип
-     * @param $title        string  Название
-     * @param $description  string  Описание
-     * @param $status       string  Статус
+     * @param $type         string   Тип
+     * @param $title        string   Название
+     * @param $description  string   Описание
+     * @param $status       string   Статус
+     * @param $userId       integer  Пользователь
      *
      * @return boolean
      */
-    public function addNotification ( $type, $title, $description, $status = "info" ) {
+    public function addNotification ( $type, $title, $description, $status = "info", $userId = null ) {
 
         /**
          * Получение детальной информации о типе уведомлений
@@ -1384,24 +1385,61 @@ class API {
          * Добавление уведомлений
          */
 
-        foreach ( $notificationTypes_roles as $notificationType_role ) {
+        if ( $userId ) {
 
+            /**
+             * Персональное уведомление
+             */
             $this->DB->insertInto( "notifications" )
                 ->values( [
                     "title" => mb_substr( $title, 0, 75 ),
                     "description" => mb_substr( $description, 0, 255 ),
                     "status" => mb_substr( $status, 0, 15 ),
-                    "role_id" => $notificationType_role[ "role_id" ]
+                    "user_id" => $userId
                 ] )
                 ->execute();
-
 
             /**
              * Создание события
              */
-            $this->addEvent( "notifications", $notificationType_role[ "role_id" ] );
+            $this->addEvent( "notifications", $userId );
 
-        } // foreach. $notificationTypes_roles
+        } else {
+
+            foreach ( $notificationTypes_roles as $notificationType_role ) {
+
+                /**
+                 * Получение пользователей роли
+                 */
+                $roleUsers = $this->DB->from( "users" )
+                    ->where( [ "role_id" => $notificationType_role[ "role_id" ] ] );
+
+
+                foreach ( $roleUsers as $roleUser ) {
+
+                    /**
+                     * Уведомление ответственного пользователя
+                     */
+                    $this->DB->insertInto( "notifications" )
+                        ->values( [
+                            "title" => mb_substr( $title, 0, 75 ),
+                            "description" => mb_substr( $description, 0, 255 ),
+                            "status" => mb_substr( $status, 0, 15 ),
+                            "role_id" => $roleUser[ "id" ]
+                        ] )
+                        ->execute();
+
+
+                    /**
+                     * Создание события
+                     */
+                    $this->addEvent( "notifications", $roleUser[ "id" ] );
+
+                } // foreach. $roleUsers
+
+            } // foreach. $notificationTypes_roles
+
+        } // if. $userId
 
 
         return true;

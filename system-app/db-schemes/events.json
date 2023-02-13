@@ -9,8 +9,8 @@
       "default": null
     },
     {
-      "title": "ID роли",
-      "article": "role_id",
+      "title": "Получатель",
+      "article": "user_id",
       "type": "int",
       "is_required": false,
       "default": null

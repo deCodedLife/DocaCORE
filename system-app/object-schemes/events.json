@@ -19,8 +19,8 @@
       "require_in_commands": [ "add" ]
     },
     {
-      "title": "Роль",
-      "article": "role_id",
+      "title": "Получатель",
+      "article": "user_id",
       "data_type": "integer",
       "field_type": "list",
       "settings": {
@@ -35,8 +35,8 @@
       "use_in_commands": [ "add", "update", "get-last-id" ],
       "require_in_commands": [],
       "list_donor": {
-        "table": "roles",
-        "properties_title": "title"
+        "table": "users",
+        "properties_title": "last_name"
       }
     },
     {

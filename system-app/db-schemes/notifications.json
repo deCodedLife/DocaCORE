@@ -23,8 +23,8 @@
       "default": null
     },
     {
-      "title": "Роль получателя",
-      "article": "role_id",
+      "title": "Получатель",
+      "article": "user_id",
       "type": "int",
       "is_required": true,
       "default": null
