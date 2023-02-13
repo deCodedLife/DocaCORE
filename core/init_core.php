@@ -1404,6 +1404,24 @@ class API {
              */
             $this->addEvent( "notifications", $userId );
 
+        } elseif ( !$notificationTypes_roles ) {
+
+            /**
+             * Общее уведомление
+             */
+            $this->DB->insertInto( "notifications" )
+                ->values( [
+                    "title" => mb_substr( $title, 0, 75 ),
+                    "description" => mb_substr( $description, 0, 255 ),
+                    "status" => mb_substr( $status, 0, 15 )
+                ] )
+                ->execute();
+
+            /**
+             * Создание события
+             */
+            $this->addEvent( "notifications" );
+
         } else {
 
             foreach ( $notificationTypes_roles as $notificationType_role ) {
@@ -1425,7 +1443,7 @@ class API {
                             "title" => mb_substr( $title, 0, 75 ),
                             "description" => mb_substr( $description, 0, 255 ),
                             "status" => mb_substr( $status, 0, 15 ),
-                            "role_id" => $roleUser[ "id" ]
+                            "user_id" => $roleUser[ "id" ]
                         ] )
                         ->execute();
 
