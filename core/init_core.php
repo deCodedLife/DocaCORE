@@ -229,6 +229,9 @@ class API {
         if ( $requestData->is_list && ( gettype( $requestData->is_list ) === "boolean" ) )
             $processedRequest[ "is_list" ] = $requestData->is_list;
 
+        if ( $requestData->context && ( gettype( $requestData->context ) === "string" ) )
+            $processedRequest[ "context" ] = $requestData->context;
+
 
         /**
          * Обход св-в в схеме объекта
@@ -549,13 +552,13 @@ class API {
     /**
      * Обработка ответа на запросы типа get
      *
-     * @param $rows          array    Строки для вывода
-     * @param $objectScheme  object   Схема объекта
-     * @param $is_list       boolean  Выводятся ли записи в списке
+     * @param $rows          array   Строки для вывода
+     * @param $objectScheme  object  Схема объекта
+     * @param $context       string  Контекст вызова get запроса
      *
      * @return array
      */
-    public function getResponseBuilder ( $rows, $objectScheme, $is_list = false ) {
+    public function getResponseBuilder ( $rows, $objectScheme, $context = false ) {
 
         /**
          * Ответ на запрос
@@ -759,24 +762,39 @@ class API {
 
 
             /**
-             * Вывод кнопок и ссылок в списке
+             * Обработка контекстов
              */
 
-            if ( $is_list && $objectScheme[ "action_buttons" ] ) {
+            switch ( $context ) {
 
-                $row[ "row_href_type" ] = "update";
-
-
-                foreach ( $objectScheme[ "action_buttons" ] as $actionButton ) {
+                /**
+                 * Списки
+                 */
+                case "list":
 
                     /**
-                     * Добавление кнопки в запись
+                     * Вывод кнопок и ссылок в списке
                      */
-                    $row[ "buttons" ][] = $this->buildActionButton( $actionButton, $row );
 
-                } // foreach. $objectScheme[ "action_buttons" ]
+                    if ( $objectScheme[ "action_buttons" ] ) {
 
-            } // if. $is_list && $objectScheme[ "action_buttons" ]
+                        $row[ "row_href_type" ] = "update";
+
+
+                        foreach ( $objectScheme[ "action_buttons" ] as $actionButton ) {
+
+                            /**
+                             * Добавление кнопки в запись
+                             */
+                            $row[ "buttons" ][] = $this->buildActionButton( $actionButton, $row );
+
+                        } // foreach. $objectScheme[ "action_buttons" ]
+
+                    } // if. $objectScheme[ "action_buttons" ]
+
+                    break;
+
+            } // switch. $context
 
 
             $response[] = $row;
