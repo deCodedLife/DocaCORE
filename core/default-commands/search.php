@@ -55,4 +55,4 @@ if ( $searchIdList[ "matches" ] ) {
  * Обработка ответа
  */
 
-$response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->is_list );
+$response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context );
