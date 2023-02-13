@@ -232,6 +232,9 @@ class API {
         if ( $requestData->context && ( gettype( $requestData->context ) === "string" ) )
             $processedRequest[ "context" ] = $requestData->context;
 
+        if ( $requestData->search && ( gettype( $requestData->search ) === "string" ) )
+            $processedRequest[ "search" ] = $requestData->search;
+
 
         /**
          * Обход св-в в схеме объекта
@@ -558,7 +561,7 @@ class API {
      *
      * @return array
      */
-    public function getResponseBuilder ( $rows, $objectScheme, $context = false ) {
+    public function getResponseBuilder ( $rows, $objectScheme, $context = "" ) {
 
         /**
          * Ответ на запрос
