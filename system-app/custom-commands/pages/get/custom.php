@@ -8,17 +8,6 @@ require_once( "functions/block-types.php" );
 
 
 /**
- * @hook
- * Формирование значений формы
- */
-
-$formFieldValues = [];
-
-if ( file_exists( $public_customCommandDirPath . "/hooks/" . $requestData->page . "/field-values.php" ) )
-    require( $public_customCommandDirPath . "/hooks/" . $requestData->page . "/field-values.php" );
-
-
-/**
  * Генерация структурного блока
  *
  * @param $structureBlock  array  Схема структурного блока
@@ -331,6 +320,21 @@ $pageDetail[ "section" ] = $pageDetail[ "url" ][ 0 ];
  */
 if ( isset( $pageDetail[ "url" ][ 1 ] ) ) $pageDetail[ "scheme_name" ] = $pageDetail[ "url" ][ 1 ] . ".json";
 if ( isset( $pageDetail[ "url" ][ 2 ] ) ) $pageDetail[ "row_id" ] = $pageDetail[ "url" ][ 2 ];
+
+
+/**
+ * @hook
+ * Формирование значений формы
+ */
+
+$formFieldValues = [];
+$hookPath = $pageDetail[ "section" ];
+
+if ( isset( $pageDetail[ "url" ][ 1 ] ) ) $hookPath .= "/" . $pageDetail[ "url" ][ 1 ];
+else $hookPath .= "/index";
+
+if ( file_exists( $public_customCommandDirPath . "/hooks/$hookPath/field-values.php" ) )
+    require( $public_customCommandDirPath . "/hooks/$hookPath/field-values.php" );
 
 
 /**
