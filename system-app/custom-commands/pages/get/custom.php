@@ -166,7 +166,27 @@ function generateStructureBlock ( $structureBlock ) {
     foreach ( $structureBlock[ "components" ] as $structureComponentType => $structureComponents ) {
 
         /**
-         * Обработка компонентов
+         * Обработка одиночных компонентов
+         */
+
+        $isContinue = false;
+
+        switch ( $structureComponentType ) {
+
+            case "search":
+
+                $responseBlock[ "components" ][ $structureComponentType ] = $structureComponents;
+
+                $isContinue = true;
+                break;
+
+        } // switch. $structureComponentType
+
+        if ( $isContinue ) continue;
+
+
+        /**
+         * Обработка множественных компонентов
          */
 
         foreach ( $structureComponents as $structureComponent ) {
@@ -398,7 +418,7 @@ foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
      * Формирование блока
      */
     $responseBlock = generateStructureBlock( $structureBlock );
-    
+
     /**
      * Добавление Блока страницы в ответ
      */
