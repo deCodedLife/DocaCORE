@@ -37,9 +37,10 @@
       "default": null
     }
   ],
-  "rows_key": "href",
+  "rows_key": "id",
   "rows": [
     {
+      "id": 1,
       "title": "Панель управления",
       "href": "dashboard",
       "order_position": 0,
@@ -48,6 +49,7 @@
       "is_system": "Y"
     },
     {
+      "id": 2,
       "title": "Настройки",
       "href": "",
       "order_position": 100,
@@ -56,6 +58,7 @@
       "is_system": "Y"
     },
     {
+      "id": 3,
       "title": "Роли",
       "href": "roles",
       "order_position": 200,
