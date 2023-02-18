@@ -21,6 +21,11 @@ $insertImages = [];
  */
 $join_insertValues = [];
 
+/**
+ * Загружаемые файлы
+ */
+$files = [];
+
 
 /**
  * Формирование значений для вставки
@@ -37,6 +42,23 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 
     $propertyName = $schemeProperty[ "article" ];
     $propertyValue = $requestData->{$schemeProperty[ "article" ]};
+
+
+    /**
+     * Подготовка файлов к загрузке
+     */
+    switch ( $schemeProperty[ "data_type" ] ) {
+
+        case "image":
+
+            $files[] = [
+                "property" => $propertyName,
+                "type" => "image",
+                "value" => $propertyValue
+            ];
+            break;
+
+    } // switch. $schemeProperty[ "data_type" ]
 
 
     /**
@@ -101,6 +123,31 @@ try {
         } // foreach. $join[ "data" ]
 
     } // foreach. $join_insertValues
+
+
+    /**
+     * Загрузка файлов
+     */
+
+    foreach ( $files as $file ) {
+
+        switch ( $file[ "type" ] ) {
+
+            case "image":
+
+                $API->DB->update( $objectScheme[ "table" ] )
+                    ->set( $file[ "property" ], $API->uploadImagesFromForm( $insertId, $file[ "value" ] ) )
+                    ->where( [
+                        "id" => $insertId,
+                        "is_system" => "N"
+                    ] )
+                    ->execute();
+
+                break;
+
+        } // switch. $file[ "type" ]
+
+    } // foreach. $files
 
 
     /**

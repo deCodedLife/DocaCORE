@@ -81,6 +81,45 @@ $API->request = json_decode( file_get_contents( "php://input" ) );
 
 
 /**
+ * Обработка формы с файлами
+ */
+
+if ( $_FILES ) {
+
+    /**
+     * Перевод формы в формат OxAPI
+     */
+
+    foreach ( $_POST as $postPropertyKey => $postProperty ) {
+
+        switch ( $postPropertyKey ) {
+
+            case "jwt":
+            case "object":
+            case "command":
+
+                $API->request->$postPropertyKey = $postProperty;
+                break;
+
+            default:
+
+                $API->request->data->$postPropertyKey = $postProperty;
+
+        } // switch. $postPropertyKey
+
+    } // foreach. $_POST
+
+
+    /**
+     * Добавление файлов в тело запроса
+     */
+    foreach ( $_FILES as $propertyArticle => $file )
+        $API->request->data->$propertyArticle = $file;
+
+} // if. $_FILES
+
+
+/**
  * Проверка обязательных параметров
  */
 if ( !$API->request ) $API->returnResponse( "Пустой запрос", 400 );

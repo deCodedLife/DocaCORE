@@ -216,9 +216,10 @@ class API {
             $requestData->id &&
             (
                 ( gettype( $requestData->id ) === "integer" ) ||
-                ( gettype( $requestData->id ) === "array" )
+                ( gettype( $requestData->id ) === "array" ) ||
+                ( ctype_digit( $requestData->id ) )
             )
-        ) $processedRequest[ "id" ] = $requestData->id;
+        ) $processedRequest[ "id" ] = (int) $requestData->id;
 
         if ( $requestData->page && ( gettype( $requestData->page ) === "integer" ) )
             $processedRequest[ "page" ] = $requestData->page;
@@ -362,6 +363,16 @@ class API {
 
                         break;
 
+                    case "image":
+
+                        /**
+                         * Добавление св-ва в запрос
+                         */
+                        $processedRequest[ $objectProperty[ "article" ] ] = $requestData->{ $objectProperty[ "article" ] };
+
+                        $isContinue = true;
+                        break;
+
                 } // switch. $objectProperty[ "data_type" ]
 
                 if ( $isContinue ) continue;
@@ -413,6 +424,16 @@ class API {
                                 ( $objectProperty[ "data_type" ] === "image" )
                             ) $is_error = false;
 
+                            if (
+                                ( $objectProperty[ "data_type" ] === "integer" ) &&
+                                ctype_digit( $requestData->{ $objectProperty[ "article" ] } )
+                            ) {
+
+                                $requestData->{ $objectProperty[ "article" ] } = (int) $requestData->{ $objectProperty[ "article" ] };
+                                $is_error = false;
+
+                            } // if. ctype_digit( $requestData->{ $objectProperty[ "article" ] } )
+
                             break;
 
                         case "array":
@@ -424,6 +445,7 @@ class API {
                             break;
 
                         case "object":
+                        case "image":
 
                             if (
                                 ( $objectProperty[ "data_type" ] === "array" )
@@ -1053,6 +1075,70 @@ class API {
         return substr( $imagePath, strlen( $_SERVER[ "DOCUMENT_ROOT" ] ) );
 
     } // function. uploadImageByUrl
+
+
+    /**
+     * Загрузка изображений из формы
+     *
+     * @param $rowId  integer  ID записи Объекта
+     * @param $image  object    Изображение
+     */
+    public function uploadImagesFromForm ( $rowId, $image ) {
+
+        /**
+         * Получение пути к директории загрузок
+         */
+        $imagesDirPath = $_SERVER[ "DOCUMENT_ROOT" ] . "/uploads/" . $this::$configs[ "company" ];
+        if ( !is_dir( $imagesDirPath ) ) mkdir( $imagesDirPath );
+
+        /**
+         * Получение пути к директории загрузок, для объекта
+         */
+        $imagesDirPath .= "/" . $this->request->object;
+        if ( !is_dir( $imagesDirPath ) ) mkdir( $imagesDirPath );
+
+
+        /**
+         * Получение пути к изображению на сервере
+         */
+
+        $imagePath = "$imagesDirPath/$rowId";
+
+        switch ( $image[ "type" ] ) {
+
+            case "image/jpeg":
+                $imagePath .= ".jpg";
+                break;
+
+            case "image/png":
+                $imagePath .= ".png";
+                break;
+
+            case "image/webp":
+                $imagePath .= ".webp";
+                break;
+
+            default:
+                return false;
+
+        } // switch. $image[ "type" ]
+
+
+        /**
+         * Сохранение изображения на сервер
+         */
+        move_uploaded_file( $image[ "tmp_name" ], $imagePath );
+
+        /**
+         * Перевод изображения в формат WebP
+         */
+        if ( $image[ "type" ] !== "webp" )
+            if ( $this->imageToWepP( $imagePath ) ) $imagePath = "$imagesDirPath/$rowId.webp";
+
+
+        return substr( $imagePath, strpos( $imagePath, "/uploads" ) );
+
+    } // function. uploadImagesFromForm
 
 
     /**
