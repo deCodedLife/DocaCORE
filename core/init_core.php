@@ -212,14 +212,24 @@ class API {
          * Обработка системных параметров
          */
 
-        if (
-            $requestData->id &&
-            (
-                ( gettype( $requestData->id ) === "integer" ) ||
-                ( gettype( $requestData->id ) === "array" ) ||
-                ( ctype_digit( $requestData->id ) )
-            )
-        ) $processedRequest[ "id" ] = (int) $requestData->id;
+        if ( $requestData->id ) {
+
+            switch ( gettype( $requestData->id ) ) {
+
+                case "integer":
+                case "array":
+
+                    $processedRequest[ "id" ] = $requestData->id;
+                    break;
+
+                case "string":
+
+                    if ( ctype_digit( $requestData->id ) ) $processedRequest[ "id" ] = (int) $requestData->id;
+                    break;
+
+            } // switch. gettype( $requestData->id )
+
+        } // if. $requestData->id
 
         if ( $requestData->page && ( gettype( $requestData->page ) === "integer" ) )
             $processedRequest[ "page" ] = $requestData->page;

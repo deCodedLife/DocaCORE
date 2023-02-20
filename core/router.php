@@ -84,7 +84,7 @@ $API->request = json_decode( file_get_contents( "php://input" ) );
  * Обработка формы с файлами
  */
 
-if ( $_FILES ) {
+if ( !$API->request ) {
 
     /**
      * Перевод формы в формат OxAPI
@@ -116,7 +116,7 @@ if ( $_FILES ) {
     foreach ( $_FILES as $propertyArticle => $file )
         $API->request->data->$propertyArticle = $file;
 
-} // if. $_FILES
+} // if. !$API->request
 
 
 /**
