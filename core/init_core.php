@@ -1083,7 +1083,7 @@ class API {
      * @param $rowId  integer  ID записи Объекта
      * @param $image  object    Изображение
      */
-    public function uploadImagesFromForm ( $rowId, $image ) {
+    public function uploadImagesFromForm ( $rowId, $image = [] ) {
 
         /**
          * Получение пути к директории загрузок
@@ -1119,7 +1119,13 @@ class API {
                 break;
 
             default:
-                return false;
+
+                /**
+                 * Очистка изображения
+                 */
+                unlink( $imagePath . ".webp" );
+
+                return "";
 
         } // switch. $image[ "type" ]
 
