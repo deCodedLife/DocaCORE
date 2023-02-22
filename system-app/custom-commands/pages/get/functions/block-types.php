@@ -196,11 +196,15 @@ function processingBlockType_form ( $structureBlock ) {
                 $isRequired = false;
                 if ( in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "require_in_commands" ] ) ) $isRequired = true;
 
+
                 /**
                  * Проверка блокировки поля
                  */
+
                 $isDisabled = false;
-                if ( !in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "use_in_commands" ] ) ) $isDisabled = true;
+                
+                if ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ) )
+                    $isDisabled = true;
 
 
                 /**

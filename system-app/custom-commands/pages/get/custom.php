@@ -384,8 +384,8 @@ if ( !$API->validatePermissions( $pageScheme[ "required_permissions" ] ) )
 
 /**
  * Получение детальной информации о запрошенной записи
- * @todo Динамическая подстановка домена
  */
+
 if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
     $pageDetail[ "row_detail" ] = (array) $API->sendRequest(
         $pageDetail[ "section" ],
@@ -393,6 +393,14 @@ if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
         [ "id" => (int) $pageDetail[ "row_id" ] ],
         $_SERVER[ "SERVER_NAME" ]
     )[ 0 ];
+
+if ( $pageDetail[ "section" ] === "settings" )
+    $pageDetail[ "row_detail" ] = (array) $API->sendRequest(
+        "settings",
+        "get",
+        [],
+        $_SERVER[ "SERVER_NAME" ]
+    );
 
 
 /**

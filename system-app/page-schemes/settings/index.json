@@ -7,7 +7,7 @@
       "type": "header",
       "size": 4,
       "settings": {
-        "title": [ "Роли" ],
+        "title": [ "Настройки" ],
         "description": ""
       },
       "components": {}
@@ -26,7 +26,7 @@
             "blocks": [
               {
                 "title": "Основное",
-                "fields": [ "title", "article" ]
+                "fields": []
               }
             ]
           }
@@ -38,7 +38,7 @@
             "type": "submit",
             "settings": {
               "title": "Сохранить",
-              "href": "settings/1",
+              "href": "settings",
               "icon": "",
               "background": "dark"
             },

@@ -6,9 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Workerman\\' => array($vendorDir . '/workerman/workerman'),
-    'PHPSocketIO\\' => array($vendorDir . '/workerman/phpsocket.io/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'Envms\\FluentPDO\\' => array($vendorDir . '/envms/fluentpdo/src'),
-    'Channel\\' => array($vendorDir . '/workerman/channel/src'),
+    'DocuSign\\eSign\\' => array($vendorDir . '/docusign/esign-client/src'),
 );
