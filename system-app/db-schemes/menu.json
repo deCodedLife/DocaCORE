@@ -25,7 +25,7 @@
     {
       "title": "Позиция (от меньшего к большему)",
       "article": "order_position",
-      "type": "tinyint",
+      "type": "smallint",
       "is_required": false,
       "default": 0
     },

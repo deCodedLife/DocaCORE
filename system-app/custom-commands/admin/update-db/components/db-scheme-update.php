@@ -28,7 +28,15 @@ foreach ( $generatedDBScheme as $tableArticle => $tableScheme ) {
      * Получение структуры текущей таблицы базы данных
      */
 
-    $tableColumns = mysqli_query( $DB_connection, "SHOW COLUMNS FROM `$tableArticle`" );
+    try {
+
+        $tableColumns = mysqli_query( $DB_connection, "SHOW COLUMNS FROM `$tableArticle`" );
+
+    } catch ( Exception $e ) {
+
+        $tableColumns = null;
+
+    } // try. mysqli_query. SHOW COLUMNS FROM `$tableArticle`
 
     foreach ( $tableColumns as $tableColumn ) {
 
