@@ -421,6 +421,9 @@ if ( file_exists( $formConstructorHookPath ) )
 
 foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
 
+    if ( !$structureBlock[ "required_permissions" ] ) $structureBlock[ "required_permissions" ] = [];
+
+
     /**
      * Проверка доступов
      */
