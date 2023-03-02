@@ -44,7 +44,7 @@ if ( $searchIdList[ "matches" ] ) {
 
     foreach ( $searchIdList[ "matches" ] as $searchId ) $findRowsId[] = $searchId[ "id" ];
 
-    $rows = $API->DB->from( "users" )
+    $rows = $API->DB->from( $objectScheme[ "table" ] )
         ->where( "id", $findRowsId )
         ->limit( 15 );
 
