@@ -28,8 +28,8 @@
       "title": "Название схемы",
       "article": "scheme_name",
       "data_type": "string",
-      "use_in_commands": [ "get-schemes", "update-scheme", "remove-scheme" ],
-      "require_in_commands": [ "update-scheme", "remove-scheme" ]
+      "use_in_commands": [ "get-schemes", "update-scheme", "remove-scheme", "group-update-fields" ],
+      "require_in_commands": [ "update-scheme", "remove-scheme", "group-update-fields" ]
     },
     {
       "title": "Тело схемы",

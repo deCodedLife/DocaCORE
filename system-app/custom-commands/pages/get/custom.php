@@ -347,8 +347,6 @@ $publicSchemePath = $API::$configs[ "paths" ][ "public_page_schemes" ] . "/" . $
 $systemSchemePath = $API::$configs[ "paths" ][ "system_page_schemes" ] . "/" . $pageDetail[ "scheme_path" ];
 
 
-
-
 /**
  * Подключение схемы страницы
  */
