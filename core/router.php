@@ -141,7 +141,7 @@ if ( !preg_match( "#^[aA-zZ0-9\-_]+$#", $API->request->command ) )
 /**
  * Загрузка схемы метода
  */
-$commandScheme = $API->loadCommandScheme();
+$commandScheme = $API->loadCommandScheme( $this->request->object . "/" . $this->request->command );
 
 /**
  * Загрузка схемы объекта

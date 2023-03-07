@@ -91,54 +91,121 @@ class API {
 
 
     /**
-     * Загрузка схемы команды
+     * Загрузка схемы
+     *
+     * @param  $schemePath  string  Путь к схеме
      *
      * @return mixed
      */
-    public function loadCommandScheme () {
+    public function loadScheme ( $schemePath ) {
 
         /**
-         * Схема метода
+         * Подключение схемы
          */
-        $scheme = null;
+        if ( file_exists( $schemePath ) ) $scheme = file_get_contents( $schemePath );
+        else $this->returnResponse( "Отсутствует схема", 500 );
 
 
         /**
-         * Формирование пути к схеме метода
-         */
-
-        $publicSchemePath = $this::$configs[ "paths" ][ "public_command_schemes" ] . "/";
-        $publicSchemePath .= $this->request->object . "/" . $this->request->command . ".json";
-
-        $systemSchemePath = $this::$configs[ "paths" ][ "system_command_schemes" ] . "/";
-        $systemSchemePath .= $this->request->object . "/" . $this->request->command . ".json";
-
-
-        /**
-         * Подключение схемы метода
-         */
-        if ( file_exists( $publicSchemePath ) ) $scheme = file_get_contents( $publicSchemePath );
-        elseif ( file_exists( $systemSchemePath ) ) $scheme = file_get_contents( $systemSchemePath );
-        else $this->returnResponse( "Отсутствует схема команды", 500 );
-
-
-        /**
-         * Декодирование схемы метода
+         * Декодирование схемы
          */
         try {
 
             $scheme = json_decode( $scheme, true );
 
-            if ( $scheme === null ) $this->returnResponse( "Ошибка обработки схемы команды", 500 );
+            if ( $scheme === null ) $this->returnResponse( "Ошибка обработки схемы", 500 );
 
         } catch ( Exception $error ) {
 
-            $this->returnResponse( "Несоответствие схеме команды", 500 );
+            $this->returnResponse( "Несоответствие схеме", 500 );
 
         } // try. json_decode. $scheme
 
 
         return $scheme;
+
+    } // function. loadScheme
+
+    /**
+     * Получение публичных и системных схем
+     *
+     * @param  $schemePath  string  Путь к схеме
+     *
+     * @return array
+     */
+    public function getPublicAndSystemSchemes ( $schemePath ) {
+
+        /**
+         * Склеенная схема
+         */
+        $resultSchemes = [
+            "public" => [],
+            "system" => []
+        ];
+
+        /**
+         * Публичная схема
+         */
+        $publicScheme = [];
+
+        /**
+         * Системная схема
+         */
+        $systemScheme = [];
+
+        /**
+         * Путь к схеме
+         */
+        $schemePath .= ".json";
+
+
+        /**
+         * Подключение схем
+         */
+
+        if ( file_exists( $this::$configs[ "paths" ][ "public_app" ] . $schemePath ) )
+            $resultSchemes[ "public" ] = $this->loadScheme( $this::$configs[ "paths" ][ "public_app" ] . $schemePath );
+
+        if ( file_exists( $this::$configs[ "paths" ][ "system_app" ] . $schemePath ) )
+            $resultSchemes[ "system" ] = $this->loadScheme( $this::$configs[ "paths" ][ "system_app" ] . $schemePath );
+
+
+        return $resultSchemes;
+
+    } // function. getPublicAndSystemSchemes
+
+
+    /**
+     * Загрузка схемы команды
+     *
+     * @param  $commandSchemePath  string  Путь к схеме команды
+     *
+     * @return mixed
+     */
+    public function loadCommandScheme ( $commandSchemePath ) {
+
+        /**
+         * Сформированная схема команды
+         */
+        $resultScheme = null;
+
+
+        /**
+         * Подключение схем команды
+         */
+        $commandSchemes = $this->getPublicAndSystemSchemes( "/command-schemes/$commandSchemePath" );
+
+        /**
+         * Склейка схем команды
+         */
+        foreach ( $commandSchemes as $commandScheme )
+            $resultScheme = $commandScheme;
+
+
+        if ( !$resultScheme )
+            $this->returnResponse( "Отсутствует схема команды", 500 );
+
+        return $resultScheme;
 
     } // function. loadCommandScheme
 
@@ -150,43 +217,51 @@ class API {
     public function loadObjectScheme ( $objectSchemeArticle ) {
 
         /**
-         * Схема объекта
+         * Сформированная схема объекта
          */
-        $scheme = null;
+        $resultScheme = [];
+
+        /**
+         * Св-ва схем объекта
+         */
+        $objectSchemeProperties = [];
 
 
         /**
-         * Формирование пути к схеме объекта
+         * Подключение схем объекта
          */
-        $publicSchemePath = $this::$configs[ "paths" ][ "public_object_schemes" ] . "/$objectSchemeArticle.json";
-        $systemSchemePath = $this::$configs[ "paths" ][ "system_object_schemes" ] . "/$objectSchemeArticle.json";
+        $objectSchemes = $this->getPublicAndSystemSchemes(
+            "/object-schemes/$objectSchemeArticle"
+        );
 
 
         /**
-         * Подключение схемы объекта
+         * Склейка схем объекта
          */
-        if ( file_exists( $publicSchemePath ) ) $scheme = file_get_contents( $publicSchemePath );
-        elseif ( file_exists( $systemSchemePath ) ) $scheme = file_get_contents( $systemSchemePath );
-        else $this->returnResponse( "Отсутствует схема объекта $objectSchemeArticle", 500 );
+
+        foreach ( $objectSchemes as $objectScheme ) {
+
+            if ( !$objectScheme ) continue;
 
 
-        /**
-         * Декодирование схемы объекта
-         */
-        try {
-
-            $scheme = json_decode( $scheme, true );
-
-            if ( $scheme === null ) $this->returnResponse( "Ошибка обработки схемы объекта", 500 );
-
-        } catch ( Exception $error ) {
-
-            $this->returnResponse( "Несоответствие схеме объекта", 500 );
-
-        } // try. json_decode. $scheme
+            $resultScheme[ "title" ] = $objectScheme[ "title" ];
+            $resultScheme[ "table" ] = $objectScheme[ "table" ];
+            $resultScheme[ "is_trash" ] = $objectScheme[ "is_trash" ];
 
 
-        return $scheme;
+            foreach ( $objectScheme[ "properties" ] as $property )
+                $objectSchemeProperties[ $property[ "article" ] ] = $property;
+
+        } // foreach. $objectSchemes
+
+        if ( $objectSchemeProperties )
+            $resultScheme[ "properties" ] = array_values( $objectSchemeProperties );
+
+
+        if ( !$resultScheme )
+            $this->returnResponse( "Отсутствует схема объекта", 500 );
+
+        return $resultScheme;
 
     } // function. loadObjectScheme
 
@@ -293,12 +368,45 @@ class API {
                          * Форматирование boolean в Y/N
                          */
 
-                        if ( $requestData->{ $objectProperty[ "article" ] } === false )
-                            $requestData->{ $objectProperty[ "article" ] } = "N";
-                        elseif ( $requestData->{ $objectProperty[ "article" ] } === true )
-                            $requestData->{ $objectProperty[ "article" ] } = "Y";
-                        else
-                            $isContinue = true;
+                        switch ( $requestData->{ $objectProperty[ "article" ] } ) {
+
+                            case null:
+
+                                $isContinue = true;
+                                break;
+
+                            default:
+
+                                /**
+                                 * Обработка исключений
+                                 */
+
+                                switch ( $requestData->{ $objectProperty[ "article" ] } ) {
+
+                                    case "N":
+                                    case "false":
+
+                                        $requestData->{ $objectProperty[ "article" ] } = false;
+                                        break;
+
+                                } // switch. $requestData->{ $objectProperty[ "article" ] }
+
+
+                                /**
+                                 * Принудительный перевод в boolean
+                                 */
+                                $requestData->{ $objectProperty[ "article" ] } = (boolean) $requestData->{ $objectProperty[ "article" ] };
+
+
+                                /**
+                                 * Перевод boolean в Y/N
+                                 */
+                                if ( $requestData->{ $objectProperty[ "article" ] } )
+                                    $requestData->{ $objectProperty[ "article" ] } = "Y";
+                                else
+                                    $requestData->{ $objectProperty[ "article" ] } = "N";
+
+                        } // switch. $requestData->{ $objectProperty[ "article" ] }
 
                         break;
 
@@ -431,6 +539,7 @@ class API {
                                 ( $objectProperty[ "data_type" ] === "password" ) ||
                                 ( $objectProperty[ "data_type" ] === "email" ) ||
                                 ( $objectProperty[ "data_type" ] === "phone" ) ||
+                                ( $objectProperty[ "data_type" ] === "boolean" ) ||
                                 ( $objectProperty[ "data_type" ] === "image" )
                             ) $is_error = false;
 

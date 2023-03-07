@@ -71,7 +71,7 @@
       "in_search": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [ "add", "update", "get" ],
       "require_in_commands": [ "add" ]
     },
     {
