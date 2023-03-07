@@ -169,7 +169,6 @@ class API {
         if ( file_exists( $this::$configs[ "paths" ][ "system_app" ] . $schemePath ) )
             $resultSchemes[ "system" ] = $this->loadScheme( $this::$configs[ "paths" ][ "system_app" ] . $schemePath );
 
-
         return $resultSchemes;
 
     } // function. getPublicAndSystemSchemes
@@ -199,7 +198,7 @@ class API {
          * Склейка схем команды
          */
         foreach ( $commandSchemes as $commandScheme )
-            $resultScheme = $commandScheme;
+            if ( $commandScheme ) $resultScheme = $commandScheme;
 
 
         if ( !$resultScheme )
