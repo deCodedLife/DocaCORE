@@ -7,8 +7,8 @@
     {
       "title": "Аватар",
       "article": "avatar",
-      "data_type": "string",
-      "field_type": "string",
+      "data_type": "image",
+      "field_type": "image",
       "is_default_in_list": true,
       "is_unique": false,
       "is_autofill": true,
