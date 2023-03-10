@@ -480,6 +480,26 @@ function processingBlockType_form ( $structureBlock ) {
 
 
                 /**
+                 * Обработка значений св-в блока типа info
+                 */
+
+                if ( $structureBlock[ "type" ] === "info" ) {
+
+                    switch ( $fieldDetail[ "data_type" ] ) {
+
+                        case "boolean":
+
+                            if ( $blockField[ "value" ] ) $blockField[ "value" ] = "Да";
+                            else $blockField[ "value" ] = "Нет";
+
+                            break;
+
+                    } // switch. $fieldDetail[ "data_type" ]
+
+                } // if. $structureBlock[ "type" ] === "info"
+
+
+                /**
                  * Учет поля формы
                  */
                 $blockFields[] = $blockField;

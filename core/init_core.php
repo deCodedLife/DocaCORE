@@ -363,49 +363,36 @@ class API {
 
                     case "boolean":
 
+                        if ( $requestData->{ $objectProperty[ "article" ] } === null ) {
+
+                            $isContinue = true;
+                            break;
+
+                        } // if. $requestData->{ $objectProperty[ "article" ] } === null
+
+
                         /**
-                         * Форматирование boolean в Y/N
+                         * Обработка исключений
                          */
-
-                        switch ( $requestData->{ $objectProperty[ "article" ] } ) {
-
-                            case null:
-
-                                $isContinue = true;
-                                break;
-
-                            default:
-
-                                /**
-                                 * Обработка исключений
-                                 */
-
-                                switch ( $requestData->{ $objectProperty[ "article" ] } ) {
-
-                                    case "N":
-                                    case "false":
-
-                                        $requestData->{ $objectProperty[ "article" ] } = false;
-                                        break;
-
-                                } // switch. $requestData->{ $objectProperty[ "article" ] }
+                        if (
+                            ( $requestData->{ $objectProperty[ "article" ] } === "N" ) ||
+                            ( $requestData->{ $objectProperty[ "article" ] } === "false" )
+                        ) $requestData->{ $objectProperty[ "article" ] } = false;
 
 
-                                /**
-                                 * Принудительный перевод в boolean
-                                 */
-                                $requestData->{ $objectProperty[ "article" ] } = (boolean) $requestData->{ $objectProperty[ "article" ] };
+                        /**
+                         * Принудительный перевод в boolean
+                         */
+                        $requestData->{ $objectProperty[ "article" ] } = (boolean) $requestData->{ $objectProperty[ "article" ] };
 
+                        /**
+                         * Перевод boolean в Y/N
+                         */
+                        if ( $requestData->{ $objectProperty[ "article" ] } )
+                            $requestData->{ $objectProperty[ "article" ] } = "Y";
+                        else
+                            $requestData->{ $objectProperty[ "article" ] } = "N";
 
-                                /**
-                                 * Перевод boolean в Y/N
-                                 */
-                                if ( $requestData->{ $objectProperty[ "article" ] } )
-                                    $requestData->{ $objectProperty[ "article" ] } = "Y";
-                                else
-                                    $requestData->{ $objectProperty[ "article" ] } = "N";
-
-                        } // switch. $requestData->{ $objectProperty[ "article" ] }
 
                         break;
 
