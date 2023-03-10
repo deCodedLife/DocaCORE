@@ -94,13 +94,18 @@ function generateStructureBlock ( $structureBlock ) {
             /**
              * Получение областей формы
              */
-            $formAreas = processingBlockType_form( $structureBlock );
-            if ( !$formAreas ) { $isContinue = true; break; }
+            $formStructure = processingBlockType_form( $structureBlock );
+            if ( !$formStructure || !$formStructure[ "areas" ] ) { $isContinue = true; break; }
+
+            /**
+             * Указание типа формы
+             */
+            $responseBlock[ "settings" ][ "type" ] = $formStructure[ "type" ];
 
             /**
              * Указание областей формы
              */
-            $responseBlock[ "settings" ][ "areas" ] = $formAreas;
+            $responseBlock[ "settings" ][ "areas" ] = $formStructure[ "areas" ];
 
             break;
 

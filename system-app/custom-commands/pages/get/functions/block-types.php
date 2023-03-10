@@ -136,6 +136,12 @@ function processingBlockType_form ( $structureBlock ) {
      */
     $objectProperties = [];
 
+    /**
+     * Тип формы.
+     * application/json (обычная) или multipart/form-data (с загрузкой файлов)
+     */
+    $formType = "application/json";
+
 
     /**
      * Проверка обязательных св-в
@@ -201,6 +207,11 @@ function processingBlockType_form ( $structureBlock ) {
                  */
                 $isVisible = true;
                 if ( $fieldDetail[ "is_visible" ] === false ) $isVisible = false;
+
+                /**
+                 * Проверка наличия полей с загрузкой файлов
+                 */
+                if ( $fieldDetail[ "data_type" ] === "image" ) $formType = "multipart/form-data";
 
 
                 /**
@@ -486,7 +497,10 @@ function processingBlockType_form ( $structureBlock ) {
     } // foreach. $formAreas
 
 
-    return $formAreas;
+    return [
+        "type" => $formType,
+        "areas" => $formAreas
+    ];
 
 } // function. processingBlockType_form
 
