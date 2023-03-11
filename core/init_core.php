@@ -247,6 +247,9 @@ class API {
             $resultScheme[ "table" ] = $objectScheme[ "table" ];
             $resultScheme[ "is_trash" ] = $objectScheme[ "is_trash" ];
 
+            if ( $objectScheme[ "action_buttons" ] )
+                $resultScheme[ "action_buttons" ] = $objectScheme[ "action_buttons" ];
+
 
             foreach ( $objectScheme[ "properties" ] as $property )
                 $objectSchemeProperties[ $property[ "article" ] ] = $property;
