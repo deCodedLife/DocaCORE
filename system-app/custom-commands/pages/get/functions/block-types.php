@@ -220,8 +220,10 @@ function processingBlockType_form ( $structureBlock ) {
 
                 $isDisabled = false;
                 
-                if ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ) )
-                    $isDisabled = true;
+                if (
+                    ( $fieldDetail[ "is_disabled" ] === true ) ||
+                    ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ) )
+                ) $isDisabled = true;
 
 
                 /**
