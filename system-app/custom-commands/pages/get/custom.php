@@ -107,6 +107,25 @@ function generateStructureBlock ( $structureBlock ) {
              */
             $responseBlock[ "settings" ][ "areas" ] = $formStructure[ "areas" ];
 
+
+            /**
+             * Получение типа команды формы
+             */
+
+            if ( $formStructure[ "command_type" ] ) {
+
+                $responseBlock[ "settings" ][ "command_type" ] = $formStructure[ "command_type" ];
+
+            } else {
+
+                $formCommandScheme = $API->loadCommandScheme(
+                    $structureBlock[ "settings" ][ "object" ] . "/" . $structureBlock[ "settings" ][ "command" ]
+                );
+
+                $responseBlock[ "settings" ][ "command_type" ] = $formCommandScheme[ "type" ];
+
+            } // if. $formStructure[ "command_type" ]
+
             break;
 
         case "tabs":
