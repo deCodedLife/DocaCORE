@@ -213,7 +213,7 @@ class API {
      *
      * @return mixed
      */
-    public function loadObjectScheme ( $objectSchemeArticle ) {
+    public function loadObjectScheme ( $objectSchemeArticle, $isReturnError = true ) {
 
         /**
          * Сформированная схема объекта
@@ -260,7 +260,7 @@ class API {
             $resultScheme[ "properties" ] = array_values( $objectSchemeProperties );
 
 
-        if ( !$resultScheme )
+        if ( !$resultScheme && $isReturnError )
             $this->returnResponse( "Отсутствует схема объекта", 500 );
 
         return $resultScheme;

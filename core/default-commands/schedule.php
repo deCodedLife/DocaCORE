@@ -38,6 +38,12 @@ $minutesPerStep = 60;
 if ( $requestData->step ) $minutesPerStep = $requestData->step;
 
 /**
+ * Кол-во дней в диапазоне графика
+ */
+$daysRange = 7;
+if ( $requestData->days_range ) $daysRange = $requestData->days_range;
+
+/**
  * Текущий временной отрезок
  * Используется, для формирования списка временных отрезков графика посещений
  */
@@ -58,7 +64,7 @@ $performersFilter = [];
  */
 if ( !$requestData->start_at ) $requestData->start_at = date( "Y-m-d" );
 if ( !$requestData->end_at ) $requestData->end_at = date(
-    "Y-m-d", strtotime( "+7 days", strtotime( $requestData->start_at ) )
+    "Y-m-d", strtotime( "+$daysRange days", strtotime( $requestData->start_at ) )
 );
 
 /**

@@ -62,6 +62,7 @@ function generateStructureBlock ( $structureBlock ) {
             break;
 
         case "list":
+        case "schedule_list":
 
             /**
              * Списки: https://tppr.me/JELn0

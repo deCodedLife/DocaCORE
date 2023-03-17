@@ -80,6 +80,53 @@ foreach ( $objectsList as $objectArticle ) {
             "field_type" => $property[ "field_type" ]
         ];
 
+
+        /**
+         * Получение внутренних св-в
+         */
+
+        if ( $property[ "list_donor" ] || $property[ "join" ] ) {
+
+            /**
+             * Схема внутреннего объекта
+             */
+
+            $innerObject = "";
+
+            if ( $property[ "list_donor" ][ "table" ] ) $innerObject = $property[ "list_donor" ][ "table" ];
+            if ( $property[ "join" ][ "donor_table" ] ) $innerObject = $property[ "join" ][ "donor_table" ];
+
+            if ( !$innerObject ) continue;
+
+
+
+            /**
+             * Получение внутренней схемы объекта
+             */
+
+            $innerObjectScheme = $API->loadObjectScheme( $property[ "list_donor" ][ "table" ], false );
+
+            if ( $innerObjectScheme[ "properties" ] ) {
+
+                foreach ( $innerObjectScheme[ "properties" ] as $innerProperty ) {
+
+                    /**
+                     * Игнорирование вложенных св-в
+                     */
+                    if ( $innerProperty[ "list_donor" ] ) continue;
+                    if ( $innerProperty[ "join" ] ) continue;
+
+                    $resultVariablesList[ $objectArticle ][ "variables" ][ $property[ "article" ] ][ "inner_variables" ][ $innerProperty[ "article" ] ] = [
+                        "title" => $innerProperty[ "title" ],
+                        "field_type" => $innerProperty[ "field_type" ]
+                    ];
+
+                } // foreach. $innerObjectScheme[ "properties" ]
+
+            } // if. $innerObjectScheme[ "properties" ]
+
+        } // if. $property[ "list_donor" ] || $property[ "join" ]
+
     } // foreach. $objectScheme[ "properties" ]
 
 } // foreach. $objectsList
