@@ -9,6 +9,7 @@
     "require": {
 	    "firebase/php-jwt": "^5.2",
         "envms/fluentpdo": "^2.2.0",
-        "docusign/esign-client": "^5.7"
+        "docusign/esign-client": "^5.7",
+        "paquettg/php-html-parser": "^3.1"
     }
 }
