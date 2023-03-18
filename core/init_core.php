@@ -1188,10 +1188,11 @@ class API {
     /**
      * Загрузка изображений из формы
      *
-     * @param $rowId  integer  ID записи Объекта
-     * @param $image  object    Изображение
+     * @param $rowId   integer  ID записи Объекта
+     * @param $image   object   Изображение
+     * @param $object  string   Объект
      */
-    public function uploadImagesFromForm ( $rowId, $image = [] ) {
+    public function uploadImagesFromForm ( $rowId, $image = [], $object = "" ) {
 
         /**
          * Получение пути к директории загрузок
@@ -1199,10 +1200,14 @@ class API {
         $imagesDirPath = $_SERVER[ "DOCUMENT_ROOT" ] . "/uploads/" . $this::$configs[ "company" ];
         if ( !is_dir( $imagesDirPath ) ) mkdir( $imagesDirPath );
 
+
         /**
          * Получение пути к директории загрузок, для объекта
          */
-        $imagesDirPath .= "/" . $this->request->object;
+
+        if ( !$object ) $imagesDirPath .= "/" . $this->request->object;
+        else $imagesDirPath .= "/$object";
+
         if ( !is_dir( $imagesDirPath ) ) mkdir( $imagesDirPath );
 
 
