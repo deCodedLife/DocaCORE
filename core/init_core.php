@@ -324,7 +324,7 @@ class API {
         /**
          * Обход св-в в схеме объекта
          */
-        foreach ( $objectScheme[ "properties" ] as $objectPropertyKey => $objectProperty ) {
+        foreach ( $objectScheme[ "properties" ] as $objectProperty ) {
 
             if ( !$objectProperty[ "require_in_commands" ] ) $objectProperty[ "require_in_commands" ] = [];
 

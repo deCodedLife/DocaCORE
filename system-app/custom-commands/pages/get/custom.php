@@ -205,6 +205,10 @@ function generateStructureBlock ( $structureBlock ) {
 
         foreach ( $structureComponents as $structureComponent ) {
 
+            if ( !$structureComponent[ "required_permissions" ] )
+                $structureComponent[ "required_permissions" ] = [];
+
+
             /**
              * Проверка доступов
              */
@@ -442,7 +446,7 @@ if ( file_exists( $formConstructorHookPath ) )
  * Формирование структуры страницы
  */
 
-foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
+foreach ( $pageScheme[ "structure" ] as $structureBlockKey => $structureBlock ) {
 
     if ( !$structureBlock[ "required_permissions" ] ) $structureBlock[ "required_permissions" ] = [];
 

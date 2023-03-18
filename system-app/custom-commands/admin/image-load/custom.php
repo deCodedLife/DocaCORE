@@ -5,5 +5,5 @@
  */
 
 $API->returnResponse(
-    $API->uploadImagesFromForm( $requestData->row_id, $requestData->image, $requestData->scheme_name )
+    $API->uploadImagesFromForm( $requestData->image_key, $requestData->image, $requestData->scheme_name )
 );

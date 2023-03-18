@@ -35,8 +35,15 @@
       "title": "ID записи",
       "article": "row_id",
       "data_type": "integer",
-      "use_in_commands": [ "get-variables-value", "image-load" ],
-      "require_in_commands": [ "get-variables-value", "image-load" ]
+      "use_in_commands": [ "get-variables-value" ],
+      "require_in_commands": [ "get-variables-value" ]
+    },
+    {
+      "title": "Ключ изображения",
+      "article": "image_key",
+      "data_type": "string",
+      "use_in_commands": [ "image-load" ],
+      "require_in_commands": [ "image-load" ]
     },
     {
       "title": "Изображение",
