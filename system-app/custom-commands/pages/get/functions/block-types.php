@@ -196,6 +196,9 @@ function processingBlockType_form ( $structureBlock ) {
                 $fieldDetail = $objectProperties[ $field ];
                 if ( !$fieldDetail ) continue;
 
+                if ( !$fieldDetail[ "require_in_commands" ] ) $fieldDetail[ "require_in_commands" ] = [];
+
+
                 /**
                  * Проверка обязательности поля
                  */

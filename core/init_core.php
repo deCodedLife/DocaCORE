@@ -1289,6 +1289,7 @@ class API {
              */
             if (
                 ( $_SERVER[ "REMOTE_ADDR" ] !== "31.184.218.141" ) &&
+                ( $_SERVER[ "REMOTE_ADDR" ] !== "65.108.107.115" ) &&
                 ( $JWT_decoded->ip !== $_SERVER[ "REMOTE_ADDR" ] )
             ) $this->returnResponse( "Не совпадает IP пользователя: " . $JWT_decoded->ip, 401 );
 
