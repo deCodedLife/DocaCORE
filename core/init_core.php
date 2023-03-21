@@ -202,7 +202,7 @@ class API {
 
 
         if ( !$resultScheme )
-            $this->returnResponse( "Отсутствует схема команды", 500 );
+            $this->returnResponse( "Отсутствует схема команды $commandSchemePath", 500 );
 
         return $resultScheme;
 
