@@ -4,7 +4,10 @@
  * Детальная информация о документе
  */
 
-if ( $requestData->id ) {
+if ( $requestData->id || $requestData->article ) {
+
+    if ( $requestData->article ) $requestData->id = $response[ "data" ][ 0 ][ "id" ];
+
 
     /**
      * Структура документа
@@ -51,4 +54,4 @@ if ( $requestData->id ) {
     $response[ "data" ][ 0 ][ "type_id" ] = (int) $response[ "data" ][ 0 ][ "type_id" ][ "value" ];
     $response[ "data" ][ 0 ][ "structure" ] = $documentStructure;
 
-} // if. $requestData->id
+} // if. $requestData->id || $requestData->article

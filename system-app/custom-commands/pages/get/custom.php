@@ -244,7 +244,7 @@ function generateStructureBlock ( $structureBlock ) {
                      */
                     $scriptBody = [];
 
-                    if ( $responseComponent[ "type" ] === "script" ) {
+                    if ( $structureComponent[ "settings" ][ "data" ] ) {
 
                         foreach ( $structureComponent[ "settings" ][ "data" ] as $scriptPropertyKey => $scriptProperty ) {
 
@@ -284,7 +284,7 @@ function generateStructureBlock ( $structureBlock ) {
                          */
                         $responseComponent[ "settings" ][ "data" ] = $scriptBody;
 
-                    } // if. $responseComponent[ "type" ] === "script"
+                    } // if. $structureComponent[ "settings" ][ "data" ]
 
                     break;
 
