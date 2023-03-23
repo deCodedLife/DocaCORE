@@ -139,8 +139,8 @@ class API {
          * Склеенная схема
          */
         $resultSchemes = [
-            "public" => [],
-            "system" => []
+            "system" => [],
+            "public" => []
         ];
 
         /**
@@ -163,11 +163,11 @@ class API {
          * Подключение схем
          */
 
-        if ( file_exists( $this::$configs[ "paths" ][ "public_app" ] . $schemePath ) )
-            $resultSchemes[ "public" ] = $this->loadScheme( $this::$configs[ "paths" ][ "public_app" ] . $schemePath );
-
         if ( file_exists( $this::$configs[ "paths" ][ "system_app" ] . $schemePath ) )
             $resultSchemes[ "system" ] = $this->loadScheme( $this::$configs[ "paths" ][ "system_app" ] . $schemePath );
+
+        if ( file_exists( $this::$configs[ "paths" ][ "public_app" ] . $schemePath ) )
+            $resultSchemes[ "public" ] = $this->loadScheme( $this::$configs[ "paths" ][ "public_app" ] . $schemePath );
 
         return $resultSchemes;
 

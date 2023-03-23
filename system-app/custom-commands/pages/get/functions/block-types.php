@@ -285,11 +285,26 @@ function processingBlockType_form ( $structureBlock ) {
                     $propertyObjectScheme = $API->loadObjectScheme( $fieldDetail[ "list_donor" ][ "table" ] );
                     if ( !$propertyObjectScheme ) continue;
 
+
+                    /**
+                     * Фильтр данных из связанной таблицы
+                     */
+
+                    $listFilter = [ "is_active" => "Y" ];
+
+                    if ( $fieldDetail[ "list_donor" ][ "filters" ] ) {
+
+                        foreach ( $fieldDetail[ "list_donor" ][ "filters" ] as $filterArticle => $filterValue )
+                            $listFilter[ $filterArticle ] = $filterValue;
+
+                    } // if. $fieldDetail[ "list_donor" ][ "filters" ]
+
+
                     /**
                      * Получение данных из связанной таблицы
                      */
                     $joinedTableRows = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] );
-                    if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( "is_active", "Y" );
+                    if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( $listFilter );
 
 
                     /**
