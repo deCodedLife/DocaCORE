@@ -152,7 +152,7 @@ foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
              * Получение значений внутреннего св-ва
              */
             $innerPropertyRows = $API->sendRequest( $innerPropertyTable, "get", [
-                "id" => $propertyValue->value
+                "id" => $innerPropertyValue->value
             ] );
 
 
