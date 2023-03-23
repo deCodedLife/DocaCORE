@@ -104,7 +104,7 @@ foreach ( $objectsList as $objectArticle ) {
              * Получение внутренней схемы объекта
              */
 
-            $innerObjectScheme = $API->loadObjectScheme( $property[ "list_donor" ][ "table" ], false );
+            $innerObjectScheme = $API->loadObjectScheme( $innerObject, false );
 
             if ( $innerObjectScheme[ "properties" ] ) {
 

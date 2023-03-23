@@ -31,83 +31,169 @@ $rowDetail = $rowDetail[ 0 ];
 foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
 
     /**
-     * Обработка списков
+     * Сформированное значение св-ва
      */
-    if ( isset( $propertyValue->title ) ) $propertyValue = $propertyValue->title;
+    $resultPropertyValue = $propertyValue;
+
 
     /**
-     * Обработка связанных объектов
+     * Получение схемы св-ва объекта
      */
-    if ( gettype( $propertyValue ) === "array" ) {
+
+    $objectPropertyScheme = [];
+
+    foreach ( $objectScheme[ "properties" ] as $objectProperty ) {
+
+        if ( $objectProperty[ "article" ] != $propertyArticle ) continue;
+        $objectPropertyScheme = $objectProperty;
+
+    } // foreach. $objectScheme[ "properties" ]
+
+    if ( !$objectPropertyScheme ) continue;
+
+
+    /**
+     * Обработка кастомных списков
+     */
+
+    if ( isset( $propertyValue->title ) ) {
 
         /**
-         * Сформированное значение св-ва
+         * Обнуление сформированного значения св-ва
          */
-        $resultPropertyValue = [];
+        $resultPropertyValue = null;
 
 
-        /**
-         * Получение схемы внутреннего св-ва объекта
-         */
-        foreach ( $objectScheme[ "properties" ] as $objectProperty ) {
+        if ( gettype( $propertyValue->value ) === "integer" ) {
 
-            if ( $objectProperty[ "article" ] != $propertyArticle ) continue;
+            /**
+             * Таблица внутреннего св-ва
+             */
+
+            $innerPropertyTable = "";
+
+            if ( $objectPropertyScheme[ "list_donor" ][ "table" ] ) $innerPropertyTable = $objectPropertyScheme[ "list_donor" ][ "table" ];
+            if ( $objectPropertyScheme[ "join" ][ "donor_table" ] ) $innerPropertyTable = $objectPropertyScheme[ "join" ][ "donor_table" ];
+
+            if ( !$innerPropertyTable ) continue;
 
 
             /**
-             * Схема внутреннего объекта
+             * Получение значений внутреннего св-ва
              */
-
-            $innerObject = "";
-
-            if ( $objectProperty[ "list_donor" ][ "table" ] ) $innerObject = $objectProperty[ "list_donor" ][ "table" ];
-            if ( $objectProperty[ "join" ][ "donor_table" ] ) $innerObject = $objectProperty[ "join" ][ "donor_table" ];
-
-            if ( !$innerObject ) continue;
+            $innerPropertyRows = $API->sendRequest( $innerPropertyTable, "get", [
+                "id" => $propertyValue->value
+            ] );
 
 
             /**
-             * Получение детальной информации о внутренних записях
+             * Обработка значений внутреннего св-ва
              */
 
-            foreach ( $propertyValue as $innerPropertyValue ) {
-
-                $innerRowDetail = $API->sendRequest( $innerObject, "get", [
-                    "id" => $innerPropertyValue->value
-                ] );
-
-                if ( !$innerRowDetail ) $API->returnResponse( [] );
-
-                $innerRowDetail = $innerRowDetail[ 0 ];
-
+            foreach ( $innerPropertyRows as $innerPropertyRowDetail ) {
 
                 /**
                  * Обработка значений внутренней записи
                  */
 
-                foreach ( $innerRowDetail as $innerRowPropertyArticle => $innerRowPropertyValue ) {
+                foreach ( $innerPropertyRowDetail as $innerPropertyRowArticle => $innerPropertyRow ) {
 
                     if (
-                        ( gettype( $innerRowPropertyValue ) === "array" ) ||
-                        ( gettype( $innerRowPropertyValue ) === "object" )
+                        ( gettype( $innerPropertyRow ) === "array" ) ||
+                        ( gettype( $innerPropertyRow ) === "object" )
                     ) continue;
 
+                    $resultPropertyValue[ $innerPropertyRowArticle ] = $innerPropertyRow;
 
-                    $resultPropertyValue[ $innerRowPropertyArticle ] = $innerRowPropertyValue;
+                } // foreach. $innerPropertyRowDetail
 
-                } // foreach. $innerRowDetail
+            } // foreach. $innerPropertyRows
 
-            } // foreach. $propertyValue
+        } else {
 
-        } // foreach. $objectScheme
+            $resultPropertyValue = $propertyValue->value;
+
+        } // if. gettype( $propertyValue->value ) === "integer"
+
+    } // if. isset( $propertyValue->title )
 
 
-        $propertyValue = $resultPropertyValue;
+    /**
+     * Обработка списков и связанных объектов
+     */
+
+    if ( gettype( $propertyValue ) === "array" ) {
+
+        /**
+         * Обнуление сформированного значения св-ва
+         */
+        $resultPropertyValue = null;
+
+
+        /**
+         * Таблица внутреннего св-ва
+         */
+
+        $innerPropertyTable = "";
+
+        if ( $objectPropertyScheme[ "list_donor" ][ "table" ] ) $innerPropertyTable = $objectPropertyScheme[ "list_donor" ][ "table" ];
+        if ( $objectPropertyScheme[ "join" ][ "donor_table" ] ) $innerPropertyTable = $objectPropertyScheme[ "join" ][ "donor_table" ];
+
+        if ( !$innerPropertyTable ) continue;
+
+
+        /**
+         * Обход значений св-ва
+         */
+
+        foreach ( $propertyValue as $innerPropertyValue ) {
+
+            /**
+             * Получение значений внутреннего св-ва
+             */
+            $innerPropertyRows = $API->sendRequest( $innerPropertyTable, "get", [
+                "id" => $propertyValue->value
+            ] );
+
+
+            /**
+             * Обработка значений внутреннего св-ва
+             */
+
+            foreach ( $innerPropertyRows as $innerPropertyRowDetail ) {
+
+                /**
+                 * Сформированный список внутренних записей
+                 */
+                $resultInnerPropertyValues = [];
+                
+
+                /**
+                 * Обработка значений внутренней записи
+                 */
+
+                foreach ( $innerPropertyRowDetail as $innerPropertyRowArticle => $innerPropertyRow ) {
+
+                    if (
+                        ( gettype( $innerPropertyRow ) === "array" ) ||
+                        ( gettype( $innerPropertyRow ) === "object" )
+                    ) continue;
+
+                    $resultInnerPropertyValues[ $innerPropertyRowArticle ] = $innerPropertyRow;
+
+                } // foreach. $innerPropertyRowDetail
+
+
+                $resultPropertyValue[] = $resultInnerPropertyValues;
+
+            } // foreach. $innerPropertyRows
+
+        } // foreach. $propertyValue
 
     } // if. gettype( $propertyValue ) === "array"
 
 
-    $resultValues[ $propertyArticle ] = $propertyValue;
+    $resultValues[ $propertyArticle ] = $resultPropertyValue;
 
 } // foreach. $rowDetail
 
