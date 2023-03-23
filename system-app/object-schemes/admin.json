@@ -28,8 +28,29 @@
       "title": "Название схемы",
       "article": "scheme_name",
       "data_type": "string",
-      "use_in_commands": [ "get-schemes", "update-scheme", "remove-scheme", "group-update-fields" ],
-      "require_in_commands": [ "update-scheme", "remove-scheme", "group-update-fields" ]
+      "use_in_commands": [ "get-schemes", "update-scheme", "remove-scheme", "group-update-fields", "get-variables-value", "image-load" ],
+      "require_in_commands": [ "update-scheme", "remove-scheme", "group-update-fields", "get-variables-value", "image-load" ]
+    },
+    {
+      "title": "ID записи",
+      "article": "row_id",
+      "data_type": "integer",
+      "use_in_commands": [ "get-variables-value" ],
+      "require_in_commands": [ "get-variables-value" ]
+    },
+    {
+      "title": "Ключ изображения",
+      "article": "image_key",
+      "data_type": "string",
+      "use_in_commands": [ "image-load" ],
+      "require_in_commands": [ "image-load" ]
+    },
+    {
+      "title": "Изображение",
+      "article": "image",
+      "data_type": "image",
+      "use_in_commands": [ "image-load" ],
+      "require_in_commands": []
     },
     {
       "title": "Тело схемы",

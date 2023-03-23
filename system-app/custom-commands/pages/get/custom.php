@@ -62,6 +62,7 @@ function generateStructureBlock ( $structureBlock ) {
             break;
 
         case "list":
+        case "schedule_list":
 
             /**
              * Списки: https://tppr.me/JELn0
@@ -204,6 +205,10 @@ function generateStructureBlock ( $structureBlock ) {
 
         foreach ( $structureComponents as $structureComponent ) {
 
+            if ( !$structureComponent[ "required_permissions" ] )
+                $structureComponent[ "required_permissions" ] = [];
+
+
             /**
              * Проверка доступов
              */
@@ -239,7 +244,7 @@ function generateStructureBlock ( $structureBlock ) {
                      */
                     $scriptBody = [];
 
-                    if ( $responseComponent[ "type" ] === "script" ) {
+                    if ( $structureComponent[ "settings" ][ "data" ] ) {
 
                         foreach ( $structureComponent[ "settings" ][ "data" ] as $scriptPropertyKey => $scriptProperty ) {
 
@@ -279,7 +284,7 @@ function generateStructureBlock ( $structureBlock ) {
                          */
                         $responseComponent[ "settings" ][ "data" ] = $scriptBody;
 
-                    } // if. $responseComponent[ "type" ] === "script"
+                    } // if. $structureComponent[ "settings" ][ "data" ]
 
                     break;
 
@@ -441,7 +446,7 @@ if ( file_exists( $formConstructorHookPath ) )
  * Формирование структуры страницы
  */
 
-foreach ( $pageScheme[ "structure" ] as $structureBlock ) {
+foreach ( $pageScheme[ "structure" ] as $structureBlockKey => $structureBlock ) {
 
     if ( !$structureBlock[ "required_permissions" ] ) $structureBlock[ "required_permissions" ] = [];
 

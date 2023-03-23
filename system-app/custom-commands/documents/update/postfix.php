@@ -34,6 +34,8 @@ if ( $requestData->id ) {
         switch ( $documentBlock->block_type ) {
 
             case "text":
+            case "header":
+            case "footer":
 
                 $documentBlockId = $API->DB->insertInto( "documents_$documentBlock->block_type" )
                     ->values( [

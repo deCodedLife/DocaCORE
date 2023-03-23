@@ -202,7 +202,7 @@ class API {
 
 
         if ( !$resultScheme )
-            $this->returnResponse( "Отсутствует схема команды", 500 );
+            $this->returnResponse( "Отсутствует схема команды $commandSchemePath", 500 );
 
         return $resultScheme;
 
@@ -213,7 +213,7 @@ class API {
      *
      * @return mixed
      */
-    public function loadObjectScheme ( $objectSchemeArticle ) {
+    public function loadObjectScheme ( $objectSchemeArticle, $isReturnError = true ) {
 
         /**
          * Сформированная схема объекта
@@ -260,7 +260,7 @@ class API {
             $resultScheme[ "properties" ] = array_values( $objectSchemeProperties );
 
 
-        if ( !$resultScheme )
+        if ( !$resultScheme && $isReturnError )
             $this->returnResponse( "Отсутствует схема объекта", 500 );
 
         return $resultScheme;
@@ -325,6 +325,9 @@ class API {
          * Обход св-в в схеме объекта
          */
         foreach ( $objectScheme[ "properties" ] as $objectProperty ) {
+
+            if ( !$objectProperty[ "require_in_commands" ] ) $objectProperty[ "require_in_commands" ] = [];
+
 
             /**
              * Св-во в запросе
@@ -1188,10 +1191,11 @@ class API {
     /**
      * Загрузка изображений из формы
      *
-     * @param $rowId  integer  ID записи Объекта
-     * @param $image  object    Изображение
+     * @param $rowId   integer  ID записи Объекта
+     * @param $image   object   Изображение
+     * @param $object  string   Объект
      */
-    public function uploadImagesFromForm ( $rowId, $image = [] ) {
+    public function uploadImagesFromForm ( $rowId, $image = [], $object = "" ) {
 
         /**
          * Получение пути к директории загрузок
@@ -1199,10 +1203,14 @@ class API {
         $imagesDirPath = $_SERVER[ "DOCUMENT_ROOT" ] . "/uploads/" . $this::$configs[ "company" ];
         if ( !is_dir( $imagesDirPath ) ) mkdir( $imagesDirPath );
 
+
         /**
          * Получение пути к директории загрузок, для объекта
          */
-        $imagesDirPath .= "/" . $this->request->object;
+
+        if ( !$object ) $imagesDirPath .= "/" . $this->request->object;
+        else $imagesDirPath .= "/$object";
+
         if ( !is_dir( $imagesDirPath ) ) mkdir( $imagesDirPath );
 
 
@@ -1281,6 +1289,7 @@ class API {
              */
             if (
                 ( $_SERVER[ "REMOTE_ADDR" ] !== "31.184.218.141" ) &&
+                ( $_SERVER[ "REMOTE_ADDR" ] !== "65.108.107.115" ) &&
                 ( $JWT_decoded->ip !== $_SERVER[ "REMOTE_ADDR" ] )
             ) $this->returnResponse( "Не совпадает IP пользователя: " . $JWT_decoded->ip, 401 );
 

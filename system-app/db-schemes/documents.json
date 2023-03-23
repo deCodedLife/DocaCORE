@@ -9,9 +9,23 @@
       "default": null
     },
     {
+      "title": "Артикул",
+      "article": "article",
+      "type": "varchar(75)",
+      "is_required": false,
+      "default": null
+    },
+    {
       "title": "Тип",
       "article": "type_id",
       "type": "int",
+      "is_required": false,
+      "default": null
+    },
+    {
+      "title": "Объект",
+      "article": "object",
+      "type": "varchar(75)",
       "is_required": false,
       "default": null
     },
