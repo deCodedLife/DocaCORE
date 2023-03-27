@@ -55,3 +55,11 @@ if ( $requestData->id || $requestData->article ) {
     $response[ "data" ][ 0 ][ "structure" ] = $documentStructure;
 
 } // if. $requestData->id || $requestData->article
+
+
+/**
+ * @hook
+ * Вывод документов
+ */
+if ( file_exists( $public_customCommandDirPath . "/hooks/result.php" ) )
+    require( $public_customCommandDirPath . "/hooks/result.php" );

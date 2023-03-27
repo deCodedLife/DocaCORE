@@ -129,6 +129,16 @@ function generateStructureBlock ( $structureBlock ) {
 
             break;
 
+        case "documents":
+
+            /**
+             * Календарь
+             */
+
+            $responseBlock[ "settings" ][ "fields_list" ] = processingBlockType_document( $structureBlock );
+
+            break;
+
         case "tabs":
 
             /**

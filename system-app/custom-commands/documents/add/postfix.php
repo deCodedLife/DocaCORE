@@ -35,6 +35,14 @@ foreach ( $requestData->structure as $documentBlock ) {
 
 
     /**
+     * Добавление артикула
+     */
+    $API->DB->update( "documents" )
+        ->set( "article", $insertId )
+        ->where( "id", $insertId )
+        ->execute();
+
+    /**
      * Добавление блока в структуру документа
      */
     $API->DB->insertInto( "documentBlocks" )
