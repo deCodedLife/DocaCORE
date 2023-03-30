@@ -32,7 +32,7 @@ $API::$configs[ "paths" ][ "system_app" ] = $API::$configs[ "paths" ][ "root" ] 
 $API::$configs[ "paths" ][ "uploads" ] = $API::$configs[ "paths" ][ "root" ] . "/uploads";
 $API::$configs[ "paths" ][ "libs" ] = $API::$configs[ "paths" ][ "root" ] . "/libs";
 
-$API::$configs[ "paths" ][ "company_uploads" ] = $API::$configs[ "paths" ][ "uploads" ] . "/" .$API::$configs[ "company" ];
+$API::$configs[ "paths" ][ "company_uploads" ] = $API::$configs[ "paths" ][ "uploads" ] . "/" . $API::$configs[ "company" ];
 $API::$configs[ "paths" ][ "settings_file" ] = $API::$configs[ "paths" ][ "company_uploads" ] . "/settings.json";
 
 $API::$configs[ "paths" ][ "default_commands" ] = $API::$configs[ "paths" ][ "core" ] . "/default-commands";
@@ -43,6 +43,7 @@ $API::$configs[ "paths" ][ "public_db_schemes" ] = $API::$configs[ "paths" ][ "p
 $API::$configs[ "paths" ][ "public_command_schemes" ] = $API::$configs[ "paths" ][ "public_app" ] . "/command-schemes";
 $API::$configs[ "paths" ][ "public_object_schemes" ] = $API::$configs[ "paths" ][ "public_app" ] . "/object-schemes";
 $API::$configs[ "paths" ][ "public_page_schemes" ] = $API::$configs[ "paths" ][ "public_app" ] . "/page-schemes";
+$API::$configs[ "paths" ][ "public_user_schemes" ] = $API::$configs[ "paths" ][ "public_app" ] . "/user-schemes";
 $API::$configs[ "paths" ][ "public_custom_commands" ] = $API::$configs[ "paths" ][ "public_app" ] . "/custom-commands";
 
 $API::$configs[ "paths" ][ "system_db_schemes" ] = $API::$configs[ "paths" ][ "system_app" ] . "/db-schemes";

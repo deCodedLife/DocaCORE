@@ -56,8 +56,8 @@
       "title": "Тело схемы",
       "article": "scheme_body",
       "data_type": "string",
-      "use_in_commands": [ "update-scheme" ],
-      "require_in_commands": [ "update-scheme" ]
+      "use_in_commands": [ "update-scheme", "update-user-scheme" ],
+      "require_in_commands": [ "update-scheme", "update-user-scheme" ]
     },
     {
       "title": "Обновление настроек",
