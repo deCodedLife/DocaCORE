@@ -20,6 +20,13 @@ $currentScheme = json_decode( $requestData->scheme_body, true );
 foreach ( $currentScheme as $schemeObjectArticle => $schemeObject ) {
 
     /**
+     * Добавление объекта в сформированную схему
+     */
+    if ( $schemeObject[ "type" ] == "custom" )
+        $resultUserScheme[ $schemeObjectArticle ][ "title" ] = $schemeObject[ "title" ];
+
+
+    /**
      * Обход областей формы
      */
 

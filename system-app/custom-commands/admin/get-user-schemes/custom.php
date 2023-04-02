@@ -214,6 +214,7 @@ foreach ( $systemObjectHrefs as $systemObjectHref ) {
     if ( $systemSchemeForm )
         $resultUserSchemes[ $systemObjectHref ] = [
             "type" => "system",
+            "title" => $objectScheme[ "title" ],
             "form" => $systemSchemeForm
         ];
 
@@ -248,6 +249,7 @@ foreach ( $userScheme as $userObjectArticle => $userObject ) {
     if ( !array_key_exists( $userObjectArticle, $resultUserSchemes ) )
         $resultUserSchemes[ $userObjectArticle ] = [
             "type" => "custom",
+            "title" => $userObject[ "title" ],
             "form" => []
         ];
 
