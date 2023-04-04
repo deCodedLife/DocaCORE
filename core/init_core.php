@@ -320,6 +320,12 @@ class API {
         if ( $requestData->search && ( gettype( $requestData->search ) === "string" ) )
             $processedRequest[ "search" ] = $requestData->search;
 
+        if ( $requestData->sort_by && ( gettype( $requestData->sort_by ) === "string" ) )
+            $processedRequest[ "sort_by" ] = $requestData->sort_by;
+
+        if ( $requestData->sort_order && ( gettype( $requestData->sort_order ) === "string" ) )
+            $processedRequest[ "sort_order" ] = $requestData->sort_order;
+
 
         /**
          * Обход св-в в схеме объекта
