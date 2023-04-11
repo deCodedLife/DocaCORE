@@ -97,6 +97,20 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 } // foreach. $objectScheme[ "properties" ] as $schemeProperty
 
 
+/**
+ * Обработка пользовательских св-в
+ */
+
+if ( $userScheme ) {
+
+    foreach ( $userScheme as $objectArticle => $object )
+        if ( "us__$objectArticle" == $objectScheme[ "table" ] )
+            foreach ( $object->properties as $propertyArticle => $property )
+                if ( $requestData->{$propertyArticle} ) $insertValues[ "us__$propertyArticle" ] = $requestData->{$propertyArticle};
+
+} // if. $userScheme
+
+
 try {
 
     $insertId = $API->DB->insertInto( $objectScheme[ "table" ] )

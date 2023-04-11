@@ -387,6 +387,192 @@ $systemSchemePath = $API::$configs[ "paths" ][ "system_page_schemes" ] . "/" . $
 
 
 /**
+ * Обработка пользовательских разделов
+ */
+
+if ( $userScheme ) {
+
+    $userSchemeArticle = "";
+    $userSchemeObject = [];
+
+    foreach ( $userScheme as $objectArticle => $object )
+        if ( $objectArticle == $pageDetail[ "section" ] ) {
+            $userSchemeArticle = $objectArticle;
+            $userSchemeObject = $object;
+        }
+
+
+    if ( $userSchemeObject && $userSchemeObject->title ) {
+
+        switch ( $pageDetail[ "url" ][ 1 ] ) {
+
+            case "add":
+            case "update":
+
+                /**
+                 * Тексты в форме
+                 */
+
+                $formText = [
+                    "description" => "Добавление",
+                    "button" => "Добавить"
+                ];
+
+                if ( $pageDetail[ "url" ][ 1 ] === "update" ) $formText = [
+                    "description" => "Редактирование",
+                    "button" => "Сохранить"
+                ];
+
+
+                /**
+                 * Получение значений формы
+                 */
+
+                if ( $pageDetail[ "url" ][ 1 ] === "update" ) $pageDetail[ "row_detail" ] = (array) $API->sendRequest(
+                    $pageDetail[ "section" ],
+                    "get",
+                    [ "id" => (int) $pageDetail[ "row_id" ] ],
+                    $_SERVER[ "SERVER_NAME" ]
+                )[ 0 ];
+
+
+                /**
+                 * Формирование тела формы
+                 */
+
+                $formAreas = [];
+
+                /**
+                 * Добавление пользовательских областей
+                 */
+                foreach ( $userSchemeObject->areas as $area )
+                    $formAreas[] = [
+                        "size" => $area->size,
+                        "blocks" => []
+                    ];
+
+                /**
+                 * Добавление пользовательских блоков и св-в
+                 */
+                foreach ( $userSchemeObject->properties as $propertyArticle => $property ) {
+
+                    $propertyValue = "";
+                    if ( $pageDetail[ "row_detail" ][ "us__$propertyArticle" ] )
+                        $propertyValue = $pageDetail[ "row_detail" ][ "us__$propertyArticle" ];
+
+                    $formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "fields" ][] = [
+                        "title" => $property->title,
+                        "article" => $propertyArticle,
+                        "data_type" => $property->field_type,
+                        "field_type" => $property->field_type,
+                        "is_required" => false,
+                        "is_disabled" => false,
+                        "is_visible" => true,
+                        "value" => $propertyValue
+                    ];
+
+                    if ( !$formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "title" ] )
+                        $formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "title" ] = "";
+
+                } // foreach. $userSchemeObject->properties
+
+
+                $API->returnResponse( [
+                    [
+                        "title" => "Шапка",
+                        "type" => "header",
+                        "size" => 4,
+                        "settings" => [
+                            "description" => $formText[ "description" ],
+                            "title" => [ $userSchemeObject->title ]
+                        ],
+                        "components" => []
+                    ],
+                    [
+                        "title" => "Форма",
+                        "type" => "form",
+                        "size" => 4,
+                        "settings" => [
+                            "object" => $userSchemeArticle,
+                            "command" => $pageDetail[ "url" ][ 1 ],
+                            "areas" => $formAreas,
+                        ],
+                        "components" => [
+                            "buttons" => [[
+                                "type" => "submit",
+                                "settings" => [
+                                    "title" => $formText[ "button" ],
+                                    "background" => "dark",
+                                    "href" => "$userSchemeArticle"
+                                ]
+                            ]]
+                        ]
+                    ]
+                ] );
+
+                break;
+
+            default:
+
+                /**
+                 * Получение заголовков списка
+                 */
+
+                $listHeaders = [];
+
+                foreach ( $userSchemeObject->properties as $propertyArticle => $property ) {
+
+                    $listHeaders[] = [
+                        "title" => $property->title,
+                        "article" => "us__$propertyArticle",
+                        "type" => $property->field_type
+                    ];
+
+                } // foreach. $userSchemeObject->properties
+
+
+                $API->returnResponse( [
+                    [
+                        "title" => "Шапка",
+                        "type" => "header",
+                        "size" => 4,
+                        "settings" => [
+                            "description" => $userSchemeObject->title,
+                            "title" => [ $userSchemeObject->title ]
+                        ],
+                        "components" => []
+                    ], [
+                        "title" => "Список",
+                        "type" => "list",
+                        "size" => 4,
+                        "settings" => [
+                            "object" => $userSchemeArticle,
+                            "headers" => $listHeaders,
+                            "filters" => []
+                        ],
+                        "components" => [
+                            "buttons" => [[
+                                "type" => "href",
+                                "settings" => [
+                                    "title" => "Добавить",
+                                    "background" => "dark",
+                                    "page" => "$userSchemeArticle/add"
+                                ]
+                            ]]
+                        ]
+                    ]
+                ] );
+
+                break;
+
+        } // switch. $pageDetail[ "url" ][ 1 ]
+
+    } // if. $userSchemeObject
+
+} // if. $userScheme
+
+
+/**
  * Подключение схемы страницы
  */
 

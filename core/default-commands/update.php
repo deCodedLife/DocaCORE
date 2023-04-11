@@ -97,6 +97,22 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
 
 
 /**
+ * Обработка пользовательских св-в
+ */
+
+if ( $userScheme ) {
+
+    foreach ( $userScheme as $objectArticle => $object )
+        if (
+            ( $objectArticle == $objectScheme[ "table" ] ) ||
+            ( "us__$objectArticle" == $objectScheme[ "table" ] )
+        ) foreach ( $object->properties as $propertyArticle => $property )
+            if ( $requestData->{$propertyArticle} ) $updateValues[ "us__$propertyArticle" ] = $requestData->{$propertyArticle};
+
+} // if. $userScheme
+
+
+/**
  * Отправка запроса на редактирование записи
  */
 

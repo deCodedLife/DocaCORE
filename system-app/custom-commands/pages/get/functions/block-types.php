@@ -7,6 +7,37 @@
 
 
 /**
+ * Добавление элемента в позицию массива
+ */
+function addItemToArrayPosition ( $array, $insertItem, $position ) {
+
+    if ( !$array ) return [ $insertItem ];
+
+
+    $isAdded = false;
+    $resultArray = [];
+
+    foreach ( $array as $arrayItemKey => $arrayItem ) {
+
+        if ( $arrayItemKey == $position ) {
+
+            if ( !$isAdded ) $resultArray[] = $insertItem;
+            $isAdded = true;
+
+        } // if. $arrayItemKey == $position
+
+        $resultArray[] = $arrayItem;
+
+    } // foreach. $array
+
+    if ( !$isAdded ) $resultArray[] = $arrayItem;
+
+    return $resultArray;
+
+} // function. addItemToArrayPosition
+
+
+/**
  * Обработка списков
  *
  * @param $structureBlock  object  Структура блока
@@ -123,6 +154,7 @@ function processingBlockType_form ( $structureBlock ) {
     global $API;
     global $pageDetail;
     global $formFieldValues;
+    global $userScheme;
 
 
     /**
@@ -222,7 +254,7 @@ function processingBlockType_form ( $structureBlock ) {
                  */
 
                 $isDisabled = false;
-                
+
                 if (
                     ( $fieldDetail[ "is_disabled" ] === true ) ||
                     ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ) )
@@ -422,14 +454,14 @@ function processingBlockType_form ( $structureBlock ) {
                                 $blockFieldValues[] = $blockFieldValue->value;
 
                             $blockField[ "value" ] = $blockFieldValues;
-                            
+
                             break;
 
                         case "object":
                             $blockField[ "value" ] = $blockField[ "value" ]->value;
 
                     } // switch. gettype( $blockField[ "value" ] )
-                    
+
 
                     /**
                      * Перевод значения в указанный в схеме тип
@@ -535,6 +567,85 @@ function processingBlockType_form ( $structureBlock ) {
         } // foreach. $area[ "blocks" ]
 
     } // foreach. $formAreas
+
+
+    /**
+     * Учет пользовательских схем
+     */
+
+    if ( $userScheme ) {
+
+        $userSchemeObject = $structureBlock[ "settings" ][ "object" ];
+        $userSchemeObject = $userScheme->$userSchemeObject;
+
+
+        /**
+         * Добавление пользовательских областей
+         */
+        foreach ( $userSchemeObject->areas as $area )
+            $formAreas = addItemToArrayPosition( $formAreas, [
+                "size" => $area->size,
+                "blocks" => []
+            ], $area->position );
+
+
+        /**
+         * Добавление пользовательских блоков и св-в
+         */
+        foreach ( $userSchemeObject->properties as $propertyArticle => $property ) {
+
+            /**
+             * Получение значения
+             */
+
+            $propertyValue = "";
+
+            if ( $pageDetail[ "row_detail" ][ "us__$propertyArticle" ] )
+                $propertyValue = $pageDetail[ "row_detail" ][ "us__$propertyArticle" ];
+
+
+            $formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "fields" ] = addItemToArrayPosition(
+                $formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "fields" ], [
+                    "title" => $property->title,
+                    "article" => $propertyArticle,
+                    "data_type" => $property->field_type,
+                    "field_type" => $property->field_type,
+                    "is_required" => false,
+                    "is_disabled" => false,
+                    "is_visible" => true,
+                    "value" => $propertyValue
+                ], $property->property_position
+            );
+
+            if ( !$formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "title" ] )
+                $formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "title" ] = "";
+
+        } // foreach. $userSchemeObject->properties
+
+
+        /**
+         * Очистка ключей массива
+         */
+
+        $resultAreas = [];
+
+        foreach ( $formAreas as $area ) {
+
+            $resultBlocks = [];
+
+            foreach ( $area[ "blocks" ] as $block )
+                $resultBlocks[] = $block;
+
+            $resultAreas[] = [
+                "size" => $area[ "size" ],
+                "blocks" => $resultBlocks
+            ];
+
+        } // foreach. $formAreas
+
+        $formAreas = $resultAreas;
+
+    } // if. $userSchemePath
 
 
     return [

@@ -215,6 +215,9 @@ class API {
      */
     public function loadObjectScheme ( $objectSchemeArticle, $isReturnError = true ) {
 
+        global $userScheme;
+
+
         /**
          * Сформированная схема объекта
          */
@@ -260,6 +263,30 @@ class API {
             $resultScheme[ "properties" ] = array_values( $objectSchemeProperties );
 
 
+        /**
+         * Обработка пользовательских объектов
+         */
+
+        if ( $userScheme ) {
+
+            foreach ( $userScheme as $objectArticle => $object ) {
+
+                if ( $objectArticle == $objectSchemeArticle ) {
+
+                    if ( $object->title ) $resultScheme = [
+                        "title" => $object->title,
+                        "table" => "us__$objectArticle",
+                        "is_trash" => false,
+                        "properties" => []
+                    ];
+
+                } // if. $objectArticle
+
+            } // foreach. $userScheme
+
+        } // if. $userScheme
+
+
         if ( !$resultScheme && $isReturnError )
             $this->returnResponse( "Отсутствует схема объекта", 500 );
 
@@ -279,10 +306,29 @@ class API {
      */
     public function requestDataPreprocessor ( $objectScheme, $requestData, $command ) {
 
+        global $userScheme;
+
+
         /**
          * Обработанный запрос
          */
         $processedRequest = [];
+
+
+        /**
+         * Обработка пользовательских св-в
+         */
+
+        if ( $userScheme ) {
+
+            foreach ( $userScheme as $objectArticle => $object )
+                if (
+                    ( $objectArticle == $objectScheme[ "table" ] ) ||
+                    ( "us__$objectArticle" == $objectScheme[ "table" ] )
+                ) foreach ( $object->properties as $propertyArticle => $property )
+                    if ( $requestData->{$propertyArticle} ) $processedRequest[ $propertyArticle ] = $requestData->{$propertyArticle};
+
+        } // if. $userScheme
 
 
         /**

@@ -16,4 +16,21 @@ if ( !$menuScheme ) $API->returnResponse( [] );
 $menuScheme = json_decode( $menuScheme, true );
 
 
+/**
+ * Добавление пользовательских пунктов меню
+ */
+
+if ( $userScheme ) {
+
+    foreach ( $userScheme as $objectArticle => $object )
+        if ( $object->title ) $menuScheme[ "side" ][] = [
+            "title" => $object->title,
+            "href" => $objectArticle,
+            "children" => [],
+            "icon" => "bullet-list"
+        ];
+
+} // if. $userScheme
+
+
 $API->returnResponse( $menuScheme[ "side" ] );

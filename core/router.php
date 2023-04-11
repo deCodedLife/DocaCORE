@@ -139,9 +139,33 @@ if ( !preg_match( "#^[aA-zZ0-9\-_]+$#", $API->request->command ) )
 
 
 /**
+ * Подключение пользовательских схем
+ */
+$userSchemePath = $API::$configs[ "paths" ][ "public_user_schemes" ] . "/" . $API::$configs[ "company" ] . ".json";
+$userScheme = json_decode( file_get_contents( $userSchemePath ) );
+
+
+/**
+ * Формирование команды для пользовательских схем
+ */
+
+$userSchemeCommand = [];
+
+foreach ( $userScheme as $objectArticle => $object )
+    if ( $API->request->object == $objectArticle ) $userSchemeCommand = [
+        "object_scheme" => $objectArticle,
+        "required_permissions" => [],
+        "required_modules" => [],
+        "type" => $API->request->command
+    ];
+
+
+/**
  * Загрузка схемы метода
  */
-$commandScheme = $API->loadCommandScheme( $API->request->object . "/" . $API->request->command );
+if ( !$userSchemeCommand ) $commandScheme = $API->loadCommandScheme( $API->request->object . "/" . $API->request->command );
+else $commandScheme = $userSchemeCommand;
+
 
 /**
  * Загрузка схемы объекта
