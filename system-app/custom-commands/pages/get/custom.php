@@ -18,6 +18,7 @@ function generateStructureBlock ( $structureBlock ) {
 
     global $API;
     global $pageDetail;
+    global $public_customCommandDirPath;
 
 
     /**
@@ -149,8 +150,28 @@ function generateStructureBlock ( $structureBlock ) {
                 /**
                  * Обработка структуры таба
                  */
-                foreach ( $tab[ "body" ] as $tabBlockKey => $tabBlock )
-                    $structureBlock[ "settings" ][ $tabKey ][ "body" ][ $tabBlockKey ] = generateStructureBlock( $tabBlock );
+                foreach ( $tab[ "body" ] as $tabBlockKey => $tabBlock ) {
+
+                    /**
+                     * @hook
+                     * Формирование таба
+                     */
+
+                    $generatedTab = generateStructureBlock( $tabBlock );
+                    $tabHookPath = $pageDetail[ "section" ];
+
+                    if ( isset( $pageDetail[ "url" ][ 1 ] ) ) $tabHookPath .= "/" . $pageDetail[ "url" ][ 1 ];
+                    else $tabHookPath .= "/index";
+
+                    $tabHookPath .= "/tabs/$tabBlockKey";
+
+                    if ( file_exists( $public_customCommandDirPath . "/hooks/$tabHookPath/field-values.php" ) )
+                        require( $public_customCommandDirPath . "/hooks/$tabHookPath/field-values.php" );
+
+
+                    $structureBlock[ "settings" ][ $tabKey ][ "body" ][ $tabBlockKey ] = $generatedTab;
+
+                } // foreach. $tab[ "body" ]
 
             } // foreach. $structureBlock[ "settings" ]
 

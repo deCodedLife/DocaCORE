@@ -253,11 +253,13 @@ class API {
             if ( $objectScheme[ "action_buttons" ] )
                 $resultScheme[ "action_buttons" ] = $objectScheme[ "action_buttons" ];
 
-
-            foreach ( $objectScheme[ "properties" ] as $property )
-                $objectSchemeProperties[ $property[ "article" ] ] = $property;
-
         } // foreach. $objectSchemes
+
+        foreach ( $objectSchemes[ "public" ][ "properties" ] as $property )
+            $objectSchemeProperties[ $property[ "article" ] ] = $property;
+
+        foreach ( $objectSchemes[ "system" ][ "properties" ] as $property )
+            $objectSchemeProperties[ $property[ "article" ] ] = $property;
 
         if ( $objectSchemeProperties )
             $resultScheme[ "properties" ] = array_values( $objectSchemeProperties );
