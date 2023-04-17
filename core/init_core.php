@@ -362,6 +362,9 @@ class API {
         if ( $requestData->limit && ( gettype( $requestData->limit ) === "integer" ) )
             $processedRequest[ "limit" ] = $requestData->limit;
 
+        if ( $requestData->select && ( gettype( $requestData->select ) === "array" ) )
+            $processedRequest[ "select" ] = $requestData->select;
+
         if ( $requestData->context && ( gettype( $requestData->context ) === "string" ) )
             $processedRequest[ "context" ] = $requestData->context;
 
@@ -747,6 +750,9 @@ class API {
      */
     public function getResponseBuilder ( $rows, $objectScheme, $context = "" ) {
 
+        global $requestData;
+
+
         /**
          * Ответ на запрос
          */
@@ -769,6 +775,12 @@ class API {
              * Обработка нестандартных типов данных
              */
             foreach ( $objectScheme[ "properties" ] as $property ) {
+
+                /**
+                 * Учет select
+                 */
+                if ( $requestData->select && !in_array( $property[ "article" ], $requestData->select ) ) continue;
+
 
                 switch ( $property[ "data_type" ] ) {
 
@@ -987,6 +999,69 @@ class API {
             $response[] = $row;
 
         } // foreach. $rows
+
+
+        /**
+         * Обработка контекстов
+         */
+
+        switch ( $context ) {
+
+            /**
+             * CSV экспорт
+             */
+            case "csv":
+
+                header( "Content-type: text/csv" );
+                header( "Content-Disposition: attachment; filename=export.csv" );
+                header( "Pragma: no-cache" );
+                header( "Expires: 0" );
+
+                $buffer = fopen( "php://output", "w" );
+                fputs( $buffer, chr( 0xEF ) . chr( 0xBB ) . chr( 0xBF ) );
+
+                foreach ( $response as $row ) {
+
+                    $resultRow = [];
+
+                    foreach ( $row as $property ) {
+
+                        if ( gettype( $property ) === "array" ) $resultRow[] = $property[ "title" ];
+                        else $resultRow[] = $property;
+
+                    } // foreach. $row
+
+                    fputcsv( $buffer, $resultRow, ";" );
+
+                } // foreach. $response
+
+                fclose( $buffer );
+                exit();
+
+
+                /**
+                 * Вывод кнопок и ссылок в списке
+                 */
+
+                if ( $objectScheme[ "action_buttons" ] ) {
+
+                    $row[ "row_href_type" ] = "update";
+
+
+                    foreach ( $objectScheme[ "action_buttons" ] as $actionButton ) {
+
+                        /**
+                         * Добавление кнопки в запись
+                         */
+                        $row[ "buttons" ][] = $this->buildActionButton( $actionButton, $row );
+
+                    } // foreach. $objectScheme[ "action_buttons" ]
+
+                } // if. $objectScheme[ "action_buttons" ]
+
+                break;
+
+        } // switch. $context
 
 
         return $response;
