@@ -416,7 +416,13 @@ function processingBlockType_form ( $structureBlock ) {
                 /**
                  * Обработка кастомных списков
                  */
-                if ( ( $fieldDetail[ "field_type" ] === "list" ) && $fieldDetail[ "custom_list" ] ) {
+                if (
+                    (
+                        ( $fieldDetail[ "field_type" ] === "list" ) ||
+                        ( $fieldDetail[ "field_type" ] === "radio" )
+                    ) &&
+                    $fieldDetail[ "custom_list" ]
+                ) {
 
                     foreach ( $fieldDetail[ "custom_list" ] as $listItem ) {
 

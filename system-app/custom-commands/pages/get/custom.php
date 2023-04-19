@@ -63,6 +63,7 @@ function generateStructureBlock ( $structureBlock ) {
             break;
 
         case "list":
+        case "radio":
         case "schedule_list":
 
             /**
@@ -163,11 +164,10 @@ function generateStructureBlock ( $structureBlock ) {
                     if ( isset( $pageDetail[ "url" ][ 1 ] ) ) $tabHookPath .= "/" . $pageDetail[ "url" ][ 1 ];
                     else $tabHookPath .= "/index";
 
-                    $tabHookPath .= "/tabs/$tabBlockKey";
+                    $tabHookPath .= "/tabs/$tabKey";
 
                     if ( file_exists( $public_customCommandDirPath . "/hooks/$tabHookPath/field-values.php" ) )
                         require( $public_customCommandDirPath . "/hooks/$tabHookPath/field-values.php" );
-
 
                     $structureBlock[ "settings" ][ $tabKey ][ "body" ][ $tabBlockKey ] = $generatedTab;
 
