@@ -362,6 +362,9 @@ class API {
         if ( $requestData->limit && ( gettype( $requestData->limit ) === "integer" ) )
             $processedRequest[ "limit" ] = $requestData->limit;
 
+        if ( $requestData->select && ( gettype( $requestData->select ) === "array" ) )
+            $processedRequest[ "select" ] = $requestData->select;
+
         if ( $requestData->context && ( gettype( $requestData->context ) === "string" ) )
             $processedRequest[ "context" ] = $requestData->context;
 
@@ -586,7 +589,8 @@ class API {
                                 ( $objectProperty[ "data_type" ] === "email" ) ||
                                 ( $objectProperty[ "data_type" ] === "phone" ) ||
                                 ( $objectProperty[ "data_type" ] === "boolean" ) ||
-                                ( $objectProperty[ "data_type" ] === "image" )
+                                ( $objectProperty[ "data_type" ] === "image" ) ||
+                                ( $objectProperty[ "data_type" ] === "file" )
                             ) $is_error = false;
 
                             if (
@@ -604,7 +608,8 @@ class API {
                         case "array":
 
                             if (
-                                ( $objectProperty[ "data_type" ] === "image" )
+                                ( $objectProperty[ "data_type" ] === "image" ) ||
+                                ( $objectProperty[ "data_type" ] === "file" )
                             ) $is_error = false;
 
                             break;
@@ -747,10 +752,18 @@ class API {
      */
     public function getResponseBuilder ( $rows, $objectScheme, $context = "" ) {
 
+        global $requestData;
+
+
         /**
          * Ответ на запрос
          */
         $response = [];
+
+        /**
+         * Заголовки списка
+         */
+        $listHeaders = [ "ID" ];
 
 
         /**
@@ -770,6 +783,17 @@ class API {
              */
             foreach ( $objectScheme[ "properties" ] as $property ) {
 
+                /**
+                 * Учет select
+                 */
+                if ( $requestData->select && !in_array( $property[ "article" ], $requestData->select ) ) continue;
+
+                /**
+                 * Заполнение заголовков списка
+                 */
+                $listHeaders[] = $property[ "title" ];
+
+
                 switch ( $property[ "data_type" ] ) {
 
                     case "boolean":
@@ -786,6 +810,7 @@ class API {
                         break;
 
                     case "image":
+                    case "file":
 
                         /**
                          * Проверка на существование изображения
@@ -987,6 +1012,51 @@ class API {
             $response[] = $row;
 
         } // foreach. $rows
+
+        $listHeaders = array_unique( $listHeaders );
+
+
+        /**
+         * Обработка контекстов
+         */
+
+        switch ( $context ) {
+
+            /**
+             * CSV экспорт
+             */
+            case "csv":
+
+                header( "Content-type: text/csv" );
+                header( "Content-Disposition: attachment; filename=export.csv" );
+                header( "Pragma: no-cache" );
+                header( "Expires: 0" );
+
+                $buffer = fopen( "php://output", "w" );
+
+                fputcsv( $buffer, $listHeaders, ";" );
+
+                foreach ( $response as $row ) {
+
+                    $resultRow = [];
+
+                    foreach ( $row as $property ) {
+
+                        if ( gettype( $property ) === "array" ) $resultRow[] = (string) $property[ "title" ];
+                        else $resultRow[] = (string) $property;
+
+                    } // foreach. $row
+
+                    fputcsv( $buffer, $resultRow, ";" );
+
+                } // foreach. $response
+
+                fclose( $buffer );
+                exit();
+
+                break;
+
+        } // switch. $context
 
 
         return $response;
@@ -1315,6 +1385,91 @@ class API {
         return substr( $imagePath, strpos( $imagePath, "/uploads" ) );
 
     } // function. uploadImagesFromForm
+
+
+    /**
+     * Загрузка файлов из формы
+     *
+     * @param $rowId   integer  ID записи Объекта
+     * @param $file    object   Файл
+     * @param $object  string   Объект
+     */
+    public function uploadFilesFromForm ( $rowId, $file = [], $object = "" ) {
+
+        /**
+         * Получение пути к директории загрузок
+         */
+        $filesDirPath = $_SERVER[ "DOCUMENT_ROOT" ] . "/uploads/" . $this::$configs[ "company" ];
+        if ( !is_dir( $filesDirPath ) ) mkdir( $filesDirPath );
+
+
+        /**
+         * Получение пути к директории загрузок, для объекта
+         */
+
+        if ( !$object ) $filesDirPath .= "/" . $this->request->object;
+        else $filesDirPath .= "/$object";
+
+        if ( !is_dir( $filesDirPath ) ) mkdir( $filesDirPath );
+
+
+        /**
+         * Получение пути к изображению на сервере
+         */
+
+        $filePath = "$filesDirPath/$rowId";
+
+        switch ( $file[ "type" ] ) {
+
+            case "image/jpeg":
+                $filePath .= ".jpg";
+                break;
+
+            case "image/png":
+                $filePath .= ".png";
+                break;
+
+            case "image/webp":
+                $filePath .= ".webp";
+                break;
+
+            case "application/pdf":
+                $filePath .= ".pdf";
+                break;
+
+            case "text/csv":
+                $filePath .= ".csv";
+                break;
+
+            case "video/mp4":
+            case "audio/mp4":
+                $filePath .= ".mp4";
+                break;
+
+            case "audio/aac":
+                $filePath .= ".aac";
+                break;
+
+            case "audio/mpeg":
+                $filePath .= ".mp3";
+                break;
+
+            default:
+
+                return "";
+
+        } // switch. $file[ "type" ]
+
+
+        /**
+         * Сохранение файла на сервер
+         */
+        move_uploaded_file( $file[ "tmp_name" ], $filePath );
+
+
+        return substr( $filePath, strpos( $filePath, "/uploads" ) );
+
+    } // function. uploadFilesFromForm
 
 
     /**

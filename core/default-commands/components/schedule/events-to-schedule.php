@@ -59,6 +59,8 @@ function addEventIntoSchedule ( $event, $performerId ) {
      */
     $eventDetails = [];
 
+    if ( !$event[ "icons" ] ) $event[ "icons" ] = [];
+
 
     /**
      * @hook
@@ -86,7 +88,8 @@ function addEventIntoSchedule ( $event, $performerId ) {
             "end_at" => $event[ "end_at" ],
             "description" => $eventDescription,
             "color" => $event[ "color" ],
-            "details" => $eventDetails
+            "details" => $eventDetails,
+            "icons" => $event[ "icons" ]
         ]
     ];
 

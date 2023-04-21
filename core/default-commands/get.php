@@ -24,6 +24,12 @@ if ( $commandScheme[ "no_limit" ] ) $requestSettings[ "limit" ] = 0;
  */
 if ( $requestData->page > 1 ) $requestSettings[ "page" ] = $requestData->page - 1;
 
+/**
+ * Выбранные св-ва
+ */
+$selectProperties = [];
+if ( $requestData->select ) $selectProperties[] = "id";
+
 
 /**
  * Формирование фильтра
@@ -39,6 +45,13 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 
 
     /**
+     * Учет select
+     */
+    if ( $requestData->select && in_array( $propertyArticle, $requestData->select ) )
+        if ( !$schemeProperty[ "join" ] ) $selectProperties[] = $propertyArticle;
+
+
+    /**
      * Игнорирование пустых св-в
      */
     if ( $propertyValue === null ) continue;
@@ -47,6 +60,7 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
      * Игнорирование св-в без автозаполнения
      */
     if ( !$schemeProperty[ "is_autofill" ] ) continue;
+
 
     /**
      * Добавление модификатора
@@ -128,7 +142,7 @@ try {
 
     if ( $objectScheme[ "is_trash" ] ) $requestSettings[ "filter" ][ "is_active" ] = "Y";
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
-    if ( $requestData->select ) $rows->select( null )->select( $requestData->select );
+    if ( $selectProperties ) $rows->select( null )->select( $selectProperties );
 
     $rows->where( $requestSettings[ "filter" ] );
 

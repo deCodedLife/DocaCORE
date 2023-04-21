@@ -247,6 +247,7 @@ function processingBlockType_form ( $structureBlock ) {
                  * Проверка наличия полей с загрузкой файлов
                  */
                 if ( $fieldDetail[ "data_type" ] === "image" ) $formType = "multipart/form-data";
+                if ( $fieldDetail[ "data_type" ] === "file" ) $formType = "multipart/form-data";
 
 
                 /**
@@ -416,7 +417,13 @@ function processingBlockType_form ( $structureBlock ) {
                 /**
                  * Обработка кастомных списков
                  */
-                if ( ( $fieldDetail[ "field_type" ] === "list" ) && $fieldDetail[ "custom_list" ] ) {
+                if (
+                    (
+                        ( $fieldDetail[ "field_type" ] === "list" ) ||
+                        ( $fieldDetail[ "field_type" ] === "radio" )
+                    ) &&
+                    $fieldDetail[ "custom_list" ]
+                ) {
 
                     foreach ( $fieldDetail[ "custom_list" ] as $listItem ) {
 

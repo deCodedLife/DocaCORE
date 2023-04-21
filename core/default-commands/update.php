@@ -45,6 +45,11 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
                 $requestData->{$schemeProperty[ "article" ]} = $API->uploadImagesFromForm( $requestData->id, $propertyValue );
                 break;
 
+            case "file":
+
+                $requestData->{$schemeProperty[ "article" ]} = $API->uploadFilesFromForm( $requestData->id, $propertyValue );
+                break;
+
         } // switch. $schemeProperty[ "data_type" ]
 
 
