@@ -247,6 +247,7 @@ function processingBlockType_form ( $structureBlock ) {
                  * Проверка наличия полей с загрузкой файлов
                  */
                 if ( $fieldDetail[ "data_type" ] === "image" ) $formType = "multipart/form-data";
+                if ( $fieldDetail[ "data_type" ] === "file" ) $formType = "multipart/form-data";
 
 
                 /**

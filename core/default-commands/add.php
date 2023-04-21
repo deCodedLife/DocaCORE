@@ -58,6 +58,15 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
             ];
             break;
 
+        case "file":
+
+            $files[] = [
+                "property" => $propertyName,
+                "type" => "file",
+                "value" => $propertyValue
+            ];
+            break;
+
     } // switch. $schemeProperty[ "data_type" ]
 
 
@@ -151,6 +160,18 @@ try {
 
                 $API->DB->update( $objectScheme[ "table" ] )
                     ->set( $file[ "property" ], $API->uploadImagesFromForm( $insertId, $file[ "value" ] ) )
+                    ->where( [
+                        "id" => $insertId,
+                        "is_system" => "N"
+                    ] )
+                    ->execute();
+
+                break;
+
+            case "file":
+
+                $API->DB->update( $objectScheme[ "table" ] )
+                    ->set( $file[ "property" ], $API->uploadFilesFromForm( $insertId, $file[ "value" ] ) )
                     ->where( [
                         "id" => $insertId,
                         "is_system" => "N"
