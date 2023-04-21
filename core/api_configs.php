@@ -45,12 +45,14 @@ $API::$configs[ "paths" ][ "public_object_schemes" ] = $API::$configs[ "paths" ]
 $API::$configs[ "paths" ][ "public_page_schemes" ] = $API::$configs[ "paths" ][ "public_app" ] . "/page-schemes";
 $API::$configs[ "paths" ][ "public_user_schemes" ] = $API::$configs[ "paths" ][ "public_app" ] . "/user-schemes";
 $API::$configs[ "paths" ][ "public_custom_commands" ] = $API::$configs[ "paths" ][ "public_app" ] . "/custom-commands";
+$API::$configs[ "paths" ][ "public_langs" ] = $API::$configs[ "paths" ][ "public_app" ] . "/langs";
 
 $API::$configs[ "paths" ][ "system_db_schemes" ] = $API::$configs[ "paths" ][ "system_app" ] . "/db-schemes";
 $API::$configs[ "paths" ][ "system_command_schemes" ] = $API::$configs[ "paths" ][ "system_app" ] . "/command-schemes";
 $API::$configs[ "paths" ][ "system_object_schemes" ] = $API::$configs[ "paths" ][ "system_app" ] . "/object-schemes";
 $API::$configs[ "paths" ][ "system_page_schemes" ] = $API::$configs[ "paths" ][ "system_app" ] . "/page-schemes";
 $API::$configs[ "paths" ][ "system_custom_commands" ] = $API::$configs[ "paths" ][ "system_app" ] . "/custom-commands";
+$API::$configs[ "paths" ][ "system_langs" ] = $API::$configs[ "paths" ][ "system_app" ] . "/langs";
 
 
 /**
