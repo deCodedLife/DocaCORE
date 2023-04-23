@@ -1542,6 +1542,10 @@ class API {
 
         if ( count( $permissions ) < 1 ) return true;
 
+        if (
+            isset( $this::$userDetail->role_id ) && $this::$userDetail->role_id == 1
+        ) return true;
+
         foreach ( $permissions as $permission ) {
 
             $rolePermission = $this->DB->from( "permissions" )
