@@ -122,6 +122,71 @@ function blockLocalization ( $block ) {
 
 
 /**
+ * Подстановка переменных
+ *
+ * @param $block       array  Блок
+ * @param $pageDetail  array  Информация о странице
+ *
+ * @return array
+ */
+function variablesPushing ( $block, $pageDetail ) {
+
+    $resultBlock = [];
+
+
+    foreach ( $block as $propertyKey => $property ) {
+
+        $resultBlock[ $propertyKey ] = $property;
+
+
+        /**
+         * Обработка переменных
+         */
+        if ( $property[ 0 ] === ":" ) {
+
+            /**
+             * Обработка переменной
+             */
+
+            /**
+             * Получение переменной в строке
+             */
+            $stringVariable = substr( $property, 1 );
+
+
+            /**
+             * Получение значения из списка
+             */
+            if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+
+
+            /**
+             * Формирование строки
+             */
+            $resultBlock[ $propertyKey ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+
+        } // if. $property[ 0 ] === ":"
+
+
+        /**
+         * Обработка внутренних св-в
+         */
+        if (
+            ( gettype( $property ) === "array" ) ||
+            ( gettype( $property ) === "object" )
+        )
+            $resultBlock[ $propertyKey ] = variablesPushing( $property, $pageDetail );
+
+    } // foreach. $block
+
+
+    return $resultBlock;
+
+} // function. variablesPushing
+
+
+/**
  * Генерация структурного блока
  *
  * @param $structureBlock  array  Схема структурного блока
@@ -177,7 +242,9 @@ function generateStructureBlock ( $structureBlock ) {
             break;
 
         case "list":
+        case "logs":
         case "radio":
+        case "accordion":
         case "schedule_list":
 
             /**
@@ -191,10 +258,11 @@ function generateStructureBlock ( $structureBlock ) {
             $listStructure = processingBlockType_list( $structureBlock );
             if ( !$listStructure[ "headers" ] ) { $isContinue = true; break; }
 
+
             /**
              * Указание заголовков списка
              */
-            $responseBlock[ "settings" ][ "headers" ] = $listStructure[ "headers" ];
+            if ( $structureBlock[ "type" ] == "list" ) $responseBlock[ "settings" ][ "headers" ] = $listStructure[ "headers" ];
             $responseBlock[ "settings" ][ "filters" ] = (object) $listStructure[ "filters" ];
 
             break;
@@ -384,50 +452,18 @@ function generateStructureBlock ( $structureBlock ) {
 
                 case "buttons":
 
-                    /**
-                     * Сформированное тело запроса
-                     */
-                    $scriptBody = [];
-
                     if ( $structureComponent[ "settings" ][ "data" ] ) {
 
-                        foreach ( $structureComponent[ "settings" ][ "data" ] as $scriptPropertyKey => $scriptProperty ) {
-
-                            $scriptBody[ $scriptPropertyKey ] = $scriptProperty;
-
-
-                            if ( $scriptProperty[ 0 ] === ":" ) {
-
-                                /**
-                                 * Обработка переменной
-                                 */
-
-                                /**
-                                 * Получение переменной в строке
-                                 */
-                                $stringVariable = substr( $scriptProperty, 1 );
-
-
-                                /**
-                                 * Получение значения из списка
-                                 */
-                                if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
-                                    $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
-
-                                /**
-                                 * Формирование строки
-                                 */
-                                $scriptBody[ $scriptPropertyKey ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
-
-                            } // if. $widgetFilter[ "value" ][ 0 ] === ":"
-
-                        } // foreach. $structureComponent[ "settings" ][ "body" ]
+                        $buttonData = variablesPushing(
+                            $structureComponent[ "settings" ][ "data" ],
+                            $pageDetail
+                        );
 
 
                         /**
                          * Обновление схемы запроса
                          */
-                        $responseComponent[ "settings" ][ "data" ] = $scriptBody;
+                        $responseComponent[ "settings" ][ "data" ] = $buttonData;
 
                     } // if. $structureComponent[ "settings" ][ "data" ]
 
@@ -439,6 +475,7 @@ function generateStructureBlock ( $structureBlock ) {
             /**
              * Добавление компонента в блок страницы
              */
+
             $responseBlock[ "components" ][ $structureComponentType ][] = $responseComponent;
 
         } // foreach. $structureComponents
