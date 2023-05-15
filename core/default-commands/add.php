@@ -93,12 +93,16 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 
     if ( $schemeProperty[ "is_unique" ] && $propertyValue ) {
 
-        $repeatedProperty = $API->DB->from( $objectScheme[ "table" ] )
-            ->where( $propertyName, $propertyValue )
-            ->limit( 1 )
-            ->fetch();
+        $isDouble = false;
 
-        if ( $repeatedProperty && $propertyValue )
+        $repeatedProperties = $API->DB->from( $objectScheme[ "table" ] )
+            ->where( $propertyName, $propertyValue );
+
+        foreach ( $repeatedProperties as $repeatedProperty )
+            if ( $repeatedProperty[ "is_active" ] === "N" ) continue;
+            else $isDouble = true;
+
+        if ( $isDouble )
             $API->returnResponse( "Запись с таким $propertyName уже существует", 500 );
 
     } // if. $schemeProperty[ "is_unique" ] && $propertyValue

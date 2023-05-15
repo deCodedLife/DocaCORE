@@ -29,7 +29,7 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
     /**
      * Получение схемы объекта
      */
-    foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
+    foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty ) {
 
         if ( !$schemeProperty[ "is_autofill" ] ) continue;
         if ( $schemeProperty[ "article" ] !== $propertyArticle ) continue;
