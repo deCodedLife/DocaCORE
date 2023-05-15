@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Psr\\Http\\Client\\' => array($vendorDir . '/psr/http-client/src'),
+    'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'PHPHtmlParser\\' => array($vendorDir . '/paquettg/php-html-parser/src/PHPHtmlParser'),
     'MyCLabs\\Enum\\' => array($vendorDir . '/myclabs/php-enum/src'),
     'Http\\Promise\\' => array($vendorDir . '/php-http/promise/src'),

@@ -3,7 +3,7 @@
         'name' => 'root/restobox.mewbas.com',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'f81dbe3c604bdc93210aa071ccb3d9d2590dc9c5',
+        'reference' => '924bb2efeaa13101eab9f35fcff0b1ec945fbb21',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -109,6 +109,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'phpmailer/phpmailer' => array(
+            'pretty_version' => 'v6.8.0',
+            'version' => '6.8.0.0',
+            'reference' => 'df16b615e371d81fb79e506277faea67a1be18f1',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpmailer/phpmailer',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'psr/http-client' => array(
             'pretty_version' => '1.0.1',
             'version' => '1.0.1.0',
@@ -151,7 +160,7 @@
         'root/restobox.mewbas.com' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'f81dbe3c604bdc93210aa071ccb3d9d2590dc9c5',
+            'reference' => '924bb2efeaa13101eab9f35fcff0b1ec945fbb21',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
