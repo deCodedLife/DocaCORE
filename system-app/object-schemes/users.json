@@ -67,8 +67,8 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update", "sign-in" ],
-      "require_in_commands": [ "add", "sign-in" ]
+      "use_in_commands": [ "add", "update", "sign-in", "sign-up", "forgot-password" ],
+      "require_in_commands": [ "add", "sign-in", "sign-up", "forgot-password" ]
     },
     {
       "title": "Пароль",
@@ -80,8 +80,8 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update", "sign-in" ],
-      "require_in_commands": [ "add", "sign-in" ]
+      "use_in_commands": [ "add", "update", "sign-in", "sign-up" ],
+      "require_in_commands": [ "add", "sign-in", "sign-up" ]
     },
     {
       "title": "Роль",
