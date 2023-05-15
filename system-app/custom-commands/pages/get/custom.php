@@ -459,6 +459,42 @@ function generateStructureBlock ( $structureBlock ) {
                             $pageDetail
                         );
 
+                        foreach ( $structureComponent[ "settings" ][ "data" ] as $scriptPropertyKey => $scriptProperty ) {
+
+                            $scriptBody[ $scriptPropertyKey ] = $scriptProperty;
+
+
+                            /**
+                             * Подстановка переменных
+                             */
+
+                            if ( $scriptProperty[ 0 ] === ":" ) {
+
+                                /**
+                                 * Обработка переменной
+                                 */
+
+                                /**
+                                 * Получение переменной в строке
+                                 */
+                                $stringVariable = substr( $scriptProperty, 1 );
+
+
+                                /**
+                                 * Получение значения из списка
+                                 */
+                                if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                                    $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+
+                                /**
+                                 * Формирование строки
+                                 */
+                                $scriptBody[ $scriptPropertyKey ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+
+                            } // if. $widgetFilter[ "value" ][ 0 ] === ":"
+
+                        } // foreach. $structureComponent[ "settings" ][ "body" ]
+
 
                         /**
                          * Обновление схемы запроса
@@ -466,6 +502,51 @@ function generateStructureBlock ( $structureBlock ) {
                         $responseComponent[ "settings" ][ "data" ] = $buttonData;
 
                     } // if. $structureComponent[ "settings" ][ "data" ]
+
+
+                    /**
+                     * Автозаполнение полей модалки
+                     */
+
+                    if ( $structureComponent[ "settings" ][ "modal_autofill" ] ) {
+
+                        foreach ( $structureComponent[ "settings" ][ "modal_autofill" ] as $modalFieldKey => $modalFieldValue ) {
+
+                            $responseComponent[ "settings" ][ "modal_autofill" ][ $modalFieldKey ] = $modalFieldValue;
+
+
+                            /**
+                             * Подстановка переменных
+                             */
+
+                            if ( $modalFieldValue[ 0 ] === ":" ) {
+
+                                /**
+                                 * Обработка переменной
+                                 */
+
+                                /**
+                                 * Получение переменной в строке
+                                 */
+                                $stringVariable = substr( $modalFieldValue, 1 );
+
+
+                                /**
+                                 * Получение значения из списка
+                                 */
+                                if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                                    $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+
+                                /**
+                                 * Формирование строки
+                                 */
+                                $responseComponent[ "settings" ][ "modal_autofill" ][ $modalFieldKey ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+
+                            } // if. $modalFieldValue[ 0 ] === ":"
+
+                        } // foreach. $structureComponent[ "settings" ][ "modal_autofill" ]
+
+                    } // if. $structureComponent[ "settings" ][ "modal_autofill" ]
 
                     break;
 

@@ -29,7 +29,7 @@ function addItemToArrayPosition ( $array, $insertItem, $position ) {
 
     } // foreach. $array
 
-    if ( !$isAdded ) $resultArray[] = $arrayItem;
+    if ( !$isAdded ) $resultArray[] = $insertItem;
 
     return $resultArray;
 
