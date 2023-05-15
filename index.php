@@ -86,6 +86,21 @@ if ( file_exists( $API::$configs[ "paths" ][ "core" ] . "/init_libs.php" ) ) {
 
 
 /**
+ * Подключение языков
+ */
+
+if ( file_exists( $API::$configs[ "paths" ][ "core" ] . "/init_langs.php" ) ) {
+
+    require_once( $API::$configs[ "paths" ][ "core" ] . "/init_langs.php" );
+
+} else {
+
+    $API->returnResponse( "Не удалось загрузить язык", 500 );
+
+} // if. file_exists. /core/init_langs.php
+
+
+/**
  * Подключение маршрутизации
  */
 
