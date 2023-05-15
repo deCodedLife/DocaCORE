@@ -97,7 +97,7 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [ "add", "update", "get" ],
       "require_in_commands": [ "add" ],
       "list_donor": {
         "table": "roles",

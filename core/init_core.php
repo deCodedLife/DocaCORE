@@ -290,7 +290,7 @@ class API {
 
 
         if ( !$resultScheme && $isReturnError )
-            $this->returnResponse( "Отсутствует схема объекта", 500 );
+            $this->returnResponse( "Отсутствует схема объекта $objectSchemeArticle", 500 );
 
         return $resultScheme;
 
@@ -392,7 +392,10 @@ class API {
             $requestProperty = $requestData->{ $objectProperty[ "article" ] };
 
 
-            if ( $requestProperty === null ) {
+            if ( 
+                ( $requestProperty === null ) ||
+                ( $requestProperty === "null" )
+            ) {
 
                 /**
                  * Проверка обязательных св-в
@@ -594,8 +597,11 @@ class API {
                             ) $is_error = false;
 
                             if (
-                                ( $objectProperty[ "data_type" ] === "integer" ) &&
-                                ctype_digit( $requestData->{ $objectProperty[ "article" ] } )
+                                (
+                                    ( $objectProperty[ "data_type" ] === "integer" ) ||
+                                    ( $objectProperty[ "data_type" ] === "float" )
+                                ) &&
+                                ctype_digit( $requestProperty )
                             ) {
 
                                 $requestData->{ $objectProperty[ "article" ] } = (int) $requestData->{ $objectProperty[ "article" ] };
@@ -770,6 +776,12 @@ class API {
          * Обработка записей
          */
         foreach ( $rows as $row ) {
+
+            /**
+             * Игнорирование удаленных записей
+             */
+            if ( $row[ "is_active" ] === "N" ) continue;
+
 
             /**
              * Обработка системных параметров
