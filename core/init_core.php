@@ -365,7 +365,13 @@ class API {
         if ( $requestData->select && ( gettype( $requestData->select ) === "array" ) )
             $processedRequest[ "select" ] = $requestData->select;
 
-        if ( $requestData->context && ( gettype( $requestData->context ) === "string" ) )
+        if (
+            $requestData->context &&
+            (
+                ( gettype( $requestData->context ) === "string" ) ||
+                ( gettype( $requestData->context ) === "object" )
+            )
+        )
             $processedRequest[ "context" ] = $requestData->context;
 
         if ( $requestData->search && ( gettype( $requestData->search ) === "string" ) )

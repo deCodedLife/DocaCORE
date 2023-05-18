@@ -428,46 +428,39 @@ function generateStructureBlock ( $structureBlock ) {
 
 
                     /**
-                     * Автозаполнение полей модалки
+                     * Контекст кнопки
                      */
 
-                    if ( $structureComponent[ "settings" ][ "modal_autofill" ] ) {
+                    if ( $structureComponent[ "settings" ][ "context" ][ "row_id" ] ) {
 
-                        foreach ( $structureComponent[ "settings" ][ "modal_autofill" ] as $modalFieldKey => $modalFieldValue ) {
+                        /**
+                         * Подстановка переменных
+                         */
 
-                            $responseComponent[ "settings" ][ "modal_autofill" ][ $modalFieldKey ] = $modalFieldValue;
+                        if ( $structureComponent[ "settings" ][ "context" ][ "row_id" ][ 0 ] === ":" ) {
+
+                            /**
+                             * Обработка переменной
+                             */
+
+                            /**
+                             * Получение переменной в строке
+                             */
+                            $stringVariable = substr( $structureComponent[ "settings" ][ "context" ][ "row_id" ], 1 );
 
 
                             /**
-                             * Подстановка переменных
+                             * Получение значения из списка
                              */
+                            if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                                $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
 
-                            if ( $modalFieldValue[ 0 ] === ":" ) {
+                            /**
+                             * Формирование строки
+                             */
+                            $responseComponent[ "settings" ][ "context" ][ "row_id" ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
 
-                                /**
-                                 * Обработка переменной
-                                 */
-
-                                /**
-                                 * Получение переменной в строке
-                                 */
-                                $stringVariable = substr( $modalFieldValue, 1 );
-
-
-                                /**
-                                 * Получение значения из списка
-                                 */
-                                if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
-                                    $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
-
-                                /**
-                                 * Формирование строки
-                                 */
-                                $responseComponent[ "settings" ][ "modal_autofill" ][ $modalFieldKey ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
-
-                            } // if. $modalFieldValue[ 0 ] === ":"
-
-                        } // foreach. $structureComponent[ "settings" ][ "modal_autofill" ]
+                        } // if. $modalFieldValue[ 0 ] === ":"
 
                     } // if. $structureComponent[ "settings" ][ "modal_autofill" ]
 
