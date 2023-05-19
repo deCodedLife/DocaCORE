@@ -34,17 +34,59 @@ if ( $userScheme ) {
 
 
 /**
- * Локализация меню
+ * Формирование меню
  */
+
+$returnMenu = [
+    "top" => $menuScheme[ "top" ],
+    "side" => []
+];
 
 foreach ( $menuScheme[ "side" ] as $menuKey => $menuValue ) {
 
-    $menuScheme[ "side" ][ $menuKey ][ "title" ] = localizationText( $menuValue[ "title" ] );
+    /**
+     * Проверка прав
+     */
+    if ( !$API->validatePermissions( $menuValue[ "required_permissions" ] ) )
+        continue;
 
-    foreach ( $menuValue[ "children" ] as $menuChildKey => $menuChildValue )
-        $menuScheme[ "side" ][ $menuKey ][ "children" ][ $menuChildKey ][ "title" ] = localizationText( $menuChildValue[ "title" ] );
+
+    /**
+     * Локализация заголовка
+     */
+    $menuValue[ "title" ] = localizationText( $menuValue[ "title" ] );
+
+
+    /**
+     * Формирование дочерних пунктов меню
+     */
+
+    $returnMenuChildren = [];
+
+    foreach ( $menuValue[ "children" ] as $menuChildKey => $menuChildValue ) {
+
+        /**
+         * Проверка прав
+         */
+        if ( !$API->validatePermissions( $menuChildValue[ "required_permissions" ] ) )
+            continue;
+
+
+        /**
+         * Локализация дочернего пункта
+         */
+        $menuChildValue[ "title" ] = localizationText( $menuChildValue[ "title" ] );
+
+        $returnMenuChildren[] = $menuChildValue;
+
+    } // foreach. $menuValue[ "children" ]
+
+    $menuValue[ "children" ] = $returnMenuChildren;
+
+
+    $returnMenu[ "side" ][] = $menuValue;
 
 } // foreach. $menuScheme[ "side" ]
 
 
-$API->returnResponse( $menuScheme[ "side" ] );
+$API->returnResponse( $returnMenu[ "side" ] );
