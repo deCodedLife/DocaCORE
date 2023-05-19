@@ -247,6 +247,12 @@ function processingBlockType_form ( $structureBlock ) {
                 if ( $fieldDetail[ "is_visible" ] === false ) $isVisible = false;
 
                 /**
+                 * Обновление формы, при изменении поля
+                 */
+                $onChangeSubmit = false;
+                if ( $fieldDetail[ "on_change_submit" ] === true ) $onChangeSubmit = true;
+
+                /**
                  * Проверка наличия полей с загрузкой файлов
                  */
                 if ( $fieldDetail[ "data_type" ] === "image" ) $formType = "multipart/form-data";
@@ -279,7 +285,8 @@ function processingBlockType_form ( $structureBlock ) {
                     "description" => $fieldDetail[ "description" ],
                     "is_required" => $isRequired,
                     "is_disabled" => $isDisabled,
-                    "is_visible" => $isVisible
+                    "is_visible" => $isVisible,
+                    "on_change_submit" => $onChangeSubmit
                 ];
 
                 if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];
