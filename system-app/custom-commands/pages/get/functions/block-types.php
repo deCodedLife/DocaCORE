@@ -424,6 +424,7 @@ function processingBlockType_form ( $structureBlock ) {
 
                 } // if. $fieldDetail[ "field_type" ] === "list"
 
+
                 /**
                  * Обработка кастомных списков
                  */
@@ -458,26 +459,32 @@ function processingBlockType_form ( $structureBlock ) {
                      */
                     $blockField[ "value" ] = $pageDetail[ "row_detail" ][ $fieldDetail[ "article" ] ];
 
+
                     /**
                      * Обработка списков
                      */
-                    switch ( gettype( $blockField[ "value" ] ) ) {
 
-                        case "array":
+                    if ( $fieldDetail[ "field_type" ] == "list" ) {
 
-                            $blockFieldValues = [];
+                        switch ( gettype( $blockField[ "value" ] ) ) {
 
-                            foreach ( $blockField[ "value" ] as $blockFieldValue )
-                                $blockFieldValues[] = $blockFieldValue->value;
+                            case "array":
 
-                            $blockField[ "value" ] = $blockFieldValues;
+                                $blockFieldValues = [];
 
-                            break;
+                                foreach ( $blockField[ "value" ] as $blockFieldValue )
+                                    $blockFieldValues[] = $blockFieldValue->value;
 
-                        case "object":
-                            $blockField[ "value" ] = $blockField[ "value" ]->value;
+                                $blockField[ "value" ] = $blockFieldValues;
 
-                    } // switch. gettype( $blockField[ "value" ] )
+                                break;
+
+                            case "object":
+                                $blockField[ "value" ] = $blockField[ "value" ]->value;
+
+                        } // switch. gettype( $blockField[ "value" ] )
+
+                    } // if. $fieldDetail[ "field_type" ] == "list"
 
 
                     /**
@@ -491,6 +498,7 @@ function processingBlockType_form ( $structureBlock ) {
                      */
                     if (
                         !$blockField[ "value" ] &&
+                        ( $blockField[ "field_type" ] === "list" ) &&
                         ( $blockField[ "data_type" ] === "array" )
                     ) {
 
@@ -498,6 +506,7 @@ function processingBlockType_form ( $structureBlock ) {
                          * Схема св-ва
                          */
                         $objectSchemeProperty = $objectProperties[ $blockField[ "article" ] ];
+
 
                         /**
                          * Значения св-ва

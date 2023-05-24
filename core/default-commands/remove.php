@@ -6,6 +6,12 @@
  */
 
 
+/**
+ * Проверка обязательных св-в
+ */
+if ( !$requestData->id ) $API->returnResponse( "Отсутствует обязательное св-во `ID`", 400 );
+
+
 try {
 
     if ( $objectScheme[ "is_trash" ] ) {

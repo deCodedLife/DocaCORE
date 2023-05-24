@@ -70,7 +70,136 @@ foreach ( $objectScheme[ "properties" ] as $property ) {
     if ( !in_array( "update", $property[ "use_in_commands" ] ) ) continue;
 
 
-    $objectProperties[] = [
+    /**
+     * Обработка связанных таблиц
+     */
+
+    if (
+        ( $property[ "list_donor" ][ "table" ] || $property[ "join" ][ "donor_table" ] ) &&
+        ( $property[ "field_type" ] === "list" )
+    ) {
+
+        if ( $property[ "joined_field" ] )
+            $blockField[ "joined_field" ] = $property[ "joined_field" ];
+
+
+        /**
+         * Определение типа связанной таблицы
+         * (list_donor / join)
+         */
+        if ( !$property[ "list_donor" ][ "table" ] ) {
+
+            $property[ "list_donor" ][ "table" ] = $property[ "join" ][ "donor_table" ];
+            $property[ "list_donor" ][ "properties_title" ] = $property[ "join" ][ "property_article" ];
+
+        } // if. !$fieldDetail[ "list_donor" ][ "table" ]
+
+
+        /**
+         * Загрузка схемы объекта связанной таблицы
+         */
+        $propertyObjectScheme = $API->loadObjectScheme( $property[ "list_donor" ][ "table" ] );
+        if ( !$propertyObjectScheme ) continue;
+
+
+        /**
+         * Фильтр данных из связанной таблицы
+         */
+
+        $listFilter = [ "is_active" => "Y" ];
+
+        if ( $property[ "list_donor" ][ "filters" ] ) {
+
+            foreach ( $property[ "list_donor" ][ "filters" ] as $filterArticle => $filterValue )
+                $listFilter[ $filterArticle ] = $filterValue;
+
+        } // if. $fieldDetail[ "list_donor" ][ "filters" ]
+
+
+        /**
+         * Получение данных из связанной таблицы
+         */
+        $joinedTableRows = $API->DB->from( $property[ "list_donor" ][ "table" ] );
+        if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( $listFilter );
+
+
+        /**
+         * Обновление списка
+         */
+        foreach ( $joinedTableRows as $joinedTableRow ) {
+
+            /**
+             * Сформированный пункт списка
+             */
+            $joinedRow = [];
+
+            /**
+             * Название поля
+             */
+            $fieldTitle = $joinedTableRow[ $property[ "list_donor" ][ "properties_title" ] ];
+
+
+            /**
+             * Нестандартные названия полей
+             */
+            switch ( $property[ "list_donor" ][ "properties_title" ] ) {
+
+                case "first_name":
+                case "last_name":
+                case "patronymic":
+
+                    /**
+                     * Получение ФИО
+                     */
+
+                    $fio = [
+                        "first_name" => "",
+                        "last_name" => "",
+                        "patronymic" => ""
+                    ];
+
+                    foreach ( $propertyObjectScheme[ "properties" ] as $objectProperty ) {
+
+                        if (
+                            ( $objectProperty[ "article" ] === "first_name" ) ||
+                            ( $objectProperty[ "article" ] === "last_name" ) ||
+                            ( $objectProperty[ "article" ] === "patronymic" )
+                        ) $fio[ $objectProperty[ "article" ] ] = $joinedTableRow[ $objectProperty[ "article" ] ];
+
+                    } // foreach. $propertyObjectScheme[ "properties" ]
+
+                    $fieldTitle = "${fio[ "last_name" ]} ${fio[ "first_name" ]} ${fio[ "patronymic" ]}";
+
+                    break;
+
+            } // switch. $fieldDetail[ "list_donor" ][ "properties_title" ]
+
+
+            /**
+             * Заполнение пункта списка
+             */
+
+            $joinedRow = [
+                "title" => $fieldTitle,
+                "value" => $joinedTableRow[ "id" ]
+            ];
+
+            if ( $property[ "joined_field" ] )
+                $joinedRow[ "joined_field_value" ] = $joinedTableRow[ $property[ "joined_field" ] ];
+
+
+            $property[ "list" ][] = $joinedRow;
+
+        } // foreach. $joinedTableRows
+
+    } // if. $fieldDetail[ "field_type" ] === "list"
+
+
+    /**
+     * Вывод св-в
+     */
+
+    $returnProperty = [
         "title" => $property[ "title" ],
         "article" => $property[ "article" ],
         "data_type" => $property[ "data_type" ],
@@ -78,6 +207,10 @@ foreach ( $objectScheme[ "properties" ] as $property ) {
         "settings" => $property[ "settings" ],
         "search" => $property[ "search" ]
     ];
+
+    if ( $property[ "list" ] ) $returnProperty[ "list" ] = $property[ "list" ];
+
+    $objectProperties[] = $returnProperty;
 
 } // foreach. $objectScheme[ "properties" ]
 

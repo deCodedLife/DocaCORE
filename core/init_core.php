@@ -980,6 +980,39 @@ class API {
 
                 } // if. $property[ "join" ]
 
+
+                /**
+                 * Умные списки
+                 */
+                if ( $property[ "field_type" ] === "smart_list" ) {
+
+                    $row[ $property[ "article" ] ] = [];
+
+
+                    /**
+                     * Получение значений умного списка
+                     */
+                    $smartListRows = $this->DB->from( $property[ "settings" ][ "connection_table" ] )
+                        ->where( "row_id", $row[ "id" ] );
+
+                    /**
+                     * Вывод значений умного списка
+                     */
+                    foreach ( $smartListRows as $smartListRow ) {
+
+                        /**
+                         * Исключение системных св-в
+                         */
+                        unset( $smartListRow[ "id" ] );
+                        unset( $smartListRow[ "row_id" ] );
+                        unset( $smartListRow[ "is_system" ] );
+
+                        $row[ $property[ "article" ] ][] = $smartListRow;
+
+                    } // foreach. $smartListRows
+
+                } // if. $property[ "field_type" ] === "smart_list"
+
             } // foreach. $objectScheme[ "properties" ]
 
 

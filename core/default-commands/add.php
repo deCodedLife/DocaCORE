@@ -22,6 +22,11 @@ $insertImages = [];
 $join_insertValues = [];
 
 /**
+ * Значения умных списков
+ */
+$smartListProperties = [];
+
+/**
  * Загружаемые файлы
  */
 $files = [];
@@ -68,6 +73,17 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
             break;
 
     } // switch. $schemeProperty[ "data_type" ]
+
+
+    /**
+     * Обработка умных списков
+     */
+    if ( $schemeProperty[ "field_type" ] === "smart_list" ) {
+
+        $smartListProperties[ $schemeProperty[ "settings" ][ "connection_table" ] ] = $propertyValue;
+        continue;
+
+    } // if. $schemeProperty[ "field_type" ] === "smart_list"
 
 
     /**
@@ -150,6 +166,33 @@ try {
         } // foreach. $join[ "data" ]
 
     } // foreach. $join_insertValues
+
+
+    /**
+     * Умные списки
+     */
+    foreach ( $smartListProperties as $table => $properties ) {
+
+        /**
+         * Очистка старых связей
+         */
+        $API->DB->deleteFrom( $table )
+            ->where( "row_id", $insertId )
+            ->execute();
+
+
+        foreach ( $properties as $propertyValues ) {
+
+            $propertyValues = (array) $propertyValues;
+            $propertyValues[ "row_id" ] = $insertId;
+
+            $API->DB->insertInto( $table )
+                ->values( $propertyValues )
+                ->execute();
+
+        } // foreach. $join[ "data" ]
+
+    } // foreach. $smartListProperties
 
 
     /**

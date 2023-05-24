@@ -7,6 +7,12 @@
 
 
 /**
+ * Проверка обязательных св-в
+ */
+if ( !$requestData->id ) $API->returnResponse( "Отсутствует обязательное св-во `ID`", 400 );
+
+
+/**
  * Значения для вставки
  */
 $updateValues = [];
@@ -15,6 +21,11 @@ $updateValues = [];
  * Значения связанных таблиц для редактирования
  */
 $join_updateValues = [];
+
+/**
+ * Значения умных списков
+ */
+$smartListProperties = [];
 
 
 /**
@@ -54,9 +65,8 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
 
 
         /**
-         * Добавление св-ва в запрос
+         * Получение информации о св-ве
          */
-
         $propertyName = $schemeProperty[ "article" ];
         $propertyValue = $requestData->{$schemeProperty[ "article" ]};
 
@@ -64,7 +74,6 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
         /**
          * Обработка связанных таблиц
          */
-
         if ( $schemeProperty[ "join" ] ) $join_updateValues[ $propertyName ] = [
             "connection_table" => $schemeProperty[ "join" ][ "connection_table" ],
             "filter_property" => $schemeProperty[ "join" ][ "filter_property" ],
@@ -72,6 +81,20 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
             "data" => []
         ];
 
+        /**
+         * Обработка умных списков
+         */
+        if ( $schemeProperty[ "field_type" ] === "smart_list" ) {
+
+            $smartListProperties[ $schemeProperty[ "settings" ][ "connection_table" ] ] = $propertyValue;
+            continue;
+
+        } // if. $schemeProperty[ "field_type" ] === "smart_list"
+
+
+        /**
+         * Добавление св-ва в запрос
+         */
         if ( $propertyValue !== null ) {
 
             if ( !$schemeProperty[ "join" ] ) $updateValues[ $propertyName ] = $propertyValue;
@@ -157,6 +180,33 @@ try {
         } // foreach. $join[ "data" ]
 
     } // foreach. $join_updateValues
+
+
+    /**
+     * Умные списки
+     */
+    foreach ( $smartListProperties as $table => $properties ) {
+
+        /**
+         * Очистка старых связей
+         */
+        $API->DB->deleteFrom( $table )
+            ->where( "row_id", $requestData->id )
+            ->execute();
+
+
+        foreach ( $properties as $propertyValues ) {
+
+            $propertyValues = (array) $propertyValues;
+            $propertyValues[ "row_id" ] = $requestData->id;
+
+            $API->DB->insertInto( $table )
+                ->values( $propertyValues )
+                ->execute();
+
+        } // foreach. $join[ "data" ]
+
+    } // foreach. $smartListProperties
 
 
     /**
