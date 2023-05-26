@@ -205,13 +205,33 @@ try {
 
             case "image":
 
-                $API->DB->update( $objectScheme[ "table" ] )
-                    ->set( $file[ "property" ], $API->uploadImagesFromForm( $insertId, $file[ "value" ] ) )
-                    ->where( [
-                        "id" => $insertId,
-                        "is_system" => "N"
-                    ] )
-                    ->execute();
+                switch ( gettype( $file[ "value" ] ) ) {
+
+                    case "string":
+
+                        $API->DB->update( $objectScheme[ "table" ] )
+                            ->set( $file[ "property" ], $API->uploadImagesFromForm( $insertId, $file[ "value" ] ) )
+                            ->where( [
+                                "id" => $insertId,
+                                "is_system" => "N"
+                            ] )
+                            ->execute();
+
+                        break;
+
+                    case "array":
+
+                        $API->DB->update( $objectScheme[ "table" ] )
+                            ->set( $file[ "property" ], $API->uploadMultiplyImages( $insertId, $file[ "value" ] ) )
+                            ->where( [
+                                "id" => $insertId,
+                                "is_system" => "N"
+                            ] )
+                            ->execute();
+
+                        break;
+
+                } // switch. gettype( $file[ "value" ] )
 
                 break;
 

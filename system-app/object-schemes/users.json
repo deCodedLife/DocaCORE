@@ -15,7 +15,10 @@
       "required_permissions": [],
       "required_modules": [],
       "use_in_commands": [ "add", "update" ],
-      "require_in_commands": []
+      "require_in_commands": [],
+      "settings": {
+        "is_multiply": false
+      }
     },
     {
       "title": "Имя",

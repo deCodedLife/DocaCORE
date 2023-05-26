@@ -385,6 +385,49 @@ class API {
 
 
         /**
+         * Проверка на multipart/form-data
+         */
+
+        $isMulipart = false;
+
+        foreach ( $objectScheme[ "properties" ] as $objectProperty ) {
+
+            switch ( $objectProperty[ "data_type" ] ) {
+
+                case "image":
+                case "file":
+
+                    $isMulipart = true;
+                    break;
+
+            } // switch.
+
+        } // foreach. $objectScheme[ "properties" ]
+
+
+        /**
+         * Обработка множественных св-в (при multiform)
+         */
+
+        if ( $isMulipart ) {
+
+            foreach ( $requestData as $propertyArticle => $propertyValue ) {
+
+                if ( $propertyArticle[ 0 ] === "_" ) {
+
+                    $propertyArticle = substr( $propertyArticle, 1 );
+                    $propertyArticle = substr( $propertyArticle, 0, strpos( $propertyArticle, "__" ) );
+
+                    $requestData->{$propertyArticle}[] = $propertyValue;
+
+                } // if. $propertyArticle[ 0 ] === "_"
+
+            } // foreach. $requestData
+
+        } // if. $isMulipart
+
+
+        /**
          * Обход св-в в схеме объекта
          */
         foreach ( $objectScheme[ "properties" ] as $objectProperty ) {
@@ -615,6 +658,14 @@ class API {
 
                             } // if. ctype_digit( $requestData->{ $objectProperty[ "article" ] } )
 
+
+                            if ( $isMulipart && ( $objectProperty[ "data_type" ] == "array" ) ) {
+
+                                $requestData->{ $objectProperty[ "article" ] } = explode( ",", $requestData->{ $objectProperty[ "article" ] } );
+                                $is_error = false;
+
+                            } // if. $isMulipart
+
                             break;
 
                         case "array":
@@ -830,24 +881,74 @@ class API {
                     case "image":
                     case "file":
 
-                        /**
-                         * Проверка на существование изображения
-                         */
-                        if (
-                            !$row[ $property[ "article" ] ] ||
-                            !file_exists( $this::$configs[ "paths" ][ "root" ] . $row[ $property[ "article" ] ] )
-                        ) {
-                            $row[ $property[ "article" ] ] = "";
-                            break;
-                        }
+                        if ( !$property[ "settings" ][ "is_multiply" ] ) {
+
+                            /**
+                             * Проверка на существование изображения
+                             */
+                            if (
+                                !$row[ $property[ "article" ] ] ||
+                                !file_exists( $this::$configs[ "paths" ][ "root" ] . $row[ $property[ "article" ] ] )
+                            ) {
+                                $row[ $property[ "article" ] ] = "";
+                                break;
+                            }
 
 
-                        /**
-                         * Определение пути к изображению
-                         */
-                        $imagePath = "https://" . $_SERVER[ "HTTP_HOST" ] . $row[ $property[ "article" ] ];
+                            /**
+                             * Определение пути к изображению
+                             */
+                            $imagePath = "https://" . $_SERVER[ "HTTP_HOST" ] . $row[ $property[ "article" ] ];
 
-                        $row[ $property[ "article" ] ] = $imagePath;
+                            $row[ $property[ "article" ] ] = $imagePath;
+
+                        } else {
+
+                            /**
+                             * Проверка наличия изображений
+                             */
+                            if ( !$row[ $property[ "article" ] ] ) break;
+
+
+                            /**
+                             * Получение пути к директории изображений
+                             */
+                            $imagesDirPath = $this::$configs[ "paths" ][ "root" ] . $row[ $property[ "article" ] ];
+                            if ( !is_dir( $imagesDirPath ) ) break;
+
+
+                            /**
+                             * Перевод св-ва изображений в массив
+                             */
+                            $row[ $property[ "article" ] ] = [];
+
+
+                            /**
+                             * Обход изображений записи
+                             */
+
+                            $imagesDir = dir( $imagesDirPath );
+
+                            while ( ( $image = $imagesDir->read() ) !== false ) {
+
+                                if ( $image === "." || $image === ".." ) continue;
+
+                                
+                                /**
+                                 * Получение пути к изображению записи
+                                 */
+                                $imageDirPath = substr( $imagesDirPath, strpos( $imagesDirPath, "/uploads" ) );
+
+                                $imagePath = "https://" . $_SERVER[ "HTTP_HOST" ] . $imageDirPath . "/" . $image;
+                                $row[ $property[ "article" ] ][] = $imagePath;
+
+                            } // while. $imagesDir->read()
+
+                            $imagesDir->close();
+
+                        } // if. $property[ "settings" ][ "is_multiply" ]
+
+                        break;
 
                 } // switch. $property[ "data_type" ]
 
@@ -1521,6 +1622,98 @@ class API {
         return substr( $filePath, strpos( $filePath, "/uploads" ) );
 
     } // function. uploadFilesFromForm
+
+
+    /**
+     * Множественная загрузка изображений
+     *
+     * @param $rowId   integer  ID записи Объекта
+     * @param $images  object   Изображения
+     * @param $object  object   Объект
+     */
+    public function uploadMultiplyImages ( $rowId, $images = [], $object = "" ) {
+
+        /**
+         * Получение пути к директории загрузок
+         */
+        $imagesDirPath = $_SERVER[ "DOCUMENT_ROOT" ] . "/uploads/" . $this::$configs[ "company" ];
+        if ( !is_dir( $imagesDirPath ) ) mkdir( $imagesDirPath );
+
+
+        /**
+         * Получение пути к директории загрузок, для объекта
+         */
+
+        if ( !$object ) $imagesDirPath .= "/" . $this->request->object;
+        else $imagesDirPath .= "/$object";
+
+        if ( !is_dir( $imagesDirPath ) ) mkdir( $imagesDirPath );
+
+
+        /**
+         * Получение пути к директории изображений на сервере
+         */
+
+        $imagesDirPath = "$imagesDirPath/$rowId";
+
+        rmdir( $imagesDirPath );
+        mkdir( $imagesDirPath );
+
+
+        /**
+         * Загрузка изображений
+         */
+
+        foreach ( $images as $imageKey => $image ) {
+
+            /**
+             * Получение пути к изображению на сервере
+             */
+
+            $imagePath = "$imagesDirPath/$imageKey";
+
+            switch ( $image[ "type" ] ) {
+
+                case "image/jpeg":
+                    $imagePath .= ".jpg";
+                    break;
+
+                case "image/png":
+                    $imagePath .= ".png";
+                    break;
+
+                case "image/webp":
+                    $imagePath .= ".webp";
+                    break;
+
+                default:
+
+                    /**
+                     * Очистка изображения
+                     */
+                    unlink( $imagePath . ".webp" );
+
+                    return "";
+
+            } // switch. $image[ "type" ]
+
+
+            /**
+             * Сохранение изображения на сервер
+             */
+            move_uploaded_file( $image[ "tmp_name" ], $imagePath );
+
+            /**
+             * Перевод изображения в формат WebP
+             */
+            if ( $image[ "type" ] !== "webp" ) $this->imageToWepP( $imagePath );
+
+        } // foreach. $images
+
+
+        return substr( $imagesDirPath, strpos( $imagesDirPath, "/uploads" ) );
+
+    } // function. uploadMultiplyImages
 
 
     /**
