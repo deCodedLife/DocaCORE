@@ -1625,12 +1625,115 @@ class API {
 
 
     /**
-     * Множественная загрузка изображений
+     * Множественная загрузка файлов
      *
      * @param $rowId   integer  ID записи Объекта
-     * @param $images  object   Изображения
+     * @param $files  object   Изображения
      * @param $object  object   Объект
      */
+    public function uploadMultiplyFiles ( $rowId, $files = [], $object = "" ) {
+
+        /**
+         * Получение пути к директории загрузок
+         */
+        $filesDirPath = $_SERVER[ "DOCUMENT_ROOT" ] . "/uploads/" . $this::$configs[ "company" ];
+        if ( !is_dir( $filesDirPath ) ) mkdir( $filesDirPath );
+
+
+        /**
+         * Получение пути к директории загрузок, для объекта
+         */
+
+        if ( !$object ) $filesDirPath .= "/" . $this->request->object;
+        else $filesDirPath .= "/$object";
+
+        if ( !is_dir( $filesDirPath ) ) mkdir( $filesDirPath );
+
+
+        /**
+         * Получение пути к директории файлов на сервере
+         */
+
+        $filesDirPath = "$filesDirPath/$rowId";
+
+        rmdir( $filesDirPath );
+        mkdir( $filesDirPath );
+
+
+        /**
+         * Загрузка изображений
+         */
+
+        foreach ( $files as $fileKey => $file ) {
+
+            /**
+             * Получение пути к файлу на сервере
+             */
+
+            $filePath = "$filesDirPath/$fileKey";
+
+            switch ( $file[ "type" ] ) {
+
+                case "image/jpeg":
+                    $filePath .= ".jpg";
+                    break;
+
+                case "image/png":
+                    $filePath .= ".png";
+                    break;
+
+                case "image/webp":
+                    $filePath .= ".webp";
+                    break;
+
+                case "application/pdf":
+                    $filePath .= ".pdf";
+                    break;
+
+                case "text/csv":
+                    $filePath .= ".csv";
+                    break;
+
+                case "video/mp4":
+                case "audio/mp4":
+                    $filePath .= ".mp4";
+                    break;
+
+                case "audio/aac":
+                    $filePath .= ".aac";
+                    break;
+
+                case "audio/mpeg":
+                    $filePath .= ".mp3";
+                    break;
+
+                default:
+
+                    return "";
+
+            } // switch. $file[ "type" ]
+
+
+            /**
+             * Сохранение файла на сервер
+             */
+            move_uploaded_file( $file[ "tmp_name" ], $filePath );
+
+        } // foreach. $images
+
+
+        return substr( $filesDirPath, strpos( $filesDirPath, "/uploads" ) );
+
+    } // function. uploadMultiplyFiles
+
+
+
+/* Множественная загрузка изображений
+ *
+ * @param $rowId   integer  ID записи Объекта
+ * @param $images  object   Изображения
+ * @param $object  object   Объект
+ */
     public function uploadMultiplyImages ( $rowId, $images = [], $object = "" ) {
 
         /**

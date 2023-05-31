@@ -67,7 +67,16 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
 
             case "file":
 
-                $requestData->{$schemeProperty[ "article" ]} = $API->uploadFilesFromForm( $requestData->id, $propertyValue );
+                if ( !$schemeProperty[ "settings" ][ "is_multiply" ] ) {
+
+                    $requestData->{$schemeProperty[ "article" ]} = $API->uploadFilesFromForm( $requestData->id, $propertyValue );
+
+                } else {
+
+                    $requestData->{$schemeProperty[ "article" ]} = $API->uploadMultiplyFiles( $requestData->id, $propertyValue );
+
+                } // if. !$schemeProperty[ "settings" ][ "is_multiply" ]
+
                 break;
 
         } // switch. $schemeProperty[ "data_type" ]
