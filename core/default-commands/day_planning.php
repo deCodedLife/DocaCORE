@@ -27,6 +27,14 @@ $requestSettings[ "filter" ] = [
 
 
 /**
+ * @hook
+ * Фильтрация записей
+ */
+if ( file_exists( $public_customCommandDirPath . "/hooks/events-filter.php" ) )
+    require( $public_customCommandDirPath . "/hooks/events-filter.php" );
+
+
+/**
  * Получение записей
  */
 
@@ -44,6 +52,9 @@ $events->where( $requestSettings[ "filter" ] );
  */
 
 foreach ( $events as $event ) {
+
+    $isContinue = false;
+
 
     /**
      * Сформированная запись
@@ -69,6 +80,8 @@ foreach ( $events as $event ) {
     if ( file_exists( $public_customCommandDirPath . "/hooks/event-details.php" ) )
         require( $public_customCommandDirPath . "/hooks/event-details.php" );
 
+
+    if ( $isContinue ) continue;
 
     $response[ "data" ][] = $eventDetails;
 
