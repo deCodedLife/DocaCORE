@@ -41,9 +41,7 @@ if ( file_exists( $public_customCommandDirPath . "/hooks/events-filter.php" ) )
 $events = $API->DB->from( $objectScheme[ "table" ] )
     ->orderBy( "start_at asc" );
 
-if ( $objectScheme[ "is_trash" ] ) $requestSettings[ "filter" ][ "is_active" ] = "Y";
-$events->select( null )->select( [ "id", $requestData->time_from_property, $requestData->time_to_property ] );
-
+if ( $objectScheme[ "is_trash" ] ) $requestSettings[ "filter" ][ "is_active" ] = "Y";;
 $events->where( $requestSettings[ "filter" ] );
 
 
