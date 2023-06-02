@@ -155,10 +155,16 @@ function processingBlockType_list ( $structureBlock ) {
 function processingBlockType_form ( $structureBlock ) {
 
     global $API;
+    global $requestData;
     global $pageDetail;
     global $formFieldValues;
     global $userScheme;
 
+
+    /**
+     * Св-ва для автозаполнения
+     */
+    $formData = $structureBlock[ "settings" ][ "data" ];
 
     /**
      * Области формы.
@@ -196,6 +202,69 @@ function processingBlockType_form ( $structureBlock ) {
      */
     foreach ( $objectScheme[ "properties" ] as $property )
         $objectProperties[ $property[ "article" ] ] = $property;
+
+
+    /**
+     * Обработка св-в для автозаполнения
+     */
+
+    foreach ( $formData as $propertyKey => $propertyValue ) {
+
+        /**
+         * Подстановка переменных
+         */
+
+        if ( $propertyValue[ 0 ] === ":" ) {
+
+            /**
+             * Обработка переменной
+             */
+
+            /**
+             * Получение переменной в строке
+             */
+            $stringVariable = substr( $propertyValue, 1 );
+
+            /**
+             * Значение переменной в строке
+             */
+            $stringValue = $pageDetail[ "row_detail" ][ $stringVariable ];
+
+
+            if ( $stringValue ) {
+
+                /**
+                 * Получение значения из списка
+                 */
+                if ( ( gettype( $stringValue ) === "array" ) && $stringValue[ 0 ]->value )
+                    $stringValue = (int) $stringValue[ 0 ]->value;
+
+            } else {
+
+                /**
+                 * Обработка контекста
+                 */
+
+                if ( $requestData->context && $requestData->context->{$stringVariable} )
+                    $stringValue = $requestData->context->{$stringVariable};
+
+                if ( $stringVariable === "id" )
+                    $stringValue = (int) $requestData->context->row_id;
+
+            } // if. $stringValue
+
+
+            /**
+             * Формирование строки
+             */
+            $propertyValue = $stringValue;
+
+        } // if. $propertyValue[ 0 ] === ":"
+
+
+        $formData[ $propertyKey ] = $propertyValue;
+
+    } // foreach. $formData
 
 
     /**
@@ -672,10 +741,11 @@ function processingBlockType_form ( $structureBlock ) {
         $formAreas = $resultAreas;
 
     } // if. $userSchemePath
-
+    
 
     return [
         "type" => $formType,
+        "data" => $formData,
         "areas" => $formAreas
     ];
 

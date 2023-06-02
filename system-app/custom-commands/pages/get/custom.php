@@ -211,6 +211,11 @@ function generateStructureBlock ( $structureBlock ) {
             $responseBlock[ "settings" ][ "type" ] = $formStructure[ "type" ];
 
             /**
+             * Указание данных для автозаполнения
+             */
+            $responseBlock[ "settings" ][ "data" ] = $formStructure[ "data" ];
+
+            /**
              * Указание областей формы
              */
             $responseBlock[ "settings" ][ "areas" ] = $formStructure[ "areas" ];
