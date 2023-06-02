@@ -29,6 +29,15 @@ $smartListProperties = [];
 
 
 /**
+ * Получение детальной информации о записи
+ */
+$rowDetail = $API->DB->from( $objectScheme[ "table" ] )
+    ->where( "id", $requestData->id )
+    ->limit( 1 )
+    ->fetch();
+
+
+/**
  * Формирование значений для редактирования
  */
 
@@ -226,29 +235,110 @@ try {
 
     } // foreach. $smartListProperties
 
-
-    /**
-     * Добавление лога
-     */
-
-    $logData = $requestData;
-    $logDescription = "Обновлена запись ${objectScheme[ "title" ]} № $requestData->id";
-
-    /**
-     * @hook
-     * Формирование описания логах
-     */
-    if ( file_exists( $public_customCommandDirPath . "/hooks/log.php" ) )
-        require( $public_customCommandDirPath . "/hooks/log.php" );
-
-    $API->addLog( [
-        "table_name" => $objectScheme[ "table" ],
-        "description" => $logDescription,
-        "row_id" => $requestData->id
-    ], $logData );
-
 } catch ( PDOException $e ) {
 
     $API->returnResponse( $e->getMessage(), 500 );
 
 } // try. update
+
+
+/**
+ * Формирование лога
+ */
+
+$isFieldsUpdate = false;
+$logDescription = "Изменены поля: ";
+
+foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty ) {
+
+    if ( !$schemeProperty[ "is_autofill" ] ) continue;
+    if ( !isset( $updateValues[ $schemeProperty[ "article" ] ] ) ) continue;
+
+
+    /**
+     * Игнорирование системных св-в
+     */
+
+    $isContinue = false;
+
+    switch ( $schemeProperty[ "article" ] ) {
+
+        case "id":
+        case "password":
+            $isContinue = true;
+            break;
+
+    } // switch. $schemePropertyKey
+
+    if ( $isContinue ) continue;
+
+
+    /**
+     * Проверка наличия изменений
+     */
+    if ( $rowDetail[ $schemeProperty[ "article" ] ] == $updateValues[ $schemeProperty[ "article" ] ] ) continue;
+
+
+    /**
+     * Обработка списков
+     */
+
+    if ( $schemeProperty[ "field_type" ] == "list" ) {
+
+        if ( $schemeProperty[ "data_type" ] == "integer" ) {
+
+            /**
+             * Получение изначального значения св-ва
+             */
+            $innerRowDetail_old = $API->DB->from( $schemeProperty[ "list_donor" ][ "table" ] )
+                ->where( "id", $rowDetail[ $schemeProperty[ "article" ] ] )
+                ->select( null )->select( $schemeProperty[ "list_donor" ][ "properties_title" ] )
+                ->limit( 1 )
+                ->fetch();
+
+            /**
+             * Получение нового значения св-ва
+             */
+            $innerRowDetail_new = $API->DB->from( $schemeProperty[ "list_donor" ][ "table" ] )
+                ->where( "id", $updateValues[ $schemeProperty[ "article" ] ] )
+                ->select( null )->select( $schemeProperty[ "list_donor" ][ "properties_title" ] )
+                ->limit( 1 )
+                ->fetch();
+
+
+            /**
+             * Обновление значений
+             */
+            $rowDetail[ $schemeProperty[ "article" ] ] = $innerRowDetail_old[ $schemeProperty[ "list_donor" ][ "properties_title" ] ];
+            $updateValues[ $schemeProperty[ "article" ] ] = $innerRowDetail_new[ $schemeProperty[ "list_donor" ][ "properties_title" ] ];
+
+        } // if. $schemeProperty[ "data_type" ] == "integer"
+
+    } // if. $schemeProperty[ "field_type" ] == "list"
+
+
+    $isFieldsUpdate = true;
+    $logDescription .= $schemeProperty[ "title" ] . " с [" . $rowDetail[ $schemeProperty[ "article" ] ] . "] на [" . $updateValues[ $schemeProperty[ "article" ] ] . "], ";
+
+} // foreach. $objectScheme[ "properties" ]
+
+if ( !$isFieldsUpdate ) $logDescription = "Обновлена запись ${objectScheme[ "title" ]} № $requestData->id";
+else $logDescription = substr( $logDescription, 0, -2 );
+
+
+/**
+ * Добавление лога
+ */
+
+/**
+ * @hook
+ * Формирование описания логах
+ */
+if ( file_exists( $public_customCommandDirPath . "/hooks/log.php" ) )
+    require( $public_customCommandDirPath . "/hooks/log.php" );
+
+$API->addLog( [
+    "table_name" => $objectScheme[ "table" ],
+    "description" => $logDescription,
+    "row_id" => $requestData->id
+], $requestData );
