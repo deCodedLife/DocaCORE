@@ -18,7 +18,7 @@ foreach ( $response[ "data" ] as $log ) {
      */
 
     $tableTitle = $tableTitles[ $log[ "table_name" ] ];
-    if ( !$tableTitle ) $tableTitle = $API->loadObjectScheme( $log[ "table_name" ] )[ "title" ];
+    if ( !$tableTitle ) $tableTitle = $API->loadObjectScheme( $log[ "table_name" ], false )[ "title" ];
 
     $tableTitles[ $log[ "table_name" ] ] = $tableTitle;
     $log[ "table_name" ] = $tableTitle;
