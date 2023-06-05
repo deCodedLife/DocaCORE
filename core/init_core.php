@@ -1548,6 +1548,9 @@ class API {
      */
     public function uploadFilesFromForm ( $rowId, $file = [], $object = "" ) {
 
+        $file = $file[ 0 ];
+
+
         /**
          * Получение пути к директории загрузок
          */
