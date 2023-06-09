@@ -282,7 +282,9 @@ function generateStructureBlock ( $structureBlock ) {
                              */
 
                             $filters = [
-                                "context" => "list"
+                                "context" => [
+                                    "block" => "list"
+                                ]
                             ];
 
                             foreach ( $tabBlock[ "settings" ][ "filters" ] as $filter ) {

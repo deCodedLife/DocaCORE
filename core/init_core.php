@@ -809,11 +809,11 @@ class API {
      *
      * @param $rows          array   Строки для вывода
      * @param $objectScheme  object  Схема объекта
-     * @param $context       string  Контекст вызова get запроса
+     * @param $context       object  Контекст вызова get запроса
      *
      * @return array
      */
-    public function getResponseBuilder ( $rows, $objectScheme, $context = "" ) {
+    public function getResponseBuilder ( $rows, $objectScheme, $context = [] ) {
 
         global $requestData;
 
@@ -1129,7 +1129,7 @@ class API {
              * Обработка контекстов
              */
 
-            switch ( $context ) {
+            switch ( $context->block ) {
 
                 /**
                  * Списки
@@ -1158,7 +1158,7 @@ class API {
 
                     break;
 
-            } // switch. $context
+            } // switch. $context->block
 
 
             $response[] = $row;
@@ -1172,7 +1172,7 @@ class API {
          * Обработка контекстов
          */
 
-        switch ( $context ) {
+        switch ( $context->block ) {
 
             /**
              * CSV экспорт
@@ -1208,7 +1208,7 @@ class API {
 
                 break;
 
-        } // switch. $context
+        } // switch. $context->block
 
 
         return $response;
