@@ -7,6 +7,432 @@
 
 
 /**
+ * Обработка списков в формах
+ *
+ * @param $fieldDetail  array  Детальная информация о поле
+ * @param $blockField   array  Детальная информация о блоке
+ */
+function addListToForm ( $fieldDetail, $blockField ) {
+
+    global $API;
+
+
+    if ( $fieldDetail[ "joined_field" ] )
+        $blockField[ "joined_field" ] = $fieldDetail[ "joined_field" ];
+
+
+    /**
+     * Определение типа связанной таблицы
+     * (list_donor / join)
+     */
+    if ( !$fieldDetail[ "list_donor" ][ "table" ] ) {
+
+        $fieldDetail[ "list_donor" ][ "table" ] = $fieldDetail[ "join" ][ "donor_table" ];
+        $fieldDetail[ "list_donor" ][ "properties_title" ] = $fieldDetail[ "join" ][ "property_article" ];
+
+    } // if. !$fieldDetail[ "list_donor" ][ "table" ]
+
+
+    /**
+     * Загрузка схемы объекта связанной таблицы
+     */
+    $propertyObjectScheme = $API->loadObjectScheme( $fieldDetail[ "list_donor" ][ "table" ] );
+    if ( !$propertyObjectScheme ) return $blockField;
+
+
+    /**
+     * Фильтр данных из связанной таблицы
+     */
+
+    $listFilter = [ "is_active" => "Y" ];
+
+    if ( $fieldDetail[ "list_donor" ][ "filters" ] ) {
+
+        foreach ( $fieldDetail[ "list_donor" ][ "filters" ] as $filterArticle => $filterValue )
+            $listFilter[ $filterArticle ] = $filterValue;
+
+    } // if. $fieldDetail[ "list_donor" ][ "filters" ]
+
+
+    /**
+     * Получение данных из связанной таблицы
+     */
+    $joinedTableRows = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] );
+    if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( $listFilter );
+
+
+    /**
+     * Обновление списка
+     */
+    foreach ( $joinedTableRows as $joinedTableRow ) {
+
+        /**
+         * Сформированный пункт списка
+         */
+        $joinedRow = [];
+
+        /**
+         * Название поля
+         */
+        $fieldTitle = $joinedTableRow[ $fieldDetail[ "list_donor" ][ "properties_title" ] ];
+
+
+        /**
+         * Нестандартные названия полей
+         */
+        switch ( $fieldDetail[ "list_donor" ][ "properties_title" ] ) {
+
+            case "first_name":
+            case "last_name":
+            case "patronymic":
+
+                /**
+                 * Получение ФИО
+                 */
+
+                $fio = [
+                    "first_name" => "",
+                    "last_name" => "",
+                    "patronymic" => ""
+                ];
+
+                foreach ( $propertyObjectScheme[ "properties" ] as $property ) {
+
+                    if (
+                        ( $property[ "article" ] === "first_name" ) ||
+                        ( $property[ "article" ] === "last_name" ) ||
+                        ( $property[ "article" ] === "patronymic" )
+                    ) $fio[ $property[ "article" ] ] = $joinedTableRow[ $property[ "article" ] ];
+
+                } // foreach. $propertyObjectScheme[ "properties" ]
+
+                $fieldTitle = "${fio[ "last_name" ]} ${fio[ "first_name" ]} ${fio[ "patronymic" ]}";
+
+                break;
+
+        } // switch. $fieldDetail[ "list_donor" ][ "properties_title" ]
+
+
+        /**
+         * Заполнение пункта списка
+         */
+
+        $joinedRow = [
+            "title" => $fieldTitle,
+            "value" => $joinedTableRow[ "id" ]
+        ];
+
+        if ( $fieldDetail[ "joined_field" ] )
+            $joinedRow[ "joined_field_value" ] = $joinedTableRow[ $fieldDetail[ "joined_field" ] ];
+
+
+        $blockField[ "list" ][] = $joinedRow;
+
+    } // foreach. $joinedTableRows
+
+
+    return $blockField;
+
+} // function. addListToForm
+
+
+/**
+ * Обработка полей формы
+ */
+function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $field, $formFieldValues ) {
+
+    global $API;
+    global $pageDetail;
+
+
+    /**
+     * Сформированное поле формы
+     */
+    $blockField = [];
+
+
+    /**
+     * Получение детальной информации о поле формы
+     */
+    $fieldDetail = $objectProperties[ $field ];
+    if ( !$fieldDetail ) return $blockField;
+
+    if ( !$fieldDetail[ "require_in_commands" ] ) $fieldDetail[ "require_in_commands" ] = [];
+
+
+    /**
+     * Проверка обязательности поля
+     */
+    $isRequired = false;
+    if ( in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "require_in_commands" ] ) ) $isRequired = true;
+
+    /**
+     * Проверка видимости поля
+     */
+    $isVisible = true;
+    if ( $fieldDetail[ "is_visible" ] === false ) $isVisible = false;
+
+    /**
+     * Обновление формы, при изменении поля
+     */
+    $onChangeSubmit = false;
+    if ( $fieldDetail[ "on_change_submit" ] === true ) $onChangeSubmit = true;
+
+    /**
+     * Проверка наличия полей с загрузкой файлов
+     */
+    if ( $fieldDetail[ "data_type" ] === "image" ) $formType = "multipart/form-data";
+    if ( $fieldDetail[ "data_type" ] === "file" ) $formType = "multipart/form-data";
+
+
+    /**
+     * Проверка блокировки поля
+     */
+
+    $isDisabled = false;
+
+    if (
+        ( $fieldDetail[ "is_disabled" ] === true ) ||
+        ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ) )
+    ) $isDisabled = true;
+
+
+    /**
+     * Получение аннотации
+     */
+    if ( !$fieldDetail[ "annotation" ] ) $fieldDetail[ "annotation" ] = "";
+
+
+    /**
+     * Формирование поля формы
+     */
+
+    $blockField = [
+        "title" => $fieldDetail[ "title" ],
+        "article" => $fieldDetail[ "article" ],
+        "annotation" => $fieldDetail[ "annotation" ],
+        "data_type" => $fieldDetail[ "data_type" ],
+        "field_type" => $fieldDetail[ "field_type" ],
+        "settings" => $fieldDetail[ "settings" ],
+        "search" => $fieldDetail[ "search" ],
+        "description" => $fieldDetail[ "description" ],
+        "is_required" => $isRequired,
+        "is_disabled" => $isDisabled,
+        "is_visible" => $isVisible,
+        "on_change_submit" => $onChangeSubmit
+    ];
+
+    if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];
+    if ( $fieldDetail[ "max_value" ] ) $blockField[ "max_value" ] = $fieldDetail[ "max_value" ];
+
+
+    /**
+     * Обработка хуков
+     */
+    if ( $fieldDetail[ "is_hook" ] )
+        $blockField[ "hook" ] = $objectScheme[ "table" ];
+
+
+    /**
+     * Обработка связанных таблиц
+     */
+    if (
+        ( $fieldDetail[ "list_donor" ][ "table" ] || $fieldDetail[ "join" ][ "donor_table" ] ) &&
+        ( $fieldDetail[ "field_type" ] === "list" )
+    ) $blockField = addListToForm( $fieldDetail, $blockField );
+
+
+    /**
+     * Обработка умных списков
+     */
+    if ( $fieldDetail[ "field_type" ] == "smart_list" ) {
+
+        foreach ( $fieldDetail[ "settings" ][ "properties" ] as $propertyKey => $property ) {
+
+            /**
+             * Загрузка схемы объекта
+             */
+
+            $propertyObjectScheme = $API->loadObjectScheme( $property[ "list_donor" ][ "table" ], false );
+
+            if ( !$propertyObjectScheme ) continue;
+
+
+            $generatedField = addListToForm( $property, $property );
+            if ( !$generatedField ) continue;
+
+
+            $blockField[ "settings" ][ "properties" ][ $propertyKey ] = $generatedField;
+
+        } // foreach. $fieldDetail[ "settings" ][ "properties" ]
+
+    } // if. $fieldDetail[ "field_type" ] == "smart_list"
+
+
+    /**
+     * Обработка кастомных списков
+     */
+    if (
+        (
+            ( $fieldDetail[ "field_type" ] === "list" ) ||
+            ( $fieldDetail[ "field_type" ] === "radio" )
+        ) &&
+        $fieldDetail[ "custom_list" ]
+    ) {
+
+        foreach ( $fieldDetail[ "custom_list" ] as $listItem ) {
+
+            $blockField[ "list" ][] = [
+                "title" => $listItem[ "title" ],
+                "value" => $listItem[ "value" ]
+            ];
+
+        } // foreach. $fieldDetail[ "custom_list" ]
+
+    } // if. ( $fieldDetail[ "field_type" ] === "list" ) && $fieldDetail[ "custom_list" ]
+
+
+    /**
+     * Заполнение значения поля
+     */
+
+    if ( $pageDetail[ "row_detail" ] ) {
+
+        /**
+         * Получение значения поля
+         */
+        $blockField[ "value" ] = $pageDetail[ "row_detail" ][ $fieldDetail[ "article" ] ];
+
+
+        /**
+         * Обработка списков
+         */
+
+        if (
+            ( $fieldDetail[ "field_type" ] == "list" ) ||
+            ( $fieldDetail[ "field_type" ] == "radio" )
+        ) {
+
+            switch ( gettype( $blockField[ "value" ] ) ) {
+
+                case "array":
+
+                    $blockFieldValues = [];
+
+                    foreach ( $blockField[ "value" ] as $blockFieldValue )
+                        $blockFieldValues[] = $blockFieldValue->value;
+
+                    $blockField[ "value" ] = $blockFieldValues;
+
+                    break;
+
+                case "object":
+                    $blockField[ "value" ] = $blockField[ "value" ]->value;
+
+            } // switch. gettype( $blockField[ "value" ] )
+
+        } // if. $fieldDetail[ "field_type" ] == "list"
+
+
+        /**
+         * Перевод значения в указанный в схеме тип
+         */
+        settype( $blockField[ "value" ], $fieldDetail[ "data_type" ] );
+
+
+        /**
+         * Получение значения связанной таблицы
+         */
+        if (
+            !$blockField[ "value" ] &&
+            ( $blockField[ "field_type" ] === "list" ) &&
+            ( $blockField[ "data_type" ] === "array" )
+        ) {
+
+            /**
+             * Схема св-ва
+             */
+            $objectSchemeProperty = $objectProperties[ $blockField[ "article" ] ];
+
+
+            /**
+             * Значения св-ва
+             */
+            $objectPropertyValues = $API->DB->from( $objectSchemeProperty[ "join" ][ "connection_table" ] )
+                ->where( $objectSchemeProperty[ "join" ][ "insert_property" ], $pageDetail[ "row_detail" ][ "id" ] );
+
+
+            /**
+             * Добавление значений
+             */
+            foreach ( $objectPropertyValues as $objectPropertyValue )
+                $blockField[ "value" ][] = $objectPropertyValue[
+                    $objectSchemeProperty[ "join" ][ "filter_property" ]
+                ];
+
+        } // if. !$blockField[ "value" ]
+
+
+        /**
+         * Добавление значения связанной таблицы
+         */
+        foreach ( $blockField[ "list" ] as $joinedTableRow ) {
+
+            if ( !$fieldDetail[ "list_donor" ][ "table" ] ) continue;
+            if ( $joinedTableRow[ "value" ] != $blockField[ "value" ] ) continue;
+
+            $blockField[ "value" ] = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] )
+                ->where( "id", $blockField[ "value" ] )
+                ->limit( 1 )
+                ->fetch()[ "id" ];
+
+        } // foreach. $blockField[ "list" ]
+
+
+        /**
+         * Обработка системных св-в
+         */
+        if ( $fieldDetail[ "data_type" ] === "password" ) $blockField[ "value" ] = null;
+
+    } // if. $pageDetail[ "row_detail" ]
+
+
+    /**
+     * Заполнение значения поля из хука
+     */
+    if ( $formFieldValues[ $fieldDetail[ "article" ] ] )
+        $blockField[ "value" ] = $formFieldValues[ $fieldDetail[ "article" ] ];
+
+
+    /**
+     * Обработка значений св-в блока типа info
+     */
+
+    if ( $structureBlock[ "type" ] === "info" ) {
+
+        switch ( $fieldDetail[ "data_type" ] ) {
+
+            case "boolean":
+
+                if ( $blockField[ "value" ] ) $blockField[ "value" ] = "Да";
+                else $blockField[ "value" ] = "Нет";
+
+                break;
+
+        } // switch. $fieldDetail[ "data_type" ]
+
+    } // if. $structureBlock[ "type" ] === "info"
+
+
+    /**
+     * Учет поля формы
+     */
+    return $blockField;
+
+} // function. addFieldToForm
+
+
+/**
  * Добавление элемента в позицию массива
  */
 function addItemToArrayPosition ( $array, $insertItem, $position ) {
@@ -288,368 +714,8 @@ function processingBlockType_form ( $structureBlock ) {
              */
             foreach ( $block[ "fields" ] as $fieldKey => $field ) {
 
-                /**
-                 * Сформированное поле формы
-                 */
-                $blockField = [];
-
-
-                /**
-                 * Получение детальной информации о поле формы
-                 */
-                $fieldDetail = $objectProperties[ $field ];
-                if ( !$fieldDetail ) continue;
-
-                if ( !$fieldDetail[ "require_in_commands" ] ) $fieldDetail[ "require_in_commands" ] = [];
-
-
-                /**
-                 * Проверка обязательности поля
-                 */
-                $isRequired = false;
-                if ( in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "require_in_commands" ] ) ) $isRequired = true;
-
-                /**
-                 * Проверка видимости поля
-                 */
-                $isVisible = true;
-                if ( $fieldDetail[ "is_visible" ] === false ) $isVisible = false;
-
-                /**
-                 * Обновление формы, при изменении поля
-                 */
-                $onChangeSubmit = false;
-                if ( $fieldDetail[ "on_change_submit" ] === true ) $onChangeSubmit = true;
-
-                /**
-                 * Проверка наличия полей с загрузкой файлов
-                 */
-                if ( $fieldDetail[ "data_type" ] === "image" ) $formType = "multipart/form-data";
-                if ( $fieldDetail[ "data_type" ] === "file" ) $formType = "multipart/form-data";
-
-
-                /**
-                 * Проверка блокировки поля
-                 */
-
-                $isDisabled = false;
-
-                if (
-                    ( $fieldDetail[ "is_disabled" ] === true ) ||
-                    ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ) )
-                ) $isDisabled = true;
-
-
-                /**
-                 * Формирование поля формы
-                 */
-
-                $blockField = [
-                    "title" => $fieldDetail[ "title" ],
-                    "article" => $fieldDetail[ "article" ],
-                    "data_type" => $fieldDetail[ "data_type" ],
-                    "field_type" => $fieldDetail[ "field_type" ],
-                    "settings" => $fieldDetail[ "settings" ],
-                    "search" => $fieldDetail[ "search" ],
-                    "description" => $fieldDetail[ "description" ],
-                    "is_required" => $isRequired,
-                    "is_disabled" => $isDisabled,
-                    "is_visible" => $isVisible,
-                    "on_change_submit" => $onChangeSubmit
-                ];
-
-                if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];
-                if ( $fieldDetail[ "max_value" ] ) $blockField[ "max_value" ] = $fieldDetail[ "max_value" ];
-
-
-                /**
-                 * Обработка хуков
-                 */
-                if ( $fieldDetail[ "is_hook" ] )
-                    $blockField[ "hook" ] = $objectScheme[ "table" ];
-
-
-                /**
-                 * Обработка связанных таблиц
-                 */
-
-                if (
-                    ( $fieldDetail[ "list_donor" ][ "table" ] || $fieldDetail[ "join" ][ "donor_table" ] ) &&
-                    ( $fieldDetail[ "field_type" ] === "list" )
-                ) {
-
-                    if ( $fieldDetail[ "joined_field" ] )
-                        $blockField[ "joined_field" ] = $fieldDetail[ "joined_field" ];
-
-
-                    /**
-                     * Определение типа связанной таблицы
-                     * (list_donor / join)
-                     */
-                    if ( !$fieldDetail[ "list_donor" ][ "table" ] ) {
-
-                        $fieldDetail[ "list_donor" ][ "table" ] = $fieldDetail[ "join" ][ "donor_table" ];
-                        $fieldDetail[ "list_donor" ][ "properties_title" ] = $fieldDetail[ "join" ][ "property_article" ];
-
-                    } // if. !$fieldDetail[ "list_donor" ][ "table" ]
-
-
-                    /**
-                     * Загрузка схемы объекта связанной таблицы
-                     */
-                    $propertyObjectScheme = $API->loadObjectScheme( $fieldDetail[ "list_donor" ][ "table" ] );
-                    if ( !$propertyObjectScheme ) continue;
-
-
-                    /**
-                     * Фильтр данных из связанной таблицы
-                     */
-
-                    $listFilter = [ "is_active" => "Y" ];
-
-                    if ( $fieldDetail[ "list_donor" ][ "filters" ] ) {
-
-                        foreach ( $fieldDetail[ "list_donor" ][ "filters" ] as $filterArticle => $filterValue )
-                            $listFilter[ $filterArticle ] = $filterValue;
-
-                    } // if. $fieldDetail[ "list_donor" ][ "filters" ]
-
-
-                    /**
-                     * Получение данных из связанной таблицы
-                     */
-                    $joinedTableRows = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] );
-                    if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( $listFilter );
-
-
-                    /**
-                     * Обновление списка
-                     */
-                    foreach ( $joinedTableRows as $joinedTableRow ) {
-
-                        /**
-                         * Сформированный пункт списка
-                         */
-                        $joinedRow = [];
-
-                        /**
-                         * Название поля
-                         */
-                        $fieldTitle = $joinedTableRow[ $fieldDetail[ "list_donor" ][ "properties_title" ] ];
-
-
-                        /**
-                         * Нестандартные названия полей
-                         */
-                        switch ( $fieldDetail[ "list_donor" ][ "properties_title" ] ) {
-
-                            case "first_name":
-                            case "last_name":
-                            case "patronymic":
-
-                                /**
-                                 * Получение ФИО
-                                 */
-
-                                $fio = [
-                                    "first_name" => "",
-                                    "last_name" => "",
-                                    "patronymic" => ""
-                                ];
-
-                                foreach ( $propertyObjectScheme[ "properties" ] as $property ) {
-
-                                    if (
-                                        ( $property[ "article" ] === "first_name" ) ||
-                                        ( $property[ "article" ] === "last_name" ) ||
-                                        ( $property[ "article" ] === "patronymic" )
-                                    ) $fio[ $property[ "article" ] ] = $joinedTableRow[ $property[ "article" ] ];
-
-                                } // foreach. $propertyObjectScheme[ "properties" ]
-
-                                $fieldTitle = "${fio[ "last_name" ]} ${fio[ "first_name" ]} ${fio[ "patronymic" ]}";
-
-                                break;
-
-                        } // switch. $fieldDetail[ "list_donor" ][ "properties_title" ]
-
-
-                        /**
-                         * Заполнение пункта списка
-                         */
-
-                        $joinedRow = [
-                            "title" => $fieldTitle,
-                            "value" => $joinedTableRow[ "id" ]
-                        ];
-
-                        if ( $fieldDetail[ "joined_field" ] )
-                            $joinedRow[ "joined_field_value" ] = $joinedTableRow[ $fieldDetail[ "joined_field" ] ];
-
-
-                        $blockField[ "list" ][] = $joinedRow;
-
-                    } // foreach. $joinedTableRows
-
-                } // if. $fieldDetail[ "field_type" ] === "list"
-
-
-                /**
-                 * Обработка кастомных списков
-                 */
-                if (
-                    (
-                        ( $fieldDetail[ "field_type" ] === "list" ) ||
-                        ( $fieldDetail[ "field_type" ] === "radio" )
-                    ) &&
-                    $fieldDetail[ "custom_list" ]
-                ) {
-
-                    foreach ( $fieldDetail[ "custom_list" ] as $listItem ) {
-
-                        $blockField[ "list" ][] = [
-                            "title" => $listItem[ "title" ],
-                            "value" => $listItem[ "value" ]
-                        ];
-
-                    } // foreach. $fieldDetail[ "custom_list" ]
-
-                } // if. ( $fieldDetail[ "field_type" ] === "list" ) && $fieldDetail[ "custom_list" ]
-
-
-                /**
-                 * Заполнение значения поля
-                 */
-
-                if ( $pageDetail[ "row_detail" ] ) {
-
-                    /**
-                     * Получение значения поля
-                     */
-                    $blockField[ "value" ] = $pageDetail[ "row_detail" ][ $fieldDetail[ "article" ] ];
-
-
-                    /**
-                     * Обработка списков
-                     */
-
-                    if ( $fieldDetail[ "field_type" ] == "list" ) {
-
-                        switch ( gettype( $blockField[ "value" ] ) ) {
-
-                            case "array":
-
-                                $blockFieldValues = [];
-
-                                foreach ( $blockField[ "value" ] as $blockFieldValue )
-                                    $blockFieldValues[] = $blockFieldValue->value;
-
-                                $blockField[ "value" ] = $blockFieldValues;
-
-                                break;
-
-                            case "object":
-                                $blockField[ "value" ] = $blockField[ "value" ]->value;
-
-                        } // switch. gettype( $blockField[ "value" ] )
-
-                    } // if. $fieldDetail[ "field_type" ] == "list"
-
-
-                    /**
-                     * Перевод значения в указанный в схеме тип
-                     */
-                    settype( $blockField[ "value" ], $fieldDetail[ "data_type" ] );
-
-
-                    /**
-                     * Получение значения связанной таблицы
-                     */
-                    if (
-                        !$blockField[ "value" ] &&
-                        ( $blockField[ "field_type" ] === "list" ) &&
-                        ( $blockField[ "data_type" ] === "array" )
-                    ) {
-
-                        /**
-                         * Схема св-ва
-                         */
-                        $objectSchemeProperty = $objectProperties[ $blockField[ "article" ] ];
-
-
-                        /**
-                         * Значения св-ва
-                         */
-                        $objectPropertyValues = $API->DB->from( $objectSchemeProperty[ "join" ][ "connection_table" ] )
-                            ->where( $objectSchemeProperty[ "join" ][ "insert_property" ], $pageDetail[ "row_detail" ][ "id" ] );
-
-
-                        /**
-                         * Добавление значений
-                         */
-                        foreach ( $objectPropertyValues as $objectPropertyValue )
-                            $blockField[ "value" ][] = $objectPropertyValue[
-                                $objectSchemeProperty[ "join" ][ "filter_property" ]
-                            ];
-
-                    } // if. !$blockField[ "value" ]
-
-
-                    /**
-                     * Добавление значения связанной таблицы
-                     */
-                    foreach ( $blockField[ "list" ] as $joinedTableRow ) {
-
-                        if ( !$fieldDetail[ "list_donor" ][ "table" ] ) continue;
-                        if ( $joinedTableRow[ "value" ] != $blockField[ "value" ] ) continue;
-
-                        $blockField[ "value" ] = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] )
-                            ->where( "id", $blockField[ "value" ] )
-                            ->limit( 1 )
-                            ->fetch()[ "id" ];
-
-                    } // foreach. $blockField[ "list" ]
-
-
-                    /**
-                     * Обработка системных св-в
-                     */
-                    if ( $fieldDetail[ "data_type" ] === "password" ) $blockField[ "value" ] = null;
-
-                } // if. $pageDetail[ "row_detail" ]
-
-
-                /**
-                 * Заполнение значения поля из хука
-                 */
-                if ( $formFieldValues[ $fieldDetail[ "article" ] ] )
-                    $blockField[ "value" ] = $formFieldValues[ $fieldDetail[ "article" ] ];
-
-
-                /**
-                 * Обработка значений св-в блока типа info
-                 */
-
-                if ( $structureBlock[ "type" ] === "info" ) {
-
-                    switch ( $fieldDetail[ "data_type" ] ) {
-
-                        case "boolean":
-
-                            if ( $blockField[ "value" ] ) $blockField[ "value" ] = "Да";
-                            else $blockField[ "value" ] = "Нет";
-
-                            break;
-
-                    } // switch. $fieldDetail[ "data_type" ]
-
-                } // if. $structureBlock[ "type" ] === "info"
-
-
-                /**
-                 * Учет поля формы
-                 */
-                $blockFields[] = $blockField;
+                $generatedBlock = addFieldToForm( $objectScheme, $objectProperties, $structureBlock, $field, $formFieldValues );
+                if ( $generatedBlock ) $blockFields[] = $generatedBlock;
 
             } // foreach. $block[ "fields" ]
 

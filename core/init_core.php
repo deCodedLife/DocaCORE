@@ -2240,14 +2240,15 @@ class API {
     /**
      * Отправка запроса в API
      *
-     * @param $object   string  Объект запроса
-     * @param $command  string  Команда запроса
-     * @param $body     array   Тело запроса
-     * @param $api_url  string  URL запроса
+     * @param $object            string   Объект запроса
+     * @param $command           string   Команда запроса
+     * @param $body              array    Тело запроса
+     * @param $api_url           string   URL запроса
+     * @param $is_full_response  boolean  Полный ответ
      *
      * @return mixed
      */
-    public function sendRequest ( $object, $command, $body = [], $api_url = "" ) {
+    public function sendRequest ( $object, $command, $body = [], $api_url = "", $is_full_response = false ) {
 
         if ( !$api_url && $_SERVER[ "HTTP_HOST" ] ) $api_url = $_SERVER[ "HTTP_HOST" ];
 
@@ -2296,7 +2297,9 @@ class API {
 
 
         if ( !$response ) return false;
-        return $response->data;
+
+        if ( !$is_full_response ) return $response->data;
+        else return $response;
 
     } // function. sendRequest
 

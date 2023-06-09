@@ -259,6 +259,84 @@ function generateStructureBlock ( $structureBlock ) {
             foreach ( $structureBlock[ "settings" ] as $tabKey => $tab ) {
 
                 /**
+                 * Обработка счетчика
+                 */
+
+                if ( $tab[ "is_counter" ] ) {
+
+                    /**
+                     * Счетчик таба
+                     */
+                    $tabCounter = 0;
+
+
+                    /**
+                     * Получение первого списка
+                     */
+                    foreach ( $tab[ "body" ] as $tabBlockKey => $tabBlock ) {
+
+                        if ( $tabBlock[ "type" ] === "list" ) {
+
+                            /**
+                             * Получение фильтров get запроса
+                             */
+
+                            $filters = [
+                                "context" => "list"
+                            ];
+
+                            foreach ( $tabBlock[ "settings" ][ "filters" ] as $filter ) {
+
+                                /**
+                                 * Подстановка переменных
+                                 */
+
+                                if ( $filter[ "value" ][ 0 ] === ":" ) {
+
+                                    /**
+                                     * Обработка переменной
+                                     */
+
+                                    /**
+                                     * Получение переменной в строке
+                                     */
+                                    $stringVariable = substr( $filter[ "value" ], 1 );
+
+
+                                    /**
+                                     * Получение значения из списка
+                                     */
+                                    if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                                        $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+
+                                    /**
+                                     * Формирование строки
+                                     */
+                                    $filter[ "value" ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+
+                                } // if. $filter[ "value" ][ 0 ] === ":"
+
+                                $filters[ $filter[ "property" ] ] = $filter[ "value" ];
+
+                            } // foreach. $tabBlock[ "settings" ][ "filters" ]
+
+
+                            $rowsCount = $API->sendRequest( $tabBlock[ "settings" ][ "object" ], "get", $filters, "", true );
+
+                            $tabCounter += $rowsCount->detail->rows_count * $rowsCount->detail->pages_count;
+
+                        } // if. $tabBlock[ "field_type" ] === "list"
+
+                    } // foreach. $tab[ "body" ]
+
+
+                    unset( $structureBlock[ "settings" ][ $tabKey ][ "is_counter" ] );
+                    $structureBlock[ "settings" ][ $tabKey ][ "counter" ] = $tabCounter;
+
+                } // if. $tab[ "is_counter" ]
+
+
+                /**
                  * Обработка структуры таба
                  */
                 foreach ( $tab[ "body" ] as $tabBlockKey => $tabBlock ) {
