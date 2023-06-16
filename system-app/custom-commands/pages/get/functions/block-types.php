@@ -400,8 +400,23 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
     /**
      * Заполнение значения поля из хука
      */
-    if ( $formFieldValues[ $fieldDetail[ "article" ] ] )
-        $blockField[ "value" ] = $formFieldValues[ $fieldDetail[ "article" ] ];
+    if ( $formFieldValues[ $fieldDetail[ "article" ] ] ) {
+
+        if ( gettype( $formFieldValues[ $fieldDetail[ "article" ] ] ) !== "array" ) {
+
+            $blockField[ "value" ] = $formFieldValues[ $fieldDetail[ "article" ] ];
+
+        } else {
+
+            /**
+             * Заполнение св-в поля
+             */
+            foreach ( $formFieldValues[ $fieldDetail[ "article" ] ] as $fieldProperty => $fieldPropertyValue )
+                $blockField[ $fieldProperty ] = $fieldPropertyValue;
+
+        } // if. gettype( $formFieldValues[ $fieldDetail[ "article" ] ] ) !== "array"
+
+    } // if. $formFieldValues[ $fieldDetail[ "article" ] ]
 
 
     /**

@@ -616,21 +616,6 @@ if ( isset( $pageDetail[ "url" ][ 2 ] ) ) $pageDetail[ "row_id" ] = $pageDetail[
 
 
 /**
- * @hook
- * Формирование значений формы
- */
-
-$formFieldValues = [];
-$hookPath = $pageDetail[ "section" ];
-
-if ( isset( $pageDetail[ "url" ][ 1 ] ) ) $hookPath .= "/" . $pageDetail[ "url" ][ 1 ];
-else $hookPath .= "/index";
-
-if ( file_exists( $public_customCommandDirPath . "/hooks/$hookPath/field-values.php" ) )
-    require( $public_customCommandDirPath . "/hooks/$hookPath/field-values.php" );
-
-
-/**
  * Формирование пути к схеме страницы
  */
 
@@ -878,6 +863,21 @@ if ( $pageDetail[ "section" ] === "settings" )
         [],
         $_SERVER[ "SERVER_NAME" ]
     );
+
+
+/**
+ * @hook
+ * Формирование значений формы
+ */
+
+$formFieldValues = [];
+$hookPath = $pageDetail[ "section" ];
+
+if ( isset( $pageDetail[ "url" ][ 1 ] ) ) $hookPath .= "/" . $pageDetail[ "url" ][ 1 ];
+else $hookPath .= "/index";
+
+if ( file_exists( $public_customCommandDirPath . "/hooks/$hookPath/field-values.php" ) )
+    require( $public_customCommandDirPath . "/hooks/$hookPath/field-values.php" );
 
 
 /**
