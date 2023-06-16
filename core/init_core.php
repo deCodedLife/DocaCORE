@@ -2035,6 +2035,9 @@ class API {
          * Заполнение данных о связанных Пользователях и Клиентах
          */
 
+        $logDetail[ "users_id" ] = [];
+        $logDetail[ "clients_id" ] = [];
+
         if ( !$requestData->is_ignore_current_user ) $logDetail[ "users_id" ][] = $this::$userDetail->id;
 
         if ( $requestData->user_id ) $logDetail[ "users_id" ][] = $requestData->user_id;
@@ -2074,6 +2077,7 @@ class API {
                     "client_id" => $clientId
                 ] )
                 ->execute();
+
 
         return true;
 

@@ -274,6 +274,21 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
 
 
     /**
+     * Игнорирование типов св-в
+     */
+
+    switch ( $schemeProperty[ "field_type" ] ) {
+
+        case "smart_list":
+            $isContinue = true;
+            break;
+
+    } // switch. $schemePropertyKey
+
+    if ( $isContinue ) continue;
+
+
+    /**
      * Проверка наличия изменений
      */
     if ( $rowDetail[ $schemeProperty[ "article" ] ] == $updateValues[ $schemeProperty[ "article" ] ] ) continue;
