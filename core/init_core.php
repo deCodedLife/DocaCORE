@@ -1657,14 +1657,18 @@ class API {
          * Получение пути к директории файлов на сервере
          */
 
+        $currentFiles = [];
         $filesDirPath = "$filesDirPath/$rowId";
 
-        rmdir( $filesDirPath );
+        foreach ( $files as $file )
+            if ( gettype( $file ) === "string" ) $currentFiles[] = substr( $file, strpos( $file, "/uploads" ) );
+
+        $this->clearDirMultiply( $filesDirPath, $currentFiles );
         mkdir( $filesDirPath );
 
 
         /**
-         * Загрузка изображений
+         * Загрузка файлов
          */
 
         foreach ( $files as $fileKey => $file ) {
@@ -1673,6 +1677,7 @@ class API {
              * Получение пути к файлу на сервере
              */
 
+            $isContinue = false;
             $filePath = "$filesDirPath/$fileKey";
 
             switch ( $file[ "type" ] ) {
@@ -1712,9 +1717,11 @@ class API {
 
                 default:
 
-                    return "";
+                    $isContinue = true;
 
             } // switch. $file[ "type" ]
+
+            if ( $isContinue ) continue;
 
 
             /**
@@ -1722,7 +1729,7 @@ class API {
              */
             move_uploaded_file( $file[ "tmp_name" ], $filePath );
 
-        } // foreach. $images
+        } // foreach. $files
 
 
         return substr( $filesDirPath, strpos( $filesDirPath, "/uploads" ) );
@@ -1760,9 +1767,13 @@ class API {
          * Получение пути к директории изображений на сервере
          */
 
+        $currentFiles = [];
         $imagesDirPath = "$imagesDirPath/$rowId";
 
-        rmdir( $imagesDirPath );
+        foreach ( $images as $image )
+            if ( gettype( $image ) === "string" ) $currentFiles[] = substr( $image, strpos( $image, "/uploads" ) );
+
+        $this->clearDirMultiply( $imagesDirPath, $currentFiles );
         mkdir( $imagesDirPath );
 
 
@@ -1776,6 +1787,7 @@ class API {
              * Получение пути к изображению на сервере
              */
 
+            $isContinue = false;
             $imagePath = "$imagesDirPath/$imageKey";
 
             switch ( $image[ "type" ] ) {
@@ -1799,9 +1811,11 @@ class API {
                      */
                     unlink( $imagePath . ".webp" );
 
-                    return "";
+                    $isContinue = true;
 
             } // switch. $image[ "type" ]
+
+            if ( $isContinue ) continue;
 
 
             /**
@@ -1820,6 +1834,34 @@ class API {
         return substr( $imagesDirPath, strpos( $imagesDirPath, "/uploads" ) );
 
     } // function. uploadMultiplyImages
+
+
+    /**
+     * Удаление директории с файлами
+     *
+     * @param $path          string  Путь к директории
+     * @param $currentFiles  array   Файлы, которые не нужно чистить
+     *
+     * @return boolean
+     */
+    public function clearDirMultiply ( $path, $currentFiles ) {
+
+        $files = array_diff( scandir( $path ), array( ".", ".." ) );
+
+
+        foreach ( $files as $file ) {
+
+            $filePath = substr( "$path/$file", strpos( "$path/$file", "/uploads" ) );
+
+            if ( is_dir( "$path/$file" ) ) continue;
+            elseif ( in_array( $filePath, $currentFiles ) ) continue;
+            else unlink( "$path/$file" );
+
+        } // foreach. $files
+
+        return true;
+
+    } // function. clearDirMultiply
 
 
     /**

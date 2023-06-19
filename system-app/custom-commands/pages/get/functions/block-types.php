@@ -178,12 +178,6 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
     $onChangeSubmit = false;
     if ( $fieldDetail[ "on_change_submit" ] === true ) $onChangeSubmit = true;
 
-    /**
-     * Проверка наличия полей с загрузкой файлов
-     */
-    if ( $fieldDetail[ "data_type" ] === "image" ) $formType = "multipart/form-data";
-    if ( $fieldDetail[ "data_type" ] === "file" ) $formType = "multipart/form-data";
-
 
     /**
      * Проверка блокировки поля
@@ -728,6 +722,19 @@ function processingBlockType_form ( $structureBlock ) {
              * Обработка полей формы
              */
             foreach ( $block[ "fields" ] as $fieldKey => $field ) {
+
+                /**
+                 * Получение детальной информации о поле формы
+                 */
+                $fieldDetail = $objectProperties[ $field ];
+                if ( !$fieldDetail ) continue;
+
+                /**
+                 * Проверка наличия полей с загрузкой файлов
+                 */
+                if ( $fieldDetail[ "data_type" ] === "image" ) $formType = "multipart/form-data";
+                if ( $fieldDetail[ "data_type" ] === "file" ) $formType = "multipart/form-data";
+
 
                 $generatedBlock = addFieldToForm( $objectScheme, $objectProperties, $structureBlock, $field, $formFieldValues );
                 if ( $generatedBlock ) $blockFields[] = $generatedBlock;
