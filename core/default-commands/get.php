@@ -141,6 +141,8 @@ try {
         ->orderBy( $requestSettings[ "sort_by" ] . " " . $requestSettings[ "sort_order" ] );
 
     if ( $objectScheme[ "is_trash" ] ) $requestSettings[ "filter" ][ "is_active" ] = "Y";
+
+
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
     if ( $selectProperties ) $rows->select( null )->select( $selectProperties );
 

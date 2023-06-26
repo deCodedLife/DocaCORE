@@ -81,6 +81,21 @@ $API->request = json_decode( file_get_contents( "php://input" ) );
 
 
 /**
+ * Подключение интеграций
+ */
+
+if ( file_exists( $API::$configs[ "paths" ][ "core" ] . "/init_integrations.php" ) ) {
+
+    require_once( $API::$configs[ "paths" ][ "core" ] . "/init_integrations.php" );
+
+} else {
+
+    $API->returnResponse( "Интеграции не отвечают", 500 );
+
+} // if. file_exists. /core/init_integrations.php
+
+
+/**
  * Обработка формы с файлами
  */
 
