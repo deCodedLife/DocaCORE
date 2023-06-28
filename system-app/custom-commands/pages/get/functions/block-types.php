@@ -53,6 +53,13 @@ function addListToForm ( $fieldDetail, $blockField ) {
 
     } // if. $fieldDetail[ "list_donor" ][ "filters" ]
 
+    if ( $fieldDetail[ "join" ][ "filters" ] ) {
+
+        foreach ( $fieldDetail[ "join" ][ "filters" ] as $filterArticle => $filterValue )
+            $listFilter[ $filterArticle ] = $filterValue;
+
+    } // if. $fieldDetail[ "join" ][ "filters" ]
+
 
     /**
      * Получение данных из связанной таблицы
