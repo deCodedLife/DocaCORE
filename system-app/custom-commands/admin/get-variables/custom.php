@@ -56,6 +56,12 @@ $objectsList = array_unique( $objectsList );
 
 foreach ( $objectsList as $objectArticle ) {
 
+    if (
+        ( $objectArticle !== "visits" ) &&
+        ( $objectArticle !== "clients" )
+    ) continue;
+
+
     /**
      * Получение схемы объекта
      */
@@ -74,6 +80,26 @@ foreach ( $objectsList as $objectArticle ) {
      */
 
     foreach ( $objectScheme[ "properties" ] as $property ) {
+
+        if ( $property[ "is_variable" ] === false ) continue;
+
+
+        /**
+         * Исключения
+         */
+
+        $isContinue = false;
+
+        switch ( $property[ "data_type" ] ) {
+
+            case "password":
+            case "boolean":
+                $isContinue = true;
+
+        } // switch. $property[ "data_type" ]
+
+        if ( $isContinue ) continue;
+
 
         $resultVariablesList[ $objectArticle ][ "variables" ][ $property[ "article" ] ] = [
             "title" => $property[ "title" ],
@@ -110,11 +136,32 @@ foreach ( $objectsList as $objectArticle ) {
 
                 foreach ( $innerObjectScheme[ "properties" ] as $innerProperty ) {
 
+                    if ( $innerProperty[ "is_variable" ] === false ) continue;
+
+
                     /**
                      * Игнорирование вложенных св-в
                      */
                     if ( $innerProperty[ "list_donor" ] ) continue;
                     if ( $innerProperty[ "join" ] ) continue;
+
+
+                    /**
+                     * Исключения
+                     */
+
+                    $isContinue = false;
+
+                    switch ( $innerProperty[ "data_type" ] ) {
+
+                        case "password":
+                        case "boolean":
+                            $isContinue = true;
+
+                    } // switch. $innerProperty[ "data_type" ]
+
+                    if ( $isContinue ) continue;
+
 
                     $resultVariablesList[ $objectArticle ][ "variables" ][ $property[ "article" ] ][ "inner_variables" ][ $innerProperty[ "article" ] ] = [
                         "title" => $innerProperty[ "title" ],

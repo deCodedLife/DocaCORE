@@ -12,6 +12,7 @@
       "is_default_in_list": true,
       "is_unique": false,
       "is_autofill": true,
+      "is_variable": false,
       "required_permissions": [],
       "required_modules": [],
       "use_in_commands": [ "add", "update" ],

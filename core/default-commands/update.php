@@ -29,6 +29,15 @@ $smartListProperties = [];
 
 
 /**
+ * Формирование лога
+ */
+
+$isFieldsUpdate = false;
+$logDescription = "Изменены поля: ";
+$logJoinedFieldsDescription = "";
+
+
+/**
  * Получение детальной информации о записи
  */
 $rowDetail = $API->DB->from( $objectScheme[ "table" ] )
@@ -102,6 +111,7 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
          * Обработка связанных таблиц
          */
         if ( $schemeProperty[ "join" ] ) $join_updateValues[ $propertyName ] = [
+            "scheme_property" => $schemeProperty[ "article" ],
             "connection_table" => $schemeProperty[ "join" ][ "connection_table" ],
             "filter_property" => $schemeProperty[ "join" ][ "filter_property" ],
             "insert_property" => $schemeProperty[ "join" ][ "insert_property" ],
@@ -188,6 +198,20 @@ try {
     foreach ( $join_updateValues as $donor_table => $join ) {
 
         /**
+         * Получение старых записей.
+         * Используется для логирования связанных таблиц
+         */
+
+        $currentRowsList = [];
+
+        $currentRows = $API->DB->from( $join[ "connection_table" ] )
+            ->where( $join[ "insert_property" ], $requestData->id );
+
+        foreach ( $currentRows as $currentRow )
+            $currentRowsList[] = $currentRow[ $join[ "filter_property" ] ];
+
+
+        /**
          * Очистка старых связей
          */
         $API->DB->deleteFrom( $join[ "connection_table" ] )
@@ -196,6 +220,31 @@ try {
 
 
         foreach ( $join[ "data" ] as $key => $connection_table_value ) {
+
+            /**
+             * Логирование связанной таблицы
+             */
+
+            if ( !in_array( $connection_table_value, $currentRowsList ) ) {
+
+                /**
+                 * Получение детальной информации о записи
+                 */
+                foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty ) {
+
+                    if ( $schemeProperty[ "article" ] !== $join[ "scheme_property" ] ) continue;
+
+                    $joinValue = $API->DB->from( $schemeProperty[ "join" ][ "donor_table" ] )
+                        ->where( "id", $connection_table_value )
+                        ->limit( 1 )
+                        ->fetch();
+
+                    $logJoinedFieldsDescription .= "добавлен " . $schemeProperty[ "title" ] . " '" . $joinValue[ $schemeProperty[ "join" ][ "property_article" ] ] . "', ";
+
+                } // foreach. $objectScheme[ "properties" ]
+
+            } // if. !in_array( $connection_table_value, $currentRowsList )
+
 
             $API->DB->insertInto( $join[ "connection_table" ] )
                 ->values( [
@@ -241,13 +290,6 @@ try {
 
 } // try. update
 
-
-/**
- * Формирование лога
- */
-
-$isFieldsUpdate = false;
-$logDescription = "Изменены поля: ";
 
 foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty ) {
 
@@ -339,6 +381,13 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
 
 if ( !$isFieldsUpdate ) $logDescription = "Обновлена запись ${objectScheme[ "title" ]} № $requestData->id";
 else $logDescription = substr( $logDescription, 0, -2 );
+
+if ( $logJoinedFieldsDescription ) {
+
+    $logJoinedFieldsDescription = substr( $logJoinedFieldsDescription, 0, -2 );
+    $logDescription .= "; $logJoinedFieldsDescription";
+
+} // if. $logJoinedFieldsDescription
 
 
 /**

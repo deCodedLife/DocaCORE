@@ -258,8 +258,18 @@ class API {
         foreach ( $objectSchemes[ "public" ][ "properties" ] as $property )
             $objectSchemeProperties[ $property[ "article" ] ] = $property;
 
-        foreach ( $objectSchemes[ "system" ][ "properties" ] as $property )
+        foreach ( $objectSchemes[ "system" ][ "properties" ] as $property ) {
+
+            if ( $objectSchemeProperties[ $property[ "article" ] ] ) {
+
+                $property[ "is_default_in_list" ] = $objectSchemeProperties[ $property[ "article" ] ][ "is_default_in_list" ];
+                $property[ "is_autofill" ] = $objectSchemeProperties[ $property[ "article" ] ][ "is_autofill" ];
+
+            } // if. $objectSchemeProperties[ $property[ "article" ] ]
+
             $objectSchemeProperties[ $property[ "article" ] ] = $property;
+
+        } // foreach. $objectSchemes[ "system" ][ "properties" ]
 
         if ( $objectSchemeProperties )
             $resultScheme[ "properties" ] = array_values( $objectSchemeProperties );
