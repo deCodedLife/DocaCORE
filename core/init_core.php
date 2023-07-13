@@ -1579,10 +1579,16 @@ class API {
 
 
         /**
+         * Получение названия файла
+         */
+        $fileTitle = substr( $file[ "name" ], 0, strpos( $file[ "name" ], "." ) );
+
+
+        /**
          * Получение пути к изображению на сервере
          */
 
-        $filePath = "$filesDirPath/$rowId";
+        $filePath = "$filesDirPath/$fileTitle";
 
         switch ( $file[ "type" ] ) {
 
@@ -1681,14 +1687,20 @@ class API {
          * Загрузка файлов
          */
 
-        foreach ( $files as $fileKey => $file ) {
+        foreach ( $files as $file ) {
+
+            /**
+             * Получение названия файла
+             */
+            $fileTitle = substr( $file[ "name" ], 0, strpos( $file[ "name" ], "." ) );
+
 
             /**
              * Получение пути к файлу на сервере
              */
 
             $isContinue = false;
-            $filePath = "$filesDirPath/$fileKey";
+            $filePath = "$filesDirPath/$fileTitle";
 
             switch ( $file[ "type" ] ) {
 

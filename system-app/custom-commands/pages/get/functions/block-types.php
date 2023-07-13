@@ -441,6 +441,33 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
 
 
     /**
+     * Обработка файлов
+     */
+
+    if ( $blockField[ "data_type" ] == "file" ) {
+
+        $resultFiles = [];
+
+
+        foreach ( $blockField[ "value" ] as $filePath ) {
+
+            $fileDetail = pathinfo( $filePath );
+
+            $resultFiles[] = [
+                "title" => $fileDetail[ "filename" ],
+                "path" => $filePath,
+                "extension" => $fileDetail[ "extension" ]
+            ];
+
+        } // foreach. $blockField[ "value" ]
+
+
+        $blockField[ "value" ] = $resultFiles;
+
+    } // if. $blockField[ "data_type" ] == "file"
+
+
+    /**
      * Учет поля формы
      */
     return $blockField;
