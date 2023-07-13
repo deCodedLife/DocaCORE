@@ -1199,6 +1199,7 @@ function processingBlockType_calendar ( $structureBlock ) {
      */
     $settings = [
         "object" => $structureBlock[ "settings" ][ "object" ],
+        "event_page" => $structureBlock[ "settings" ][ "event_page" ],
         "filters" => []
     ];
 
