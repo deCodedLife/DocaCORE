@@ -337,6 +337,18 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
 
 
     /**
+     * Обработка boolean
+     */
+
+    if ( $schemeProperty[ "data_type" ] == "boolean" ) {
+
+        if ( $rowDetail[ $schemeProperty[ "article" ] ] == "Y" ) $rowDetail[ $schemeProperty[ "article" ] ] = "Да";
+        else $rowDetail[ $schemeProperty[ "article" ] ] = "Нет";
+
+    } // if. $schemeProperty[ "data_type" ] == "boolean"
+
+
+    /**
      * Обработка списков
      */
 
@@ -372,6 +384,13 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
         } // if. $schemeProperty[ "data_type" ] == "integer"
 
     } // if. $schemeProperty[ "field_type" ] == "list"
+
+
+    /**
+     * Игнорирование технических данных
+     */
+    if ( $rowDetail[ $schemeProperty[ "article" ] ] == "Array" ) continue;
+    if ( $updateValues[ $schemeProperty[ "article" ] ] == "Array" ) continue;
 
 
     $isFieldsUpdate = true;

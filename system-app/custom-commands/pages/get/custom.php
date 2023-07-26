@@ -329,6 +329,18 @@ function generateStructureBlock ( $structureBlock ) {
 
                         } // if. $tabBlock[ "field_type" ] === "list"
 
+
+                        if ( $tabBlock[ "type" ] === "mini_chat" ) {
+
+                            $rowsCount = $API->sendRequest( $tabBlock[ "settings" ][ "object" ], "get", [
+                                $tabBlock[ "settings" ][ "filter_property" ] => $pageDetail[ "row_id" ],
+                                "is_readed" => false
+                            ], "", true );
+
+                            $tabCounter += $rowsCount->detail->rows_count * $rowsCount->detail->pages_count;
+
+                        } // $tabBlock[ "type" ] === "mini_chat"
+
                     } // foreach. $tab[ "body" ]
 
 

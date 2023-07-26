@@ -9,8 +9,9 @@
 /**
  * Обработка списков в формах
  *
- * @param $fieldDetail  array  Детальная информация о поле
- * @param $blockField   array  Детальная информация о блоке
+ * @param $fieldDetail  array    Детальная информация о поле
+ * @param $blockField   array    Детальная информация о блоке
+ * @param $rowId        integer  ID записи
  */
 function addListToForm ( $fieldDetail, $blockField ) {
 
@@ -131,11 +132,22 @@ function addListToForm ( $fieldDetail, $blockField ) {
 
         if ( $fieldDetail[ "joined_field" ] )
             $joinedRow[ "joined_field_value" ] = $joinedTableRow[ $fieldDetail[ "joined_field" ] ];
-
+        
 
         $blockField[ "list" ][] = $joinedRow;
 
     } // foreach. $joinedTableRows
+
+
+    /**
+     * @hook
+     * Формирование полей списка
+     */
+
+    $listConstructorHookPath = $API::$configs[ "paths" ][ "public_custom_commands" ] . "/pages/get/hooks/list/" . $fieldDetail[ "list_donor" ][ "table" ] . ".php";
+
+    if ( file_exists( $listConstructorHookPath ) )
+        require( $listConstructorHookPath );
 
 
     return $blockField;

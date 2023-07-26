@@ -1168,6 +1168,22 @@ class API {
 
                     break;
 
+                /**
+                 * Поля типа "select"
+                 */
+                case "select":
+
+                    if ( $row[ "first_name" ] ) $row[ "title" ] = $row[ "last_name" ] . " " . $row[ "first_name" ] . " " . $row[ "patronymic" ];
+
+
+                    $row = [
+                        "title" => $row[ "title" ],
+                        "value" => $row[ "id" ],
+                        "menu_title" => $row[ "title" ]
+                    ];
+
+                    break;
+
             } // switch. $context->block
 
 
@@ -1402,8 +1418,8 @@ class API {
         /**
          * Перевод изображения в формат WebP
          */
-        if ( $imageExtension !== "webp" )
-            if ( $this->imageToWepP( $imagePath ) ) $imagePath = "$imagesDirPath/$imageTitle.webp";
+//        if ( $imageExtension !== "webp" )
+//            if ( $this->imageToWepP( $imagePath ) ) $imagePath = "$imagesDirPath/$imageTitle.webp";
 
         return substr( $imagePath, strlen( $_SERVER[ "DOCUMENT_ROOT" ] ) );
 
@@ -1465,8 +1481,8 @@ class API {
         /**
          * Перевод изображения в формат WebP
          */
-        if ( $imageDetail[ "extension" ] !== "webp" )
-            if ( $this->imageToWepP( $imagePath ) ) $imagePath = "$imagesDirPath/$imageTitle.webp";
+//        if ( $imageDetail[ "extension" ] !== "webp" )
+//            if ( $this->imageToWepP( $imagePath ) ) $imagePath = "$imagesDirPath/$imageTitle.webp";
 
 
         return substr( $imagePath, strlen( $_SERVER[ "DOCUMENT_ROOT" ] ) );
@@ -1540,8 +1556,8 @@ class API {
         /**
          * Перевод изображения в формат WebP
          */
-        if ( $image[ "type" ] !== "webp" )
-            if ( $this->imageToWepP( $imagePath ) ) $imagePath = "$imagesDirPath/$rowId.webp";
+//        if ( $image[ "type" ] !== "webp" )
+//            if ( $this->imageToWepP( $imagePath ) ) $imagePath = "$imagesDirPath/$rowId.webp";
 
 
         return substr( $imagePath, strpos( $imagePath, "/uploads" ) );
@@ -1848,7 +1864,7 @@ class API {
             /**
              * Перевод изображения в формат WebP
              */
-            if ( $image[ "type" ] !== "webp" ) $this->imageToWepP( $imagePath );
+            // if ( $image[ "type" ] !== "webp" ) $this->imageToWepP( $imagePath );
 
         } // foreach. $images
 
