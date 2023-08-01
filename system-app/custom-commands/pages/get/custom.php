@@ -929,3 +929,15 @@ foreach ( $pageScheme[ "structure" ] as $structureBlockKey => $structureBlock ) 
     if ( $responseBlock ) $response[ "data" ][] = $responseBlock;
 
 } // foreach. $pageScheme->structure
+
+
+/**
+ * @hook
+ * Изменение страницы
+ */
+
+$formConstructorPath = $API::$configs[ "paths" ][ "public_custom_commands" ] . "/pages/get/" . $pageDetail[ "section" ] . "/";
+$formConstructorPath .= str_replace( ".json", "", $pageDetail[ "scheme_name" ] ) . "/complete.php";
+
+if ( file_exists( $formConstructorPath ) )
+    require( $formConstructorPath );

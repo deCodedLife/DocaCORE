@@ -130,8 +130,45 @@ function addListToForm ( $fieldDetail, $blockField ) {
             "value" => $joinedTableRow[ "id" ]
         ];
 
-        if ( $fieldDetail[ "joined_field" ] )
-            $joinedRow[ "joined_field_value" ] = $joinedTableRow[ $fieldDetail[ "joined_field" ] ];
+        if ( $fieldDetail[ "joined_field" ] ) {
+
+            if ( !$fieldDetail[ "join" ] ) {
+
+                $joinedRow[ "joined_field_value" ] = $joinedTableRow[ $fieldDetail[ "joined_field" ] ];
+
+            } else {
+
+                /**
+                 * Получение схемы связанного св-ва
+                 */
+
+                foreach ( $propertyObjectScheme[ "properties" ] as $joinedPropertyScheme ) {
+
+                    if ( $joinedPropertyScheme[ "article" ] != $fieldDetail[ "joined_field" ] ) continue;
+
+
+                    /**
+                     * Получение значений связанного св-ва
+                     */
+
+                    $joinedFieldRowsFilter = [
+                        $joinedPropertyScheme[ "join" ][ "insert_property" ] => $joinedTableRow[ "id" ]
+                    ];
+
+                    if ( $joinedPropertyScheme[ "is_trash" ] )
+                        $joinedFieldRowsFilter[ "is_active" ] = "Y";
+
+                    $joinedFieldRows = $API->DB->from( $joinedPropertyScheme[ "join" ][ "connection_table" ] )
+                        ->where( $joinedFieldRowsFilter );
+
+                    foreach ( $joinedFieldRows as $joinedFieldRow )
+                        $joinedRow[ "joined_field_value" ][] = $joinedFieldRow[ $joinedPropertyScheme[ "join" ][ "filter_property" ] ];
+
+                } // foreach. $propertyObjectScheme[ "properties" ]
+
+            } // if. !$fieldDetail[ "join" ]
+
+        } // if. $fieldDetail[ "joined_field" ]
         
 
         $blockField[ "list" ][] = $joinedRow;
@@ -1239,7 +1276,8 @@ function processingBlockType_calendar ( $structureBlock ) {
     $settings = [
         "object" => $structureBlock[ "settings" ][ "object" ],
         "event_page" => $structureBlock[ "settings" ][ "event_page" ],
-        "filters" => []
+        "filters" => [],
+        "context" => []
     ];
 
 
@@ -1282,6 +1320,47 @@ function processingBlockType_calendar ( $structureBlock ) {
         $settings[ "filters" ][ $filter[ "property" ] ] = $filter[ "value" ];
 
     } // foreach. $structureBlock[ "settings" ][ "filters" ]
+
+
+    /**
+     * Формирование контекста
+     */
+
+    foreach ( $structureBlock[ "settings" ][ "context" ] as $contextKey => $context ) {
+
+        /**
+         * Подстановка переменных
+         */
+
+        if ( $context[ 0 ] === ":" ) {
+
+            /**
+             * Обработка переменной
+             */
+
+            /**
+             * Получение переменной в строке
+             */
+            $stringVariable = substr( $context, 1 );
+
+
+            /**
+             * Получение значения из списка
+             */
+            if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+                $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+
+            /**
+             * Формирование строки
+             */
+            $context = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+
+        } // if. $context[ "value" ][ 0 ] === ":"
+
+
+        $settings[ "context" ][ $contextKey ] = $context;
+
+    } // foreach. $structureBlock[ "settings" ][ "context" ]
 
 
     return $settings;
