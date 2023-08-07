@@ -128,14 +128,10 @@ foreach ( $response[ "data" ] as $event ) {
 
         case "array":
 
-            foreach ( $event[ $requestData->performers_article ] as $performer ) {
-
-                /**
-                 * Добавление события в расписание
-                 */
-                addEventIntoSchedule( $event, $performer[ "value" ] );
-
-            } // foreach. $event[ $requestData->performers_article ]
+            /**
+             * Добавление события в расписание
+             */
+            addEventIntoSchedule( $event, $event[ $requestData->performers_article ][ "value" ] );
 
             break;
 
