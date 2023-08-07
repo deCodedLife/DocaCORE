@@ -581,15 +581,6 @@ class API {
                             '/[^0-9]/', "", $requestData->{ $objectProperty[ "article" ] }
                         );
 
-                        /**
-                         * Проверка длины строки
-                         */
-                        if ( mb_strlen( $requestData->{ $objectProperty[ "article" ] } ) !== 11 )
-                            $this->returnResponse(
-                                "Неправильный формат телефона",
-                                400
-                            );
-
                         break;
 
                     case "image":
