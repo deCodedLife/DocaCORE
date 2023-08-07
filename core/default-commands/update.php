@@ -391,6 +391,7 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
      */
     if ( $rowDetail[ $schemeProperty[ "article" ] ] == "Array" ) continue;
     if ( $updateValues[ $schemeProperty[ "article" ] ] == "Array" ) continue;
+    if ( gettype( $updateValues[ $schemeProperty[ "article" ] ] ) == "array" ) continue;
 
 
     $isFieldsUpdate = true;
@@ -398,7 +399,7 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
 
 } // foreach. $objectScheme[ "properties" ]
 
-if ( !$isFieldsUpdate ) $logDescription = "Обновлена запись ${objectScheme[ "title" ]} № $requestData->id";
+if ( !$isFieldsUpdate ) $logDescription = "Обновлена запись ${objectScheme[ "title" ]}";
 else $logDescription = substr( $logDescription, 0, -2 );
 
 if ( $logJoinedFieldsDescription ) {

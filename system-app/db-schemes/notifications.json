@@ -23,6 +23,13 @@
       "default": null
     },
     {
+      "title": "Ссылка",
+      "article": "href",
+      "type": "varchar(255)",
+      "is_required": false,
+      "default": null
+    },
+    {
       "title": "Получатель",
       "article": "user_id",
       "type": "int",

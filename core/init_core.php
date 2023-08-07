@@ -2213,10 +2213,11 @@ class API {
      * @param $description  string   Описание
      * @param $status       string   Статус
      * @param $userId       integer  Пользователь
+     * @param $href         string   Ссылка
      *
      * @return boolean
      */
-    public function addNotification ( $type, $title, $description, $status = "info", $userId = null ) {
+    public function addNotification ( $type, $title, $description, $status = "info", $userId = null, $href = "" ) {
 
         /**
          * Получение детальной информации о типе уведомлений
@@ -2251,7 +2252,8 @@ class API {
                     "title" => mb_substr( $title, 0, 75 ),
                     "description" => mb_substr( $description, 0, 255 ),
                     "status" => mb_substr( $status, 0, 15 ),
-                    "user_id" => $userId
+                    "user_id" => $userId,
+                    "href" => $href
                 ] )
                 ->execute();
 
@@ -2269,7 +2271,8 @@ class API {
                 ->values( [
                     "title" => mb_substr( $title, 0, 75 ),
                     "description" => mb_substr( $description, 0, 255 ),
-                    "status" => mb_substr( $status, 0, 15 )
+                    "status" => mb_substr( $status, 0, 15 ),
+                    "href" => $href
                 ] )
                 ->execute();
 
@@ -2299,7 +2302,8 @@ class API {
                             "title" => mb_substr( $title, 0, 75 ),
                             "description" => mb_substr( $description, 0, 255 ),
                             "status" => mb_substr( $status, 0, 15 ),
-                            "user_id" => $roleUser[ "id" ]
+                            "user_id" => $roleUser[ "id" ],
+                            "href" => $href
                         ] )
                         ->execute();
 

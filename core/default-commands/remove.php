@@ -92,7 +92,7 @@ try {
      */
 
     $logData = $requestData;
-    $logDescription = "Удалена запись ${objectScheme[ "title" ]} № $requestData->id";
+    $logDescription = "Удалена запись ${objectScheme[ "title" ]}";
 
     /**
      * @hook

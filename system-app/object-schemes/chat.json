@@ -7,7 +7,7 @@
       "title": "Объект сообщений",
       "article": "messages_object",
       "data_type": "string",
-      "use_in_commands": [ "get-unread-count" ],
+      "use_in_commands": [ "get-unread-count", "read" ],
       "require_in_commands": [ "get-unread-count" ]
     },
     {
