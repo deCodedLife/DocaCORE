@@ -84,6 +84,23 @@ function processingComponentType_filter ( $structureComponent ) {
         if ( !$propertyDetail ) continue;
 
 
+        /**
+         * Обработка нестандартных св-в
+         */
+
+        switch ( $structureComponent[ "settings" ][ "donor_property_title" ] ) {
+
+            case "first_name":
+            case "last_name":
+
+                $fio = $donorRow[ "last_name" ] . " " . $donorRow[ "first_name" ];
+                if ( $donorRow[ "patronymic" ] ) $fio .= " " .  $donorRow[ "patronymic" ];
+
+                $donorRow[ $structureComponent[ "settings" ][ "donor_property_title" ] ] = $fio;
+
+        } // switch. $structureComponent[ "settings" ][ "donor_property_title" ]
+
+
         settype(
             $donorRow[ $structureComponent[ "settings" ][ "donor_property_value" ] ],
             $propertyDetail[ "data_type" ]
@@ -94,7 +111,7 @@ function processingComponentType_filter ( $structureComponent ) {
             "value" => $donorRow[ $structureComponent[ "settings" ][ "donor_property_value" ] ]
         ];
 
-    }
+    } // foreach. $donorRows
 
 
     return $filterList;
