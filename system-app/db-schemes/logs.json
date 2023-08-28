@@ -18,7 +18,7 @@
     {
       "title": "Описание события",
       "article": "description",
-      "type": "varchar(255)",
+      "type": "tinytext",
       "is_required": true,
       "default": null
     },

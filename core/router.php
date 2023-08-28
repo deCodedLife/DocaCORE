@@ -196,8 +196,10 @@ $requestData = $API->requestDataPreprocessor( $objectScheme, $API->request->data
 /**
  * Проверка прав
  */
-if ( !$API->validatePermissions( $commandScheme[ "required_permissions" ] ) )
-    $API->returnResponse( "Недостаточно прав", 403 );
+if (
+    ( $API->request->command != "get-system-components" ) &&
+    !$API->validatePermissions( $commandScheme[ "required_permissions" ] )
+) $API->returnResponse( "Недостаточно прав", 403 );
 
 /**
  * Проверка подключения необходимых модулей
@@ -233,22 +235,35 @@ elseif ( is_dir( $public_customCommandDirPath ) ) $customCommandDirPath = $publi
  * Формирование пути к префиксу команды
  */
 $commandPrefixPath = "$customCommandDirPath/prefix.php";
+if (
+    file_exists( $public_customCommandDirPath . "/prefix.php" ) &&
+    !file_exists( $system_customCommandDirPath . "/prefix.php" )
+) $commandPrefixPath = $public_customCommandDirPath . "/prefix.php";
 
 /**
  * Формирование пути к нестандартной команде
  */
 $customCommandPath = "$customCommandDirPath/custom.php";
+if (
+    file_exists( $public_customCommandDirPath . "/custom.php" ) &&
+    !file_exists( $system_customCommandDirPath . "/custom.php" )
+) $customCommandPath = $public_customCommandDirPath . "/custom.php";
 
 /**
  * Формирование пути к постфиксу команды
  */
 $commandPostfixPath = "$customCommandDirPath/postfix.php";
+if (
+    file_exists( $public_customCommandDirPath . "/postfix.php" ) &&
+    !file_exists( $system_customCommandDirPath . "/postfix.php" )
+) $commandPostfixPath = $public_customCommandDirPath . "/postfix.php";
 
 
 /**
  * Префикс команды
  */
 if ( file_exists( $commandPrefixPath ) ) require_once( $commandPrefixPath );
+
 
 /**
  * Инициализация команды

@@ -254,9 +254,26 @@ function generateStructureBlock ( $structureBlock ) {
         case "tabs":
 
             /**
+             * Игнорировать табы
+             */
+            $ignoreTabs = [];
+
+
+            /**
              * Обработка табов
              */
             foreach ( $structureBlock[ "settings" ] as $tabKey => $tab ) {
+
+                /**
+                 * Проверка доступов
+                 */
+                if ( !$API->validatePermissions( $tab[ "required_permissions" ] ) ) {
+
+                    $ignoreTabs[] = $tabKey;
+                    continue;
+
+                } // if. !$API->validatePermissions( $tab[ "required_permissions" ] )
+
 
                 /**
                  * Обработка счетчика
@@ -377,6 +394,15 @@ function generateStructureBlock ( $structureBlock ) {
 
             } // foreach. $structureBlock[ "settings" ]
 
+
+            /**
+             * Игнорирование табов
+             */
+            foreach ( $ignoreTabs as $ignoreTabKey )
+                unset( $structureBlock[ "settings" ][ $ignoreTabKey ] );
+
+
+            $structureBlock[ "settings" ] = array_values( $structureBlock[ "settings" ] );
             $responseBlock[ "settings" ] = $structureBlock[ "settings" ];
 
             break;

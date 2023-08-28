@@ -252,6 +252,12 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
      */
     if ( !$fieldDetail[ "annotation" ] ) $fieldDetail[ "annotation" ] = "";
 
+    /**
+     * Размер поля
+     */
+    $propertySize = 4;
+    if ( $fieldDetail[ "size" ] ) $propertySize = $fieldDetail[ "size" ];
+
 
     /**
      * Формирование поля формы
@@ -260,6 +266,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
     $blockField = [
         "title" => $fieldDetail[ "title" ],
         "article" => $fieldDetail[ "article" ],
+        "size" => $propertySize,
         "annotation" => $fieldDetail[ "annotation" ],
         "data_type" => $fieldDetail[ "data_type" ],
         "field_type" => $fieldDetail[ "field_type" ],
@@ -269,6 +276,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
         "is_required" => $isRequired,
         "is_disabled" => $isDisabled,
         "is_visible" => $isVisible,
+        "is_clearable" => $fieldDetail[ "is_clearable" ],
         "on_change_submit" => $onChangeSubmit
     ];
 
@@ -874,11 +882,13 @@ function processingBlockType_form ( $structureBlock ) {
                 $formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "fields" ], [
                     "title" => $property->title,
                     "article" => $propertyArticle,
+                    "size" => 4,
                     "data_type" => $property->field_type,
                     "field_type" => $property->field_type,
                     "is_required" => false,
                     "is_disabled" => false,
                     "is_visible" => true,
+                    "is_clearable" => $property->is_clearable,
                     "value" => $propertyValue
                 ], $property->property_position
             );
@@ -1021,7 +1031,8 @@ function processingBlockType_document ( $structureBlock ) {
             "description" => $fieldDetail[ "description" ],
             "is_required" => $isRequired,
             "is_disabled" => $isDisabled,
-            "is_visible" => $isVisible
+            "is_visible" => $isVisible,
+            "is_clearable" => $fieldDetail[ "is_clearable" ]
         ];
 
         if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];

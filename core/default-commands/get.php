@@ -140,7 +140,8 @@ try {
     $rows = $API->DB->from( $objectScheme[ "table" ] )
         ->orderBy( $requestSettings[ "sort_by" ] . " " . $requestSettings[ "sort_order" ] );
 
-    if ( $objectScheme[ "is_trash" ] ) $requestSettings[ "filter" ][ "is_active" ] = "Y";
+    if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] )
+        $requestSettings[ "filter" ][ "is_active" ] = "Y";
 
 
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
@@ -172,7 +173,11 @@ try {
     /**
      * Обработка ответа
      */
-    $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context );
+
+    $isCheckActive = true;
+    if ( $requestSettings[ "filter" ][ "is_active" ] === "N" ) $isCheckActive = false;
+
+    $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context, $isCheckActive );
 
 } catch ( PDOException $e ) {
 

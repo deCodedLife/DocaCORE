@@ -584,7 +584,10 @@ class API {
                         /**
                          * Проверка длины строки
                          */
-                        if ( mb_strlen( $requestData->{ $objectProperty[ "article" ] } ) !== 11 )
+                        if (
+                            $requestData->{ $objectProperty[ "article" ] } &&
+                            ( mb_strlen( $requestData->{ $objectProperty[ "article" ] } ) !== 11 )
+                        )
                             $this->returnResponse(
                                 "Неправильный формат телефона",
                                 400
@@ -817,13 +820,14 @@ class API {
     /**
      * Обработка ответа на запросы типа get
      *
-     * @param $rows          array   Строки для вывода
-     * @param $objectScheme  object  Схема объекта
-     * @param $context       object  Контекст вызова get запроса
+     * @param $rows           array    Строки для вывода
+     * @param $objectScheme   object   Схема объекта
+     * @param $context        object   Контекст вызова get запроса
+     * @param $isCheckActive  boolean  Проверять активность записей
      *
      * @return array
      */
-    public function getResponseBuilder ( $rows, $objectScheme, $context = [] ) {
+    public function getResponseBuilder ( $rows, $objectScheme, $context = [], $isCheckActive = true ) {
 
         global $requestData;
 
@@ -847,7 +851,7 @@ class API {
             /**
              * Игнорирование удаленных записей
              */
-            if ( $row[ "is_active" ] === "N" ) continue;
+            if ( $isCheckActive && ( $row[ "is_active" ] === "N" ) ) continue;
 
 
             /**
@@ -1970,8 +1974,6 @@ class API {
          * Проверка требуемых доступов
          */
 
-        if ( count( $permissions ) < 1 ) return true;
-
         if (
             isset( $this::$userDetail->role_id ) && $this::$userDetail->role_id == 1
         ) return true;
@@ -2103,12 +2105,6 @@ class API {
          * Заполнение системных св-в
          */
         $detail[ "ip" ] = $_SERVER[ "REMOTE_ADDR" ];
-
-
-        /**
-         * Обработка строк
-         */
-        $detail[ "description" ] = substr( $detail[ "description" ], 0, 255 );
 
 
         /**

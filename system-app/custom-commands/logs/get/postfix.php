@@ -23,6 +23,8 @@ foreach ( $response[ "data" ] as $log ) {
     $tableTitles[ $log[ "table_name" ] ] = $tableTitle;
     $log[ "table_name" ] = $tableTitle;
 
+    $log[ "user_id" ] = $log[ "users_id" ][ 0 ];
+
 
     $resultLogs[] = $log;
 
