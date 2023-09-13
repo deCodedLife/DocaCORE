@@ -64,13 +64,14 @@ function processingComponentType_filter ( $structureComponent ) {
      */
     $donorRows = $API->DB->from( $structureComponent[ "settings" ][ "donor_object" ] );
     if ( $objectScheme[ "is_trash" ] ) $donorRows->where( "is_active", "Y" );
+    $donorRows->limit( 100 );
 
 
     /**
      * Обработка записей из таблицы донора
      */
 
-    foreach ( $donorRows as $donorRow ) {
+    foreach ( $donorRows as $donorRowKey => $donorRow ) {
 
         /**
          * Получение детальной информации о св-ве записи

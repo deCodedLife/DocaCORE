@@ -40,7 +40,7 @@ if ( $requestData->step ) $minutesPerStep = $requestData->step;
 /**
  * Кол-во дней в диапазоне графика
  */
-$daysRange = 7;
+$daysRange = 1;
 if ( $requestData->days_range ) $daysRange = $requestData->days_range;
 
 /**
