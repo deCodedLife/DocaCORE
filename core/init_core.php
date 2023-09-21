@@ -1680,14 +1680,7 @@ class API {
         /**
          * Получение пути к директории файлов на сервере
          */
-
-        $currentFiles = [];
         $filesDirPath = "$filesDirPath/$rowId";
-
-        foreach ( $files as $file )
-            if ( gettype( $file ) === "string" ) $currentFiles[] = substr( $file, strpos( $file, "/uploads" ) );
-
-        $this->clearDirMultiply( $filesDirPath, $currentFiles );
         mkdir( $filesDirPath );
 
 
@@ -1706,52 +1699,7 @@ class API {
             /**
              * Получение пути к файлу на сервере
              */
-
-            $isContinue = false;
             $filePath = "$filesDirPath/$fileTitle";
-
-            switch ( $file[ "type" ] ) {
-
-                case "image/jpeg":
-                    $filePath .= ".jpg";
-                    break;
-
-                case "image/png":
-                    $filePath .= ".png";
-                    break;
-
-                case "image/webp":
-                    $filePath .= ".webp";
-                    break;
-
-                case "application/pdf":
-                    $filePath .= ".pdf";
-                    break;
-
-                case "text/csv":
-                    $filePath .= ".csv";
-                    break;
-
-                case "video/mp4":
-                case "audio/mp4":
-                    $filePath .= ".mp4";
-                    break;
-
-                case "audio/aac":
-                    $filePath .= ".aac";
-                    break;
-
-                case "audio/mpeg":
-                    $filePath .= ".mp3";
-                    break;
-
-                default:
-
-                    $isContinue = true;
-
-            } // switch. $file[ "type" ]
-
-            if ( $isContinue ) continue;
 
 
             /**
@@ -1768,12 +1716,12 @@ class API {
 
 
 
-/* Множественная загрузка изображений
- *
- * @param $rowId   integer  ID записи Объекта
- * @param $images  object   Изображения
- * @param $object  object   Объект
- */
+    /* Множественная загрузка изображений
+     *
+     * @param $rowId   integer  ID записи Объекта
+     * @param $images  object   Изображения
+     * @param $object  object   Объект
+     */
     public function uploadMultiplyImages ( $rowId, $images = [], $object = "" ) {
 
         /**

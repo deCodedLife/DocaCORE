@@ -183,6 +183,16 @@ function generateStructureBlock ( $structureBlock ) {
 
 
             /**
+             * Хук на изменение заголовков
+             */
+
+            $headersHookPath = $pageDetail[ "url" ][ 0 ] . "/list-headers.php";
+
+            if ( file_exists( $public_customCommandDirPath . "/hooks/$headersHookPath" ) )
+                require( $public_customCommandDirPath . "/hooks/$headersHookPath" );
+
+
+            /**
              * Указание заголовков списка
              */
             if ( $structureBlock[ "type" ] == "list" ) $responseBlock[ "settings" ][ "headers" ] = $listStructure[ "headers" ];
