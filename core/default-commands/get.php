@@ -177,7 +177,8 @@ try {
     $isCheckActive = true;
     if ( $requestSettings[ "filter" ][ "is_active" ] === "N" ) $isCheckActive = false;
 
-    $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context, $isCheckActive );
+    if ( $API->request->command !== "schedule" ) $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context, $isCheckActive );
+    else $response[ "data" ] = $rows->fetchAll();
 
 } catch ( PDOException $e ) {
 

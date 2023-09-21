@@ -71,7 +71,7 @@ function processingComponentType_filter ( $structureComponent ) {
      * Обработка записей из таблицы донора
      */
 
-    foreach ( $donorRows as $donorRowKey => $donorRow ) {
+    if ( !$structureComponent[ "settings" ][ "is_search" ] ) foreach ( $donorRows as $donorRowKey => $donorRow ) {
 
         /**
          * Получение детальной информации о св-ве записи

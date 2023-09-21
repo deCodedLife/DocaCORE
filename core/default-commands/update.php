@@ -186,8 +186,7 @@ try {
     if ( $updateValues ) $API->DB->update( $objectScheme[ "table" ] )
         ->set( $updateValues )
         ->where( [
-            "id" => $requestData->id,
-            "is_system" => "N"
+            "id" => $requestData->id
         ] )
         ->execute();
 

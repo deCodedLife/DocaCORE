@@ -69,7 +69,7 @@ foreach ( $events as $event ) {
      */
     $eventDetails[ "time" ] = date( "H:i", strtotime( $event[ $requestData->time_from_property ] ) );
     $eventDetails[ "time" ] .= " - " . date( "H:i", strtotime( $event[ $requestData->time_to_property ] ) );
-
+    
 
     /**
      * @hook

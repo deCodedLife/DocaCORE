@@ -73,6 +73,7 @@ function addListToForm ( $fieldDetail, $blockField ) {
      */
     $joinedTableRows = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] );
     if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( $listFilter );
+    $joinedTableRows->limit( 1000 );
 
 
     /**

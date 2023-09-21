@@ -94,6 +94,47 @@
       "required_modules": [],
       "use_in_commands": [ "add", "update" ],
       "require_in_commands": []
+    },
+    {
+      "title": "Тело",
+      "article": "body",
+      "data_type": "string",
+      "field_type": "string",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": false,
+      "in_search": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "print" ],
+      "require_in_commands": []
+    }
+  ],
+  "action_buttons": [
+    {
+      "type": "href",
+      "settings": {
+        "title": "Изменить",
+        "page": [
+          "documents/update/",
+          ":id"
+        ],
+        "icon": "gear",
+        "background": "dark"
+      }
+    },
+    {
+      "type": "script",
+      "settings": {
+        "title": "Удалить",
+        "background": "dark",
+        "icon": "trash",
+        "object": "documents",
+        "command": "remove",
+        "data": {
+          "id": ":id"
+        }
+      }
     }
   ]
 }

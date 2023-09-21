@@ -46,6 +46,7 @@ function addEventIntoSchedule ( $event, $performerId ) {
     $eventEndStep = getStepKey(
         date( "H:i", strtotime( $event[ "end_at" ] ) )
     );
+    if ( $eventStartStep < $eventEndStep ) $eventEndStep--;
 
     /**
      * Описание события.
@@ -118,6 +119,7 @@ foreach ( $response[ "data" ] as $event ) {
     switch ( gettype( $event[ $requestData->performers_article ] ) ) {
 
         case "integer":
+        case "string":
 
             /**
              * Добавление события в расписание

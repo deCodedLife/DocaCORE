@@ -1256,6 +1256,7 @@ class API {
                 break;
 
             case "script":
+            case "print":
 
                 /**
                  * Обход св-в запроса

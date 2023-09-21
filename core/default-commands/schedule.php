@@ -40,7 +40,7 @@ if ( $requestData->step ) $minutesPerStep = $requestData->step;
 /**
  * Кол-во дней в диапазоне графика
  */
-$daysRange = 1;
+$daysRange = 30;
 if ( $requestData->days_range ) $daysRange = $requestData->days_range;
 
 /**
@@ -133,10 +133,13 @@ if ( file_exists( $public_customCommandDirPath . "/hooks/after-get-command.php" 
  */
 require( "components/schedule/get-performers-detail.php" );
 
+
 /**
  * Получение времени начала и окончания событий
  */
 require( "components/schedule/get-event-times.php" );
+
+
 
 /**
  * @hook
@@ -144,6 +147,7 @@ require( "components/schedule/get-event-times.php" );
  */
 if ( file_exists( $public_customCommandDirPath . "/hooks/get-event-times.php" ) )
     require( $public_customCommandDirPath . "/hooks/get-event-times.php" );
+
 
 /**
  * Формирование списка временных отрезков
