@@ -42,6 +42,12 @@ function addListToForm ( $fieldDetail, $blockField ) {
 
 
     /**
+     * Не формировать список при поиске
+     */
+    if ( $fieldDetail[ "search" ] ) return $blockField;
+
+
+    /**
      * Фильтр данных из связанной таблицы
      */
 

@@ -472,7 +472,7 @@ function generateStructureBlock ( $structureBlock ) {
          * Обработка множественных компонентов
          */
 
-        foreach ( $structureComponents as $structureComponent ) {
+        foreach ( $structureComponents as $structureComponentKey => $structureComponent ) {
 
             if ( !$structureComponent[ "required_permissions" ] )
                 $structureComponent[ "required_permissions" ] = [];

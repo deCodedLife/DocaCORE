@@ -101,11 +101,24 @@ try {
     if ( file_exists( $public_customCommandDirPath . "/hooks/log.php" ) )
         require( $public_customCommandDirPath . "/hooks/log.php" );
 
-    $API->addLog( [
-        "table_name" => $objectScheme[ "table" ],
-        "description" => $logDescription,
-        "row_id" => $requestData->id
-    ], $logData );
+    if ( gettype( $requestData->id ) === "array" ) {
+
+        foreach ( $requestData->id as $id )
+            $API->addLog( [
+                "table_name" => $objectScheme[ "table" ],
+                "description" => $logDescription,
+                "row_id" => $id
+            ], $logData );
+
+    } else {
+
+        $API->addLog( [
+            "table_name" => $objectScheme[ "table" ],
+            "description" => $logDescription,
+            "row_id" => $requestData->id
+        ], $logData );
+
+    } // if. gettype( $requestData->id ) === "array"
 
 } catch ( PDOException $e ) {
 
