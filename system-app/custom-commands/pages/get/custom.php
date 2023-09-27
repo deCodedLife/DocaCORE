@@ -351,9 +351,11 @@ function generateStructureBlock ( $structureBlock ) {
                             } // foreach. $tabBlock[ "settings" ][ "filters" ]
 
 
-                            $rowsCount = $API->sendRequest( $tabBlock[ "settings" ][ "object" ], "get", $filters, "", true );
+                            $filters[ "context" ][ "is_counter" ] = true;
+                            $rowsCount = $API->sendRequest( $tabBlock[ "settings" ][ "object" ], "get", $filters, "", true )->data;
 
-                            $tabCounter += $rowsCount->detail->rows_count * $rowsCount->detail->pages_count;
+                            $tabCounter = $rowsCount;
+                            continue;
 
                         } // if. $tabBlock[ "field_type" ] === "list"
 
@@ -363,7 +365,7 @@ function generateStructureBlock ( $structureBlock ) {
                             $rowsCount = $API->sendRequest( $tabBlock[ "settings" ][ "object" ], "get", [
                                 $tabBlock[ "settings" ][ "filter_property" ] => $pageDetail[ "row_id" ],
                                 "is_readed" => false
-                            ], "", true );
+                            ], "", true )->data;
 
                             $tabCounter += $rowsCount->detail->rows_count * $rowsCount->detail->pages_count;
 
@@ -398,6 +400,7 @@ function generateStructureBlock ( $structureBlock ) {
 
                     if ( file_exists( $public_customCommandDirPath . "/hooks/$tabHookPath/field-values.php" ) )
                         require( $public_customCommandDirPath . "/hooks/$tabHookPath/field-values.php" );
+
 
                     $structureBlock[ "settings" ][ $tabKey ][ "body" ][ $tabBlockKey ] = $generatedTab;
 

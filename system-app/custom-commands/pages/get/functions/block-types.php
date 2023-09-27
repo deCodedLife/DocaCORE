@@ -18,8 +18,14 @@ function addListToForm ( $fieldDetail, $blockField ) {
     global $API;
 
 
-    if ( $fieldDetail[ "joined_field" ] )
+    if ( $fieldDetail[ "joined_field" ] ) {
+
         $blockField[ "joined_field" ] = $fieldDetail[ "joined_field" ];
+
+        $blockField[ "joined_field_filter" ] = $fieldDetail[ "joined_field" ];
+        if ( $fieldDetail[ "joined_field_filter" ] ) $blockField[ "joined_field_filter" ] = $fieldDetail[ "joined_field_filter" ];
+
+    } // if. $fieldDetail[ "joined_field" ]
 
 
     /**
@@ -304,7 +310,24 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
     if (
         ( $fieldDetail[ "list_donor" ][ "table" ] || $fieldDetail[ "join" ][ "donor_table" ] ) &&
         ( $fieldDetail[ "field_type" ] === "list" )
-    ) $blockField = addListToForm( $fieldDetail, $blockField );
+    ) {
+
+        $blockField = addListToForm( $fieldDetail, $blockField );
+
+
+        if ( $fieldDetail[ "join" ][ "donor_table" ] ) {
+
+            $blockField[ "settings" ][ "object" ] = $fieldDetail[ "join" ][ "donor_table" ];
+            $blockField[ "settings" ][ "select" ] = $fieldDetail[ "join" ][ "property_article" ];
+
+        } else {
+
+            $blockField[ "settings" ][ "object" ] = $fieldDetail[ "list_donor" ][ "table" ];
+            $blockField[ "settings" ][ "select" ] = $fieldDetail[ "list_donor" ][ "properties_title" ];
+
+        } // if. $fieldDetail[ "join" ][ "donor_table" ]
+
+    }
 
 
     /**
@@ -836,7 +859,7 @@ function processingBlockType_form ( $structureBlock ) {
 
                 $generatedBlock = addFieldToForm( $objectScheme, $objectProperties, $structureBlock, $field, $formFieldValues );
                 if ( $generatedBlock ) $blockFields[] = $generatedBlock;
-
+                
             } // foreach. $block[ "fields" ]
 
 
@@ -1062,8 +1085,14 @@ function processingBlockType_document ( $structureBlock ) {
             ( $fieldDetail[ "field_type" ] === "list" )
         ) {
 
-            if ( $fieldDetail[ "joined_field" ] )
+            if ( $fieldDetail[ "joined_field" ] ) {
+
                 $blockField[ "joined_field" ] = $fieldDetail[ "joined_field" ];
+
+                $blockField[ "joined_field_filter" ] = $fieldDetail[ "joined_field" ];
+                if ( $fieldDetail[ "joined_field_filter" ] ) $blockField[ "joined_field_filter" ] = $fieldDetail[ "joined_field_filter" ];
+
+            } // if. $fieldDetail[ "joined_field" ]
 
 
             /**

@@ -96,6 +96,13 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 try {
 
     /**
+     * Обработка списков форм
+     */
+    if ( $requestData->context->block == "form_list" )
+        $requestSettings[ "limit" ] = 1000;
+
+
+    /**
      * Кол-во пропускаемых записей
      */
     $offset = $requestSettings[ "page" ] * $requestSettings[ "limit" ];
@@ -151,6 +158,32 @@ try {
 
 
     /**
+     * Обработка списков форм
+     */
+    if ( $requestData->context->block == "form_list" ) {
+
+        /**
+         * Сформированный список
+         */
+        $formList = [];
+
+
+        foreach ( $rows as $row ) {
+
+            $formList[] = [
+                "title" => $row[ $selectProperties[ 1 ] ],
+                "value" => $row[ "id" ]
+            ];
+
+        } // foreach. $rows
+
+
+        $API->returnResponse( $formList );
+
+    } // if. $requestData->context->block == "form_list"
+
+
+    /**
      * Получение кол-ва записей и страниц
      */
 
@@ -161,6 +194,13 @@ try {
             $response[ "detail" ][ "rows_count" ] / $requestSettings[ "limit" ]
         );
     else $response[ "detail" ][ "pages_count" ] = 1;
+
+
+    /**
+     * Получение кол-ва записей для счетчика
+     */
+    if ( $requestData->context->is_counter )
+        $API->returnResponse( $response[ "detail" ][ "rows_count" ] );
 
 
     /**
