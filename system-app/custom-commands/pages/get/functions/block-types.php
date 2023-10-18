@@ -337,6 +337,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
          * Получение значения поля
          */
         $blockField[ "value" ] = $pageDetail[ "row_detail" ][ $fieldDetail[ "article" ] ];
+        if ( $blockField[ "value" ]->value ) $blockField[ "value" ] = $blockField[ "value" ]->value;
 
 
         /**

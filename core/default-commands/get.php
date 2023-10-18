@@ -165,12 +165,12 @@ try {
         /**
          * Сформированный список
          */
-        $formList = [];
+        $response[ "data" ] = [];
 
 
         foreach ( $rows as $row ) {
 
-            $formList[] = [
+            $response[ "data" ][ ] = [
                 "title" => $row[ $selectProperties[ 1 ] ],
                 "value" => $row[ "id" ]
             ];
@@ -178,7 +178,11 @@ try {
         } // foreach. $rows
 
 
-        $API->returnResponse( $formList );
+        if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
+            require $public_customCommandDirPath . "/postfix.php";
+
+
+        $API->returnResponse( $response[ "data" ] );
 
     } // if. $requestData->context->block == "form_list"
 

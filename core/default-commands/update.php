@@ -5,7 +5,6 @@
  * Используется для редактирования записей в базе данных
  */
 
-
 /**
  * Проверка обязательных св-в
  */
@@ -62,6 +61,45 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
 
         if ( !$schemeProperty[ "is_autofill" ] ) continue;
         if ( $schemeProperty[ "article" ] !== $propertyArticle ) continue;
+
+        /**
+         * Проверка на наличие роли
+         */
+        if (
+            isset( $schemeProperty[ "required_permissions" ] ) &&
+            count( $schemeProperty[ "required_permissions" ] ) != 0 &&
+            $API::$userDetail->role_id
+        ) {
+
+            /**
+             *  Получение списка id доступов у роли
+             */
+            $hasAllPermissions = false;
+            $permissionsQuery = $API->DB->from( "roles_permissions" )
+                ->where( "role_id", $API::$userDetail->role_id );
+
+            $userPermissions = [];
+
+            /**
+             * Формирование списка доступов пользователя
+             */
+            foreach ( $permissionsQuery as $item ) {
+
+                $permission = $API->DB->from( "permissions" )
+                    ->where( "id", $item[ "permission_id" ] )
+                    ->fetch();
+
+                if ( !$permission ) continue;
+                $userPermissions[] = $permission[ "article" ];
+
+            } // foreach ( $permissionsQuery as $item ) {
+
+            /**
+             * Проверка доступов
+             */
+            if ( !array_intersect( $schemeProperty[ "required_permissions" ], $userPermissions ) ) continue;
+
+        } // if ( isset( $schemeProperty[ "required_permissions" ] ) && count( $schemeProperty[ "required_permissions" ] ) != 0 )
 
 
         /**
