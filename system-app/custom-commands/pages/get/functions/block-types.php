@@ -39,12 +39,79 @@ function addListToForm ( $fieldDetail, $blockField ) {
      */
     if ( $blockField[ "list_donor" ] ) {
 
-        $blockField[ "settings" ][ "object" ] = $blockField[ "list_donor" ][ "table" ];
-        $blockField[ "settings" ][ "select" ] = $blockField[ "list_donor" ][ "properties_title" ];
+        foreach ( $fieldDetail[ "list_donor" ][ "filters" ] as $filterArticle => $filterValue )
+            $listFilter[ $filterArticle ] = $filterValue;
 
-        unset( $blockField[ "list_donor" ] );
+    } // if. $fieldDetail[ "list_donor" ][ "filters" ]
 
-    } // if. $blockField[ "list_donor" ]
+    if ( $fieldDetail[ "join" ][ "filters" ] ) {
+
+        foreach ( $fieldDetail[ "join" ][ "filters" ] as $filterArticle => $filterValue )
+            $listFilter[ $filterArticle ] = $filterValue;
+
+    } // if. $fieldDetail[ "join" ][ "filters" ]
+
+
+    /**
+     * Получение данных из связанной таблицы
+     */
+    $joinedTableRows = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] );
+    if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( $listFilter );
+    $joinedTableRows->limit( 1000 );
+
+
+    /**
+     * Обновление списка
+     */
+    foreach ( $joinedTableRows as $joinedTableRow ) {
+
+        /**
+         * Сформированный пункт списка
+         */
+        $joinedRow = [];
+
+        /**
+         * Название поля
+         */
+        $fieldTitle = $joinedTableRow[ $fieldDetail[ "list_donor" ][ "properties_title" ] ];
+
+
+        /**
+         * Нестандартные названия полей
+         */
+        switch ( $fieldDetail[ "list_donor" ][ "properties_title" ] ) {
+
+            case "first_name":
+            case "last_name":
+            case "patronymic":
+
+                /**
+                 * Получение ФИО
+                 */
+
+                $fio = [
+                    "first_name" => "",
+                    "last_name" => "",
+                    "patronymic" => ""
+                ];
+
+                foreach ( $propertyObjectScheme[ "properties" ] as $property ) {
+
+                    if (
+                        ( $property[ "article" ] === "first_name" ) ||
+                        ( $property[ "article" ] === "last_name" ) ||
+                        ( $property[ "article" ] === "patronymic" )
+                    ) $fio[ $property[ "article" ] ] = $joinedTableRow[ $property[ "article" ] ];
+
+                } // foreach. $propertyObjectScheme[ "properties" ]
+
+                $fieldTitle = "${fio[ "last_name" ]} ${fio[ "first_name" ]} ${fio[ "patronymic" ]}";
+
+                break;
+
+        } // switch. $fieldDetail[ "list_donor" ][ "properties_title" ]
+
+    } // foreach. $joinedTableRows
 
 
     /**
@@ -249,6 +316,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
          * Получение значения поля
          */
         $blockField[ "value" ] = $pageDetail[ "row_detail" ][ $fieldDetail[ "article" ] ];
+        if ( $blockField[ "value" ]->value ) $blockField[ "value" ] = $blockField[ "value" ]->value;
 
 
         /**

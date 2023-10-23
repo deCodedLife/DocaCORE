@@ -173,7 +173,7 @@ try {
         /**
          * Сформированный список
          */
-        $formList = [];
+        $response[ "data" ] = [];
 
 
         foreach ( $rows as $row ) {
@@ -186,7 +186,7 @@ try {
             ) $rowTitle .= " " . $row[ $selectProperties[ 2 ] ] . " " . $row[ $selectProperties[ 3 ] ];
 
 
-            $formList[] = [
+            $response[ "data" ][ ] = [
                 "title" => $rowTitle,
                 "value" => $row[ "id" ]
             ];
@@ -194,7 +194,11 @@ try {
         } // foreach. $rows
 
 
-        $API->returnResponse( $formList );
+        if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
+            require $public_customCommandDirPath . "/postfix.php";
+
+
+        $API->returnResponse( $response[ "data" ] );
 
     } // if. $requestData->context->block == "form_list"
 
