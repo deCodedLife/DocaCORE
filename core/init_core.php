@@ -660,6 +660,14 @@ class API {
                             } // if. ctype_digit( $requestData->{ $objectProperty[ "article" ] } )
 
 
+                            if ( $objectProperty[ "data_type" ] == "array" ) {
+
+                                $requestData->{ $objectProperty[ "article" ] } = [ $requestData->{ $objectProperty[ "article" ] } ];
+                                $is_error = false;
+
+                            } // if. $objectProperty[ "data_type" ] == "array"
+
+
                             if ( $isMulipart && ( $objectProperty[ "data_type" ] == "array" ) ) {
 
                                 $requestData->{ $objectProperty[ "article" ] } = explode( ",", $requestData->{ $objectProperty[ "article" ] } );
@@ -2057,7 +2065,7 @@ class API {
         $insertedLogId = $this->DB->insertInto( "logs" )
             ->values( [
                 "table_name" => $detail[ "table_name" ],
-                "description" => $detail[ "description" ],
+                "description" => mb_substr( $detail[ "description" ], 0, 200 ),
                 "row_id" => $detail[ "row_id" ],
                 "ip" => $detail[ "ip" ]
             ] )
@@ -2246,6 +2254,77 @@ class API {
         return true;
 
     } // function. addNotification
+
+
+    /**
+     * Получение кэша высоконагруженных отчетов
+     *
+     * @param $reportArticle  string   Артикул отчета
+     * @param $filters        array    Фильтры отчета
+     *
+     * @return array
+     */
+    public function getHardReportCache ( $reportArticle, $requestFilters = [] ) {
+
+        if ( isset( $requestFilters->start_at ) ) $requestFilters->start_at .= " 00:00:00";
+
+        $requestFilters = (array) $requestFilters;
+
+
+        $reports = $this->DB->from( "hardReports" )
+            ->where( "report_article", $reportArticle )
+            ->orderBy( "created_at asc" );
+
+
+        foreach ( $reports as $report ) {
+
+            $isValid = true;
+            $reportFiltersResult = [];
+
+
+            $reportFilters = $this->DB->from( "hardReports_filters" )
+                ->where( "report_id", $report[ "id" ] );
+
+            foreach ( $reportFilters as $reportFilter )
+                $reportFiltersResult[ $reportFilter[ "filter_article" ] ] = $reportFilter[ "filter_value" ];
+
+
+            /**
+             * Проверка соответствия отчета
+             */
+            foreach ( $requestFilters as $requestFilterArticle => $requestFilterValue )
+                if ( $reportFiltersResult[ $requestFilterArticle ] != $requestFilterValue ) $isValid = false;
+
+
+            if ( $isValid ) {
+
+                /**
+                 * Получение кэша
+                 */
+
+                $reportCache = [];
+
+                $reportCacheRows = $this->DB->from( "hardReports_cache" )
+                    ->where( "report_id", $report[ "id" ] );
+
+                foreach ( $reportCacheRows as $reportCacheRow )
+                    $reportCache[ $reportCacheRow[ "property_article" ] ] = $reportCacheRow[ "property_value" ];
+
+
+                return [
+                    "status" => $report[ "status" ],
+                    "updated_at" => $report[ "created_at" ],
+                    "data" => $reportCache
+                ];
+
+            } // if. $isValid
+
+        } // foreach. $reports
+
+
+        return [];
+
+    } // function. getHighReportCache
 
 
     /**

@@ -31,8 +31,9 @@ $Sphinx->SetArrayResult( true );
 /**
  * Поиск совпадения
  */
+$requestData->limit = $requestData->limit ?? 50;
 
-$Sphinx->SetLimits( 0, 15 );
+$Sphinx->SetLimits( 0, $requestData->limit );
 $searchIdList = $Sphinx->Query(
     $requestData->search,
     str_replace( "-", "_", $API::$configs[ "db" ][ "name" ] ) . "_" . $objectScheme[ "table" ]
@@ -46,7 +47,7 @@ if ( $searchIdList[ "matches" ] ) {
 
     $rows = $API->DB->from( $objectScheme[ "table" ] )
         ->where( "id", $findRowsId )
-        ->limit( 15 );
+        ->limit( $requestData->limit );
 
 } // if. $searchIdList[ "matches" ]
 
@@ -54,5 +55,10 @@ if ( $searchIdList[ "matches" ] ) {
 /**
  * Обработка ответа
  */
+
+$response[ "detail" ][ "rows_count" ] = count( $searchIdList[ "matches" ] );
+$response[ "detail" ][ "pages_count" ] = ceil(
+    $response[ "detail" ][ "rows_count" ] / $requestData->limit
+);
 
 $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context );

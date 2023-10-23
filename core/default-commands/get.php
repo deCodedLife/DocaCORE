@@ -98,8 +98,16 @@ try {
     /**
      * Обработка списков форм
      */
-    if ( $requestData->context->block == "form_list" )
+    if ( $requestData->context->block == "form_list" ) {
+
         $requestSettings[ "limit" ] = 1000;
+
+        if (
+            ( $selectProperties[ 1 ] == "first_name" ) ||
+            ( $selectProperties[ 1 ] == "last_name" )
+        ) $selectProperties = [ "id", "last_name", "first_name", "patronymic" ];
+
+    } // if. $requestData->context->block == "form_list"
 
 
     /**
@@ -170,8 +178,16 @@ try {
 
         foreach ( $rows as $row ) {
 
+            $rowTitle = $row[ $selectProperties[ 1 ] ];
+
+            if (
+                ( $selectProperties[ 1 ] == "first_name" ) ||
+                ( $selectProperties[ 1 ] == "last_name" )
+            ) $rowTitle .= " " . $row[ $selectProperties[ 2 ] ] . " " . $row[ $selectProperties[ 3 ] ];
+
+
             $formList[] = [
-                "title" => $row[ $selectProperties[ 1 ] ],
+                "title" => $rowTitle,
                 "value" => $row[ "id" ]
             ];
 

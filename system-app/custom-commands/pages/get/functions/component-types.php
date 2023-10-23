@@ -102,15 +102,22 @@ function processingComponentType_filter ( $structureComponent ) {
         } // switch. $structureComponent[ "settings" ][ "donor_property_title" ]
 
 
+        /**
+         * Сформированный фильтр
+         */
+
         settype(
             $donorRow[ $structureComponent[ "settings" ][ "donor_property_value" ] ],
             $propertyDetail[ "data_type" ]
         );
 
-        $filterList[] = [
+        $filterResult = [
             "title" => $donorRow[ $structureComponent[ "settings" ][ "donor_property_title" ] ],
             "value" => $donorRow[ $structureComponent[ "settings" ][ "donor_property_value" ] ]
         ];
+
+
+        $filterList[] = $filterResult;
 
     } // foreach. $donorRows
 

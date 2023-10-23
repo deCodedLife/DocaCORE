@@ -496,6 +496,9 @@ function generateStructureBlock ( $structureBlock ) {
                 "settings" => $structureComponent[ "settings" ]
             ];
 
+            if ( $structureComponent[ "placeholder" ] )
+                $responseComponent[ "placeholder" ] = $structureComponent[ "placeholder" ];
+
 
             /**
              * Обработка типов компонентов

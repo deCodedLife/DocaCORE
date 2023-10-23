@@ -29,164 +29,22 @@ function addListToForm ( $fieldDetail, $blockField ) {
 
 
     /**
-     * Определение типа связанной таблицы
-     * (list_donor / join)
-     */
-    if ( !$fieldDetail[ "list_donor" ][ "table" ] ) {
-
-        $fieldDetail[ "list_donor" ][ "table" ] = $fieldDetail[ "join" ][ "donor_table" ];
-        $fieldDetail[ "list_donor" ][ "properties_title" ] = $fieldDetail[ "join" ][ "property_article" ];
-
-    } // if. !$fieldDetail[ "list_donor" ][ "table" ]
-
-
-    /**
-     * Загрузка схемы объекта связанной таблицы
-     */
-    $propertyObjectScheme = $API->loadObjectScheme( $fieldDetail[ "list_donor" ][ "table" ] );
-    if ( !$propertyObjectScheme ) return $blockField;
-
-
-    /**
      * Не формировать список при поиске
      */
     if ( $fieldDetail[ "search" ] ) return $blockField;
 
 
     /**
-     * Фильтр данных из связанной таблицы
+     * Умные списки
      */
+    if ( $blockField[ "list_donor" ] ) {
 
-    $listFilter = [ "is_active" => "Y" ];
+        $blockField[ "settings" ][ "object" ] = $blockField[ "list_donor" ][ "table" ];
+        $blockField[ "settings" ][ "select" ] = $blockField[ "list_donor" ][ "properties_title" ];
 
-    if ( $fieldDetail[ "list_donor" ][ "filters" ] ) {
+        unset( $blockField[ "list_donor" ] );
 
-        foreach ( $fieldDetail[ "list_donor" ][ "filters" ] as $filterArticle => $filterValue )
-            $listFilter[ $filterArticle ] = $filterValue;
-
-    } // if. $fieldDetail[ "list_donor" ][ "filters" ]
-
-    if ( $fieldDetail[ "join" ][ "filters" ] ) {
-
-        foreach ( $fieldDetail[ "join" ][ "filters" ] as $filterArticle => $filterValue )
-            $listFilter[ $filterArticle ] = $filterValue;
-
-    } // if. $fieldDetail[ "join" ][ "filters" ]
-
-
-    /**
-     * Получение данных из связанной таблицы
-     */
-    $joinedTableRows = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] );
-    if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( $listFilter );
-    $joinedTableRows->limit( 1000 );
-
-
-    /**
-     * Обновление списка
-     */
-    foreach ( $joinedTableRows as $joinedTableRow ) {
-
-        /**
-         * Сформированный пункт списка
-         */
-        $joinedRow = [];
-
-        /**
-         * Название поля
-         */
-        $fieldTitle = $joinedTableRow[ $fieldDetail[ "list_donor" ][ "properties_title" ] ];
-
-
-        /**
-         * Нестандартные названия полей
-         */
-        switch ( $fieldDetail[ "list_donor" ][ "properties_title" ] ) {
-
-            case "first_name":
-            case "last_name":
-            case "patronymic":
-
-                /**
-                 * Получение ФИО
-                 */
-
-                $fio = [
-                    "first_name" => "",
-                    "last_name" => "",
-                    "patronymic" => ""
-                ];
-
-                foreach ( $propertyObjectScheme[ "properties" ] as $property ) {
-
-                    if (
-                        ( $property[ "article" ] === "first_name" ) ||
-                        ( $property[ "article" ] === "last_name" ) ||
-                        ( $property[ "article" ] === "patronymic" )
-                    ) $fio[ $property[ "article" ] ] = $joinedTableRow[ $property[ "article" ] ];
-
-                } // foreach. $propertyObjectScheme[ "properties" ]
-
-                $fieldTitle = "${fio[ "last_name" ]} ${fio[ "first_name" ]} ${fio[ "patronymic" ]}";
-
-                break;
-
-        } // switch. $fieldDetail[ "list_donor" ][ "properties_title" ]
-
-
-        /**
-         * Заполнение пункта списка
-         */
-
-        $joinedRow = [
-            "title" => $fieldTitle,
-            "value" => $joinedTableRow[ "id" ]
-        ];
-
-        if ( $fieldDetail[ "joined_field" ] ) {
-
-            if ( !$fieldDetail[ "join" ] ) {
-
-                $joinedRow[ "joined_field_value" ] = $joinedTableRow[ $fieldDetail[ "joined_field" ] ];
-
-            } else {
-
-                /**
-                 * Получение схемы связанного св-ва
-                 */
-
-                foreach ( $propertyObjectScheme[ "properties" ] as $joinedPropertyScheme ) {
-
-                    if ( $joinedPropertyScheme[ "article" ] != $fieldDetail[ "joined_field" ] ) continue;
-
-
-                    /**
-                     * Получение значений связанного св-ва
-                     */
-
-                    $joinedFieldRowsFilter = [
-                        $joinedPropertyScheme[ "join" ][ "insert_property" ] => $joinedTableRow[ "id" ]
-                    ];
-
-                    if ( $joinedPropertyScheme[ "is_trash" ] )
-                        $joinedFieldRowsFilter[ "is_active" ] = "Y";
-
-                    $joinedFieldRows = $API->DB->from( $joinedPropertyScheme[ "join" ][ "connection_table" ] )
-                        ->where( $joinedFieldRowsFilter );
-
-                    foreach ( $joinedFieldRows as $joinedFieldRow )
-                        $joinedRow[ "joined_field_value" ][] = $joinedFieldRow[ $joinedPropertyScheme[ "join" ][ "filter_property" ] ];
-
-                } // foreach. $propertyObjectScheme[ "properties" ]
-
-            } // if. !$fieldDetail[ "join" ]
-
-        } // if. $fieldDetail[ "joined_field" ]
-        
-
-        $blockField[ "list" ][] = $joinedRow;
-
-    } // foreach. $joinedTableRows
+    } // if. $blockField[ "list_donor" ]
 
 
     /**
@@ -283,6 +141,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
         "annotation" => $fieldDetail[ "annotation" ],
         "data_type" => $fieldDetail[ "data_type" ],
         "field_type" => $fieldDetail[ "field_type" ],
+        "is_edit" => $fieldDetail[ "is_edit" ],
         "settings" => $fieldDetail[ "settings" ],
         "search" => $fieldDetail[ "search" ],
         "description" => $fieldDetail[ "description" ],
