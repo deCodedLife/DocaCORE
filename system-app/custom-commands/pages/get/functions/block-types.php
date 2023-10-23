@@ -39,79 +39,12 @@ function addListToForm ( $fieldDetail, $blockField ) {
      */
     if ( $blockField[ "list_donor" ] ) {
 
-        foreach ( $fieldDetail[ "list_donor" ][ "filters" ] as $filterArticle => $filterValue )
-            $listFilter[ $filterArticle ] = $filterValue;
+        $blockField[ "settings" ][ "object" ] = $blockField[ "list_donor" ][ "table" ];
+        $blockField[ "settings" ][ "select" ] = $blockField[ "list_donor" ][ "properties_title" ];
 
-    } // if. $fieldDetail[ "list_donor" ][ "filters" ]
+        unset( $blockField[ "list_donor" ] );
 
-    if ( $fieldDetail[ "join" ][ "filters" ] ) {
-
-        foreach ( $fieldDetail[ "join" ][ "filters" ] as $filterArticle => $filterValue )
-            $listFilter[ $filterArticle ] = $filterValue;
-
-    } // if. $fieldDetail[ "join" ][ "filters" ]
-
-
-    /**
-     * Получение данных из связанной таблицы
-     */
-    $joinedTableRows = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] );
-    if ( $propertyObjectScheme[ "is_trash" ] ) $joinedTableRows->where( $listFilter );
-    $joinedTableRows->limit( 1000 );
-
-
-    /**
-     * Обновление списка
-     */
-    foreach ( $joinedTableRows as $joinedTableRow ) {
-
-        /**
-         * Сформированный пункт списка
-         */
-        $joinedRow = [];
-
-        /**
-         * Название поля
-         */
-        $fieldTitle = $joinedTableRow[ $fieldDetail[ "list_donor" ][ "properties_title" ] ];
-
-
-        /**
-         * Нестандартные названия полей
-         */
-        switch ( $fieldDetail[ "list_donor" ][ "properties_title" ] ) {
-
-            case "first_name":
-            case "last_name":
-            case "patronymic":
-
-                /**
-                 * Получение ФИО
-                 */
-
-                $fio = [
-                    "first_name" => "",
-                    "last_name" => "",
-                    "patronymic" => ""
-                ];
-
-                foreach ( $propertyObjectScheme[ "properties" ] as $property ) {
-
-                    if (
-                        ( $property[ "article" ] === "first_name" ) ||
-                        ( $property[ "article" ] === "last_name" ) ||
-                        ( $property[ "article" ] === "patronymic" )
-                    ) $fio[ $property[ "article" ] ] = $joinedTableRow[ $property[ "article" ] ];
-
-                } // foreach. $propertyObjectScheme[ "properties" ]
-
-                $fieldTitle = "${fio[ "last_name" ]} ${fio[ "first_name" ]} ${fio[ "patronymic" ]}";
-
-                break;
-
-        } // switch. $fieldDetail[ "list_donor" ][ "properties_title" ]
-
-    } // foreach. $joinedTableRows
+    } // if. $blockField[ "list_donor" ]
 
 
     /**
@@ -316,7 +249,6 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
          * Получение значения поля
          */
         $blockField[ "value" ] = $pageDetail[ "row_detail" ][ $fieldDetail[ "article" ] ];
-        if ( $blockField[ "value" ]->value ) $blockField[ "value" ] = $blockField[ "value" ]->value;
 
 
         /**
@@ -382,7 +314,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
              */
             foreach ( $objectPropertyValues as $objectPropertyValue )
                 $blockField[ "value" ][] = $objectPropertyValue[
-                    $objectSchemeProperty[ "join" ][ "filter_property" ]
+                $objectSchemeProperty[ "join" ][ "filter_property" ]
                 ];
 
         } // if. !$blockField[ "value" ]
@@ -516,7 +448,7 @@ function addItemToArrayPosition ( $array, $insertItem, $position ) {
     } // foreach. $array
 
     if ( !$isAdded ) $resultArray[] = $insertItem;
-    
+
 
     return $resultArray;
 
@@ -786,7 +718,7 @@ function processingBlockType_form ( $structureBlock ) {
 
                 $generatedBlock = addFieldToForm( $objectScheme, $objectProperties, $structureBlock, $field, $formFieldValues );
                 if ( $generatedBlock ) $blockFields[] = $generatedBlock;
-                
+
             } // foreach. $block[ "fields" ]
 
 
@@ -837,17 +769,17 @@ function processingBlockType_form ( $structureBlock ) {
 
             $formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "fields" ] = addItemToArrayPosition(
                 $formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "fields" ], [
-                    "title" => $property->title,
-                    "article" => $propertyArticle,
-                    "size" => 4,
-                    "data_type" => $property->field_type,
-                    "field_type" => $property->field_type,
-                    "is_required" => false,
-                    "is_disabled" => false,
-                    "is_visible" => true,
-                    "is_clearable" => $property->is_clearable,
-                    "value" => $propertyValue
-                ], $property->property_position
+                "title" => $property->title,
+                "article" => $propertyArticle,
+                "size" => 4,
+                "data_type" => $property->field_type,
+                "field_type" => $property->field_type,
+                "is_required" => false,
+                "is_disabled" => false,
+                "is_visible" => true,
+                "is_clearable" => $property->is_clearable,
+                "value" => $propertyValue
+            ], $property->property_position
             );
 
             if ( !$formAreas[ $property->area_position ][ "blocks" ][ $property->block_position ][ "title" ] )
@@ -879,7 +811,7 @@ function processingBlockType_form ( $structureBlock ) {
         $formAreas = $resultAreas;
 
     } // if. $userSchemePath
-    
+
 
     return [
         "type" => $formType,
