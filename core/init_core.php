@@ -973,11 +973,24 @@ class API {
                     /**
                      * Получение детальной информации о записи
                      */
-                    $detailRow = $this->DB->from( $property[ "list_donor" ][ "table" ] )
-                        ->select( null )->select( [ "id", $property[ "list_donor" ][ "properties_title" ] ] )
-                        ->where( [ "id" => $row[ $property[ "article" ] ] ] )
-                        ->limit( 1 )
-                        ->fetch();
+
+                    if ( !$property[ "list_donor" ][ "object" ] ) {
+
+                        $detailRow = $this->DB->from( $property[ "list_donor" ][ "table" ] )
+                            ->select( null )->select( [ "id", $property[ "list_donor" ][ "properties_title" ] ] )
+                            ->where( [ "id" => $row[ $property[ "article" ] ] ] )
+                            ->limit( 1 )
+                            ->fetch();
+
+                    } else {
+
+                        $detailRow = $this->DB->from( $property[ "list_donor" ][ "object" ] )
+                            ->select( null )->select( [ "id", $property[ "list_donor" ][ "properties_title" ] ] )
+                            ->where( [ "id" => $row[ $property[ "article" ] ] ] )
+                            ->limit( 1 )
+                            ->fetch();
+
+                    } // if. !$property[ "list_donor" ][ "object" ]
 
 
                     /**

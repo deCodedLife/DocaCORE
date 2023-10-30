@@ -174,7 +174,6 @@ foreach ( $userScheme as $objectArticle => $object )
         "type" => $API->request->command
     ];
 
-
 /**
  * Загрузка схемы метода
  */
@@ -229,7 +228,6 @@ $customCommandDirPath = "";
 
 if ( is_dir( $system_customCommandDirPath ) ) $customCommandDirPath = $system_customCommandDirPath;
 elseif ( is_dir( $public_customCommandDirPath ) ) $customCommandDirPath = $public_customCommandDirPath;
-
 
 /**
  * Формирование пути к префиксу команды

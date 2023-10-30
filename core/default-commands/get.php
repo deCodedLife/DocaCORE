@@ -82,7 +82,9 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
         /**
          * Обновление фильтра записей
          */
-        $requestSettings[ "filter" ][ $propertyArticle ] = $propertyValue;
+
+        if ( gettype( $propertyValue ) !== "array" ) $requestSettings[ "filter" ][ $propertyArticle ] = $propertyValue;
+        else $requestSettings[ "multiply_filter" ][ $propertyArticle ] = $propertyValue;
 
     } // if. $schemeProperty[ "join" ]
 
@@ -163,6 +165,21 @@ try {
     if ( $selectProperties ) $rows->select( null )->select( $selectProperties );
 
     $rows->where( $requestSettings[ "filter" ] );
+
+
+    /**
+     * Множественные фильтры
+     */
+    if ( $requestSettings[ "multiply_filter" ] ) {
+
+        foreach ( $requestSettings[ "multiply_filter" ] as $multiplyFilterArticle => $multiplyFilterValues ) {
+
+            foreach ( $multiplyFilterValues as $multiplyFilterValue )
+                $rows->where( $multiplyFilterArticle, $multiplyFilterValue );
+
+        } // foreach. $requestSettings[ "multiply_filter" ]
+
+    } // if. $requestSettings[ "multiply_filter" ]
 
 
     /**

@@ -68,6 +68,25 @@ function processingComponentType_filter ( $structureComponent ) {
 
 
     /**
+     * Фильтрация записей
+     */
+
+    if (
+        $structureComponent[ "settings" ][ "recipient_property" ] &&
+        $objectProperties[ $structureComponent[ "settings" ][ "recipient_property" ] ][ "list_donor" ][ "multiply_filter" ]
+    ) {
+
+        foreach ( $objectProperties[ $structureComponent[ "settings" ][ "recipient_property" ] ][ "list_donor" ][ "multiply_filter" ] as $filterArticle => $filterValues ) {
+
+            foreach ( $filterValues as $filterValue )
+                $donorRows->where( $filterArticle, $filterValue );
+
+        } // foreach. $objectProperties[ $structureComponent[ "settings" ][ "recipient_property" ] ][ "list_donor" ][ "multiply_filter" ]
+
+    } // if. $structureComponent[ "recipient_property" ]
+
+
+    /**
      * Обработка записей из таблицы донора
      */
 
