@@ -1934,6 +1934,12 @@ class API {
 
     } // function. validatePermissions
 
+    public function getCurrentUser () {
+
+        return $this->validateJWT();
+
+    } // function. getCurrentUser
+
     /**
      * Проверка подключения необходимых модулей
      *

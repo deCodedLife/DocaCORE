@@ -1111,7 +1111,12 @@ function processingBlockType_analyticWidgets ( $structureBlock ) {
     /**
      * Сформированные настройки виджета
      */
+
+    $isHard = false;
+    if ( $structureBlock[ "settings" ][ "is_hard" ] ) $isHard = true;
+
     $widgetSettings = [
+        "is_hard" => $isHard,
         "widgets_group" => $structureBlock[ "settings" ][ "widgets_group" ],
         "filters" => []
     ];
