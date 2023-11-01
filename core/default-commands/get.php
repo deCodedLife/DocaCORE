@@ -157,6 +157,7 @@ try {
     $rows = $API->DB->from( $objectScheme[ "table" ] )
         ->orderBy( $requestSettings[ "sort_by" ] . " " . $requestSettings[ "sort_order" ] );
 
+
     if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] )
         $requestSettings[ "filter" ][ "is_active" ] = "Y";
 
@@ -173,6 +174,11 @@ try {
     if ( $requestSettings[ "multiply_filter" ] ) {
 
         foreach ( $requestSettings[ "multiply_filter" ] as $multiplyFilterArticle => $multiplyFilterValues ) {
+
+            if ( $API->request->command == "schedule"  ) {
+                $rows->where( $multiplyFilterArticle, $multiplyFilterValues );
+                continue;
+            }
 
             foreach ( $multiplyFilterValues as $multiplyFilterValue )
                 $rows->where( $multiplyFilterArticle, $multiplyFilterValue );
