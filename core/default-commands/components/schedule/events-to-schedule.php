@@ -22,12 +22,13 @@ function addEventIntoSchedule ( $event, $performerId ) {
     global $public_customCommandDirPath;
 
 
+
     /**
      * Игнорирование записей, у сотрудников, которые не выводятся в расписании
      */
     if ( !$performersDetail[ $performerId ] ) return false;
 
-
+    
     /**
      * Получение даты события
      */
@@ -93,6 +94,7 @@ function addEventIntoSchedule ( $event, $performerId ) {
             "icons" => $event[ "icons" ]
         ]
     ];
+    
 
 
     return true;

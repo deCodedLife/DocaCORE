@@ -432,8 +432,15 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
 
 
     $isFieldsUpdate = true;
-    $logDescription .= $schemeProperty[ "title" ] . " с [" . $rowDetail[ $schemeProperty[ "article" ] ] . "] на [" . $updateValues[ $schemeProperty[ "article" ] ] . "], ";
 
+    if ( $schemeProperty[ "ignoreInLogs" ] ) {
+
+        $logDescription .= $schemeProperty["title"] . ", ";
+        continue;
+    }
+
+    $logDescription .= $schemeProperty[ "title" ] . " с [" . $rowDetail[ $schemeProperty[ "article" ] ] . "] на [" . $updateValues[ $schemeProperty[ "article" ] ] . "], ";
+    
 } // foreach. $objectScheme[ "properties" ]
 
 if ( !$isFieldsUpdate ) $logDescription = "Обновлена запись ${objectScheme[ "title" ]}";

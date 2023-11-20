@@ -171,21 +171,7 @@ try {
     /**
      * Множественные фильтры
      */
-    if ( $requestSettings[ "multiply_filter" ] ) {
-
-        foreach ( $requestSettings[ "multiply_filter" ] as $multiplyFilterArticle => $multiplyFilterValues ) {
-
-            if ( $API->request->command == "schedule"  ) {
-                $rows->where( $multiplyFilterArticle, $multiplyFilterValues );
-                continue;
-            }
-
-            foreach ( $multiplyFilterValues as $multiplyFilterValue )
-                $rows->where( $multiplyFilterArticle, $multiplyFilterValue );
-
-        } // foreach. $requestSettings[ "multiply_filter" ]
-
-    } // if. $requestSettings[ "multiply_filter" ]
+    if ( $requestSettings[ "multiply_filter" ] ) $rows->where( $requestSettings[ "multiply_filter" ] );
 
 
     /**
