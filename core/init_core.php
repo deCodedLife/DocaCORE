@@ -451,7 +451,7 @@ class API {
             $requestProperty = $requestData->{ $objectProperty[ "article" ] };
 
 
-            if ( 
+            if (
                 ( $requestProperty === null ) ||
                 ( $requestProperty === "null" )
             ) {
@@ -943,7 +943,7 @@ class API {
 
                                 if ( $image === "." || $image === ".." ) continue;
 
-                                
+
                                 /**
                                  * Получение пути к изображению записи
                                  */

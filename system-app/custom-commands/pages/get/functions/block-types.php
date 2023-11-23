@@ -314,7 +314,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
              */
             foreach ( $objectPropertyValues as $objectPropertyValue )
                 $blockField[ "value" ][] = $objectPropertyValue[
-                    $objectSchemeProperty[ "join" ][ "filter_property" ]
+                $objectSchemeProperty[ "join" ][ "filter_property" ]
                 ];
 
         } // if. !$blockField[ "value" ]
