@@ -49,6 +49,7 @@ function addEventIntoSchedule ( $event, $performerId ) {
     );
     if ( $eventStartStep < $eventEndStep ) $eventEndStep--;
 
+
     /**
      * Описание события.
      * Выводится в ячейке события в Расписании
@@ -106,7 +107,44 @@ function addEventIntoSchedule ( $event, $performerId ) {
  * Обработка событий
  */
 
+$all_events = [];
+
 foreach ( $response[ "data" ] as $event ) {
+
+    $events = [];
+
+    $event_start = new DateTime( $event[ "start_at" ] );
+    $event_end = new DateTime( $event[ "end_at" ] );
+    $days_count = $event_end->diff( $event_start )->format( "%a" );
+
+    if ( $days_count == 0 ) {
+
+        $all_events[] = $event;
+        continue;
+
+    }
+
+    for( $iterator = new DateTime( $event[ "start_at" ] ); $iterator < $event_end; $iterator->modify( '+1 day' ) ) {
+
+        $new_event = $event;
+
+        if ( $iterator->format( "m-d" ) != $event_start->format( "m-d" ) )
+            $new_event[ "start_at" ] = $iterator->format( "Y-m-d " . $stepsList[ 0 ] ?? "00:00" );
+
+        if ( $iterator->format( "m-d" ) != $event_end->format( "m-d" ) )
+            $new_event[ "end_at" ] = $iterator->format( "Y-m-d " . end( $stepsList ) );
+
+        $new_event[ "iter" ] = $iterator->format( "Y-m-d H:i:s" );
+
+        $new_event[ "iter_i" ] = $iterator->format( "m-d" );
+        $new_event[ "iter_e" ] = $event_start->format( "m-d" );
+        $all_events[] = $new_event;
+
+    }
+
+}
+
+foreach ( $all_events as $event ) {
 
     /**
      * Получение цвета события
