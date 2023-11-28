@@ -195,10 +195,14 @@ $requestData = $API->requestDataPreprocessor( $objectScheme, $API->request->data
 /**
  * Проверка прав
  */
-if (
-    ( $API->request->command != "get-system-components" ) &&
-    !$API->validatePermissions( $commandScheme[ "required_permissions" ] )
-) $API->returnResponse( "Недостаточно прав", 403 );
+if ( $API->request->data->context->block != "form_list" ) {
+    
+    if (
+        ( $API->request->command != "get-system-components" ) &&
+        !$API->validatePermissions( $commandScheme[ "required_permissions" ] )
+    ) $API->returnResponse( "Недостаточно прав", 403 );
+
+}
 
 /**
  * Проверка подключения необходимых модулей

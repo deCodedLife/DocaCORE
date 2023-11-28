@@ -381,6 +381,27 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
 
                 break;
 
+            case "integer":
+
+                if ( $fieldDetail[ "list_donor" ][ "table" ] ) {
+
+                    $query = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] )
+                        ->where( "id", $blockField[ "value" ] )
+                        ->limit( 1 )
+                        ->fetch();
+
+                    $blockField[ "value" ] = $query[ $fieldDetail[ "list_donor" ][ "properties_title" ] ];
+                }
+
+                break;
+
+            case "array":
+
+                $API->returnResponse($fieldDetail);
+
+
+                break;
+
         } // switch. $fieldDetail[ "data_type" ]
 
     } // if. $structureBlock[ "type" ] === "info"

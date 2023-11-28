@@ -919,7 +919,7 @@ if ( $pageDetail[ "section" ] === "settings" )
         $_SERVER[ "SERVER_NAME" ]
     );
 
-
+//$API->returnResponse( $pageDetail );
 /**
  * @hook
  * Формирование значений формы

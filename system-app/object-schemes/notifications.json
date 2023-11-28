@@ -18,6 +18,19 @@
       "require_in_commands": []
     },
     {
+      "title": "Дата",
+      "article": "created_at",
+      "data_type": "datetime",
+      "field_type": "datetime",
+      "is_default_in_list": false,
+      "is_unique": false,
+      "is_autofill": true,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "get" ],
+      "require_in_commands": []
+    },
+    {
       "title": "Ссылка",
       "article": "href",
       "data_type": "string",

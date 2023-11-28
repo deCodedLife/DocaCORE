@@ -1534,7 +1534,10 @@ class API {
          * Получение пути к изображению на сервере
          */
 
-        $imagePath = "$imagesDirPath/$rowId";
+        $hash = $rowId . random_bytes(10);
+        $hash = md5( $hash );
+
+        $imagePath = "$imagesDirPath/$hash";
 
         switch ( $image[ "type" ] ) {
 
