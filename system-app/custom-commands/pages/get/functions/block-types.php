@@ -385,7 +385,9 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
 
                 if ( $fieldDetail[ "list_donor" ][ "table" ] ) {
 
-                    $query = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] )
+                    $objectScheme = $API->loadObjectScheme($fieldDetail[ "list_donor" ][ "table" ]);
+
+                    $query = $API->DB->from( $objectScheme[ "table" ] )
                         ->where( "id", $blockField[ "value" ] )
                         ->limit( 1 )
                         ->fetch();
@@ -397,10 +399,45 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
 
             case "array":
 
-                $API->returnResponse($fieldDetail);
+                if ( $fieldDetail[ "join" ] ) {
 
+                    $titles = [];
+
+                    foreach ( $blockField[ "value" ] as $value ) {
+
+                        $objectScheme = $API->loadObjectScheme($fieldDetail[ "join" ][ "donor_table" ]);
+
+                        $query = $API->DB->from( $objectScheme[ "table" ] )
+                            ->where( "id", $value )
+                            ->limit( 1 )
+                            ->fetch();
+
+                        $titles[] = $query[ $fieldDetail[ "join" ][ "property_article" ] ];
+
+                    }
+
+                    $blockField[ "value" ] = $titles;
+                }
 
                 break;
+
+            case "string":
+
+                if ( $fieldDetail[ "custom_list" ] ) {
+
+                    foreach ( $fieldDetail[ "custom_list" ] as $item ) {
+
+                        if ( $item[ "value" ] == $blockField[ "value" ] ) {
+
+                            $blockField[ "value" ] = $item[ "title" ];
+
+                        }
+
+                    }
+
+                }
+                break;
+
 
         } // switch. $fieldDetail[ "data_type" ]
 
@@ -1141,6 +1178,8 @@ function processingBlockType_analyticWidgets ( $structureBlock ) {
         "widgets_group" => $structureBlock[ "settings" ][ "widgets_group" ],
         "filters" => []
     ];
+
+    if ( $structureBlock[ "settings" ][ "linked_filter" ] ) $widgetSettings[ "linked_filter" ] = $structureBlock[ "settings" ][ "linked_filter" ];
 
 
     /**

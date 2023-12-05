@@ -974,10 +974,20 @@ class API {
                      * Получение детальной информации о записи
                      */
 
+                    $selectProperties = [
+                        "id",
+                        $property[ "list_donor" ][ "properties_title" ],
+                    ];
+
+                    if ( $property[ "list_donor" ][ "properties_title" ] === "last_name" ) {
+                        $selectProperties[] = "first_name";
+                        $selectProperties[] = "patronymic";
+                    }
+
                     if ( !$property[ "list_donor" ][ "object" ] ) {
 
                         $detailRow = $this->DB->from( $property[ "list_donor" ][ "table" ] )
-                            ->select( null )->select( [ "id", $property[ "list_donor" ][ "properties_title" ] ] )
+                            ->select( null )->select( $selectProperties )
                             ->where( [ "id" => $row[ $property[ "article" ] ] ] )
                             ->limit( 1 )
                             ->fetch();
@@ -1006,12 +1016,22 @@ class API {
 
                     }
 
+                    $rowTitle = $detailRow[ $property[ "list_donor" ][ "properties_title" ] ];
+
+                    if ( $property[ "list_donor" ][ "properties_title" ] === "last_name" ) {
+
+                        $rowTitle = $detailRow[ "last_name" ] . " ";
+                        if ( $detailRow[ "first_name" ] ) $rowTitle .= mb_substr( $detailRow[ "first_name" ], 0, 1 ) . ". ";
+                        if ( $detailRow[ "patronymic" ] ) $rowTitle .= mb_substr( $detailRow[ "patronymic" ], 0, 1 ) . ".";
+
+                    }
+
 
                     /**
                      * Добавление пункта списка
                      */
                     $row[ $property[ "article" ] ] = [
-                        "title" => $detailRow[ $property[ "list_donor" ][ "properties_title" ] ],
+                        "title" => $rowTitle,
                         "value" => (int) $detailRow[ "id" ]
                     ];
 

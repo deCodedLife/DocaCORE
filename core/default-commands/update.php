@@ -430,6 +430,10 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
     if ( $updateValues[ $schemeProperty[ "article" ] ] == "Array" ) continue;
     if ( gettype( $updateValues[ $schemeProperty[ "article" ] ] ) == "array" ) continue;
 
+    /**
+     * Игнорирование объекта в логах, если в его схеме есть параметр should_log: false
+     */
+    if ( isset( $commandScheme[ "should_log" ] ) && !$commandScheme[ "should_log" ] ) continue;
 
     $isFieldsUpdate = true;
 

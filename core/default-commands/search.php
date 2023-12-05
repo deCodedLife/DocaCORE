@@ -24,7 +24,7 @@ if ( !$objectScheme[ "table" ] ) $API->returnResponse( "Отсутствует �
 
 $Sphinx = new SphinxClient();
 
-$Sphinx->SetSortMode( SPH_SORT_RELEVANCE  );
+$Sphinx->SetSortMode( SPH_SORT_RELEVANCE );
 $Sphinx->SetArrayResult( true );
 
 
@@ -39,6 +39,13 @@ $searchIdList = $Sphinx->Query(
     str_replace( "-", "_", $API::$configs[ "db" ][ "name" ] ) . "_" . $objectScheme[ "table" ]
 );
 
+$searchIdList[ "matches" ][] = [
+    "id" => intval( $requestData->search ),
+    "weight" => "1679",
+    "attrs" => []
+];
+
+
 if ( $searchIdList[ "matches" ] ) {
 
     $findRowsId = [];
@@ -48,6 +55,7 @@ if ( $searchIdList[ "matches" ] ) {
     $rows = $API->DB->from( $objectScheme[ "table" ] )
         ->where( "id", $findRowsId )
         ->limit( $requestData->limit );
+
 
 } // if. $searchIdList[ "matches" ]
 
