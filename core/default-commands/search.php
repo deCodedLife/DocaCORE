@@ -45,15 +45,22 @@ $searchIdList[ "matches" ][] = [
     "attrs" => []
 ];
 
+unset( $requestData->search );
+
 
 if ( $searchIdList[ "matches" ] ) {
 
     $findRowsId = [];
 
     foreach ( $searchIdList[ "matches" ] as $searchId ) $findRowsId[] = $searchId[ "id" ];
+    $testObj = (array) $requestData;
 
+    unset( $testObj[ "limit" ] );
+    unset( $testObj[ "context" ] );
+    $testObj[ "id" ] = $findRowsId;
+    
     $rows = $API->DB->from( $objectScheme[ "table" ] )
-        ->where( "id", $findRowsId )
+        ->where( $testObj )
         ->limit( $requestData->limit );
 
 

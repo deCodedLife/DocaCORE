@@ -1248,7 +1248,8 @@ function processingBlockType_calendar ( $structureBlock ) {
         "object" => $structureBlock[ "settings" ][ "object" ],
         "events" => $structureBlock[ "settings" ][ "events" ],
         "filters" => [],
-        "context" => []
+        "context" => [],
+        "context_keys" => $structureBlock[ "settings" ][ "context_keys" ] ?? []
     ];
 
 

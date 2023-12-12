@@ -18,6 +18,7 @@ date_default_timezone_set( "Europe/Moscow" );
  */
 
 $API::$configs[ "company" ] = explode( ".", $_SERVER[ "HTTP_HOST" ] )[ 0 ];
+$API::$configs[ "company" ] = "yazdorov";
 
 
 /**

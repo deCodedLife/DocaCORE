@@ -26,9 +26,9 @@ function addEventIntoSchedule ( $event, $performerId ) {
     /**
      * Игнорирование записей, у сотрудников, которые не выводятся в расписании
      */
-    if ( !$performersDetail[ $performerId ] ) return false;
+    if ( !$performersDetail->$performerId ) return false;
 
-    
+
     /**
      * Получение даты события
      */
@@ -72,11 +72,10 @@ function addEventIntoSchedule ( $event, $performerId ) {
     if ( file_exists( $public_customCommandDirPath . "/hooks/event-details.php" ) )
         require( $public_customCommandDirPath . "/hooks/event-details.php" );
 
-
     /**
      * Заполнение информации об Исполнителе
      */
-    $resultSchedule[ $eventDate ][ $performerId ][ "performer_title" ] = $performersDetail[ $performerId ];
+    $resultSchedule[ $eventDate ][ $performerId ][ "performer_title" ] = $performersDetail->$performerId;
 
 
     /**
@@ -95,8 +94,6 @@ function addEventIntoSchedule ( $event, $performerId ) {
             "icons" => $event[ "icons" ]
         ]
     ];
-    
-
 
     return true;
 
@@ -180,3 +177,4 @@ foreach ( $all_events as $event ) {
     } // switch. gettype( $event[ $requestData->joined_row_article ] )
 
 } // foreach. $response[ "data" ]
+

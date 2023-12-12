@@ -6,7 +6,8 @@
  */
 
 $performersRows = $API->DB->from( $requestData->performers_table )
-    ->where( $performersFilter );
+    ->where( $performersFilter )
+    ->orderBy( "$requestData->performers_title ASC" );
 
 
 /**
@@ -15,6 +16,7 @@ $performersRows = $API->DB->from( $requestData->performers_table )
  */
 if ( file_exists( $public_customCommandDirPath . "/hooks/get-performers.php" ) )
     require( $public_customCommandDirPath . "/hooks/get-performers.php" );
+
 
 foreach ( $performersRows as $performersRow ) {
 
@@ -36,3 +38,7 @@ foreach ( $performersRows as $performersRow ) {
     $performersDetail[ $performersRow[ "id" ] ] = $performerName;
 
 } // foreach. $performersRows
+
+$performersDetail = json_decode( json_encode( $performersDetail ?? [] ) );
+
+// $API->returnResponse( $performersDetail, 500 );

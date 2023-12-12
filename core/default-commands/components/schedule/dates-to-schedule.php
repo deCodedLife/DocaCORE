@@ -28,7 +28,7 @@ $currentScheduleDate = $scheduleFrom;
 
 while ( $currentScheduleDate <= $scheduleTo ) {
 
-    global $resultSchedule;
+    global $resultSchedule, $API;
 
 
     /**

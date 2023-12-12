@@ -1,7 +1,7 @@
 {
   "title": "Документы",
   "table": "documents",
-  "search": "",
+  "search": true,
   "is_trash": true,
   "properties": [
     {
@@ -11,12 +11,30 @@
       "field_type": "string",
       "is_default_in_list": true,
       "is_unique": false,
+      "settings": {
+        "is_multiply": false,
+        "is_search": true
+      },
       "is_autofill": true,
       "in_search": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [ "add", "update", "search", "get" ],
       "require_in_commands": [ "add" ]
+    },
+    {
+      "title": "Дата последнего изменения",
+      "article": "updated_at",
+      "data_type": "datetime",
+      "field_type": "datetime",
+      "is_default_in_list": true,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "is_visible": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "get", "update" ]
     },
     {
       "title": "Артикул",

@@ -35,6 +35,13 @@
       "type": "char(1)",
       "is_required": false,
       "default": "Y"
+    },
+    {
+      "title": "Дата последнего изменения",
+      "article": "updated_at",
+      "type": "datetime",
+      "is_required": false,
+      "default": null
     }
   ],
   "rows_key": "",
