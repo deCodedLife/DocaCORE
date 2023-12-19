@@ -95,10 +95,14 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 
         case "image":
 
+            $isMultiply = false;
+            if ( $schemeProperty[ "settings" ][ "is_multiply" ] ) $isMultiply = true;
+
             $files[] = [
+                "is_multiply" => $isMultiply,
                 "property" => $propertyName,
                 "type" => "image",
-                "value" => $propertyValue
+                "value" => $isMultiply ? $propertyValue : $propertyValue[ 0 ]
             ];
             break;
 
