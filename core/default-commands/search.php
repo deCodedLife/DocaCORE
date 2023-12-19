@@ -53,14 +53,40 @@ if ( $searchIdList[ "matches" ] ) {
     $findRowsId = [];
 
     foreach ( $searchIdList[ "matches" ] as $searchId ) $findRowsId[] = $searchId[ "id" ];
-    $testObj = (array) $requestData;
+    $searchRequest = (array) $requestData;
 
-    unset( $testObj[ "limit" ] );
-    unset( $testObj[ "context" ] );
-    $testObj[ "id" ] = $findRowsId;
+    unset( $searchRequest[ "limit" ] );
+    unset( $searchRequest[ "context" ] );
+
+//    foreach ( $objectScheme[ "properties" ] as $field )
+//        $propertiesScheme[ $field[ "article" ] ] = $field;
+//
+//    $API->returnResponse( $requestData );
+//    foreach ( (object) $searchRequest as $key => $value ) {
+//
+//        $API->returnResponse( $key );
+////        $API->returnResponse( $propertiesScheme[ $key ] );
+//
+//    }
+
+
+    $searchRequest[ "id" ] = $findRowsId;
+    /**
+//     * Получение схемы команды объекта
+//     */
+//    $objectName = $property[ "list_donor" ][ "object" ] ?? $property[ "list_donor" ][ "table" ];
+//    $donorScheme = $this->loadObjectScheme( $objectName );
+//
+//    /**
+//     * Если таблица не совпадает со схемой объекта,
+//     * то приоритетной считается та, что из объекта
+//     */
+//    if ( $property[ "list_donor" ][ "table" ] != $donorScheme[ "table" ] )
+//        $objectName = $donorScheme[ "table" ];
+
     
     $rows = $API->DB->from( $objectScheme[ "table" ] )
-        ->where( $testObj )
+        ->where( $searchRequest )
         ->limit( $requestData->limit );
 
 
