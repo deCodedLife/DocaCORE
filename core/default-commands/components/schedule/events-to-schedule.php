@@ -146,7 +146,7 @@ foreach ( $all_events as $event ) {
     /**
      * Получение цвета события
      */
-    if ( !$event[ "status" ][ "color" ] ) $event[ "color" ] = "light";
+//    if ( !$event[ "status" ][ "color" ] ) $event[ "color" ] = "light";
 
 
     /**

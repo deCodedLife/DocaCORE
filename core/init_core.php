@@ -451,6 +451,7 @@ class API {
             $requestProperty = $requestData->{ $objectProperty[ "article" ] };
 
 
+
             if (
                 ( $requestProperty === null ) ||
                 ( $requestProperty === "null" )

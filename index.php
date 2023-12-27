@@ -6,8 +6,8 @@
  * Клиентская часть приложения. Отсюда происходит
  */
 
-ini_set('display_errors','Off');
-ini_set('error_reporting', E_ALL );
+ini_set( 'display_errors',false );
+ini_set( 'error_reporting', E_ALL );
 
 /**
  * Формирование HTTP заголовков
