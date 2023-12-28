@@ -63,5 +63,3 @@ if ( $requestData->id || $requestData->article ) {
  */
 if ( file_exists( $public_customCommandDirPath . "/hooks/result.php" ) )
     require( $public_customCommandDirPath . "/hooks/result.php" );
-
-$API->returnResponse( $requestData );
