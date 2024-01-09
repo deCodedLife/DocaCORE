@@ -52,6 +52,9 @@ foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
     if ( !$objectPropertyScheme ) continue;
 
 
+    if ( $propertyArticle === "service_id" && $requestData->scheme_name == "equipmentVisits" )
+        $propertyArticle = "services_id";
+
     /**
      * Обработка кастомных списков
      */
@@ -166,7 +169,7 @@ foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
                  * Сформированный список внутренних записей
                  */
                 $resultInnerPropertyValues = [];
-                
+
 
                 /**
                  * Обработка значений внутренней записи

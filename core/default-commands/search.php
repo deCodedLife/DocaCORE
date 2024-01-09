@@ -17,27 +17,38 @@ $rows = [];
  */
 if ( !$objectScheme[ "table" ] ) $API->returnResponse( "Отсутствует таблица в схеме запроса", 500 );
 
+$API->returnResponse( $objectScheme );
 
-/**
- * Объявление объекта sphinx
- */
+if ( $requestData->is_test ) {
 
-$Sphinx = new SphinxClient();
+    $API->returnResponse( "test" );
 
-$Sphinx->SetSortMode( SPH_SORT_RELEVANCE );
-$Sphinx->SetArrayResult( true );
+} else {
+
+    /**
+     * Объявление объекта sphinx
+     */
+
+    $Sphinx = new SphinxClient();
+
+    $Sphinx->SetSortMode( SPH_SORT_RELEVANCE );
+    $Sphinx->SetArrayResult( true );
 
 
-/**
- * Поиск совпадения
- */
-$requestData->limit = $requestData->limit ?? 50;
+    /**
+     * Поиск совпадения
+     */
+    $requestData->limit = $requestData->limit ?? 50;
 
-$Sphinx->SetLimits( 0, $requestData->limit );
-$searchIdList = $Sphinx->Query(
-    $requestData->search,
-    str_replace( "-", "_", $API::$configs[ "db" ][ "name" ] ) . "_" . $objectScheme[ "table" ]
-);
+    $Sphinx->SetLimits( 0, $requestData->limit );
+    $searchIdList = $Sphinx->Query(
+        $requestData->search,
+        str_replace( "-", "_", $API::$configs[ "db" ][ "name" ] ) . "_" . $objectScheme[ "table" ]
+    );
+
+}
+
+
 
 $searchIdList[ "matches" ][] = [
     "id" => intval( $requestData->search ),
@@ -75,7 +86,6 @@ if ( $searchIdList[ "matches" ] ) {
 //     * Получение схемы команды объекта
 //     */
 //    $objectName = $property[ "list_donor" ][ "object" ] ?? $property[ "list_donor" ][ "table" ];
-//    $donorScheme = $this->loadObjectScheme( $objectName );
 //
 //    /**
 //     * Если таблица не совпадает со схемой объекта,
