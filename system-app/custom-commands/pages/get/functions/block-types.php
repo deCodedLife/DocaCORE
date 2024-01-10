@@ -188,6 +188,15 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
 
     }
 
+    /**
+     * Обработка булева
+     */
+    if ( $fieldDetail[ "field_type" ] == "checkbox" ) {
+
+        $listItem[ "value" ] = $listItem[ "value" ] === 'Y';
+
+    }
+
 
     /**
      * Обработка умных списков
@@ -984,6 +993,7 @@ function processingBlockType_document ( $structureBlock ) {
 
         if ( $fieldDetail[ "min_value" ] ) $blockField[ "min_value" ] = $fieldDetail[ "min_value" ];
         if ( $fieldDetail[ "max_value" ] ) $blockField[ "max_value" ] = $fieldDetail[ "max_value" ];
+        if ( $fieldDetail[ "field_type" ] == "checkbox" && !$listItem ) $blockField[ "value" ] = false;
 
 
         /**
