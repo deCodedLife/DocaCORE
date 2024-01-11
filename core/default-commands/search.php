@@ -17,7 +17,7 @@ $rows = [];
  */
 if ( !$objectScheme[ "table" ] ) $API->returnResponse( "Отсутствует таблица в схеме запроса", 500 );
 
-$API->returnResponse( $objectScheme );
+//$API->returnResponse( $objectScheme );
 
 if ( $requestData->is_test ) {
 
