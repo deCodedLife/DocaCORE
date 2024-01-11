@@ -17,27 +17,38 @@ $rows = [];
  */
 if ( !$objectScheme[ "table" ] ) $API->returnResponse( "Отсутствует таблица в схеме запроса", 500 );
 
+//$API->returnResponse( $objectScheme );
 
-/**
- * Объявление объекта sphinx
- */
+if ( $requestData->is_test ) {
 
-$Sphinx = new SphinxClient();
+    $API->returnResponse( "test" );
 
-$Sphinx->SetSortMode( SPH_SORT_RELEVANCE );
-$Sphinx->SetArrayResult( true );
+} else {
+
+    /**
+     * Объявление объекта sphinx
+     */
+
+    $Sphinx = new SphinxClient();
+
+    $Sphinx->SetSortMode( SPH_SORT_RELEVANCE );
+    $Sphinx->SetArrayResult( true );
 
 
-/**
- * Поиск совпадения
- */
-$requestData->limit = $requestData->limit ?? 50;
+    /**
+     * Поиск совпадения
+     */
+    $requestData->limit = $requestData->limit ?? 50;
 
-$Sphinx->SetLimits( 0, $requestData->limit );
-$searchIdList = $Sphinx->Query(
-    $requestData->search,
-    str_replace( "-", "_", $API::$configs[ "db" ][ "name" ] ) . "_" . $objectScheme[ "table" ]
-);
+    $Sphinx->SetLimits( 0, $requestData->limit );
+    $searchIdList = $Sphinx->Query(
+        $requestData->search,
+        str_replace( "-", "_", $API::$configs[ "db" ][ "name" ] ) . "_" . $objectScheme[ "table" ]
+    );
+
+}
+
+
 
 $searchIdList[ "matches" ][] = [
     "id" => intval( $requestData->search ),
@@ -53,14 +64,39 @@ if ( $searchIdList[ "matches" ] ) {
     $findRowsId = [];
 
     foreach ( $searchIdList[ "matches" ] as $searchId ) $findRowsId[] = $searchId[ "id" ];
-    $testObj = (array) $requestData;
+    $searchRequest = (array) $requestData;
 
-    unset( $testObj[ "limit" ] );
-    unset( $testObj[ "context" ] );
-    $testObj[ "id" ] = $findRowsId;
+    unset( $searchRequest[ "limit" ] );
+    unset( $searchRequest[ "context" ] );
+
+//    foreach ( $objectScheme[ "properties" ] as $field )
+//        $propertiesScheme[ $field[ "article" ] ] = $field;
+//
+//    $API->returnResponse( $requestData );
+//    foreach ( (object) $searchRequest as $key => $value ) {
+//
+//        $API->returnResponse( $key );
+////        $API->returnResponse( $propertiesScheme[ $key ] );
+//
+//    }
+
+
+    $searchRequest[ "id" ] = $findRowsId;
+    /**
+//     * Получение схемы команды объекта
+//     */
+//    $objectName = $property[ "list_donor" ][ "object" ] ?? $property[ "list_donor" ][ "table" ];
+//
+//    /**
+//     * Если таблица не совпадает со схемой объекта,
+//     * то приоритетной считается та, что из объекта
+//     */
+//    if ( $property[ "list_donor" ][ "table" ] != $donorScheme[ "table" ] )
+//        $objectName = $donorScheme[ "table" ];
+
     
     $rows = $API->DB->from( $objectScheme[ "table" ] )
-        ->where( $testObj )
+        ->where( $searchRequest )
         ->limit( $requestData->limit );
 
 

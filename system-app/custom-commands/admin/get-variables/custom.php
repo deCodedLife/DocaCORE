@@ -57,8 +57,7 @@ $objectsList = array_unique( $objectsList );
 foreach ( $objectsList as $objectArticle ) {
 
     if (
-        ( $objectArticle !== "visits" ) &&
-        ( $objectArticle !== "clients" )
+        ( $objectArticle !== "visits" )
     ) continue;
 
 

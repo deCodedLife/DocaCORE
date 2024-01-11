@@ -32,7 +32,7 @@ $API->JWT = new JWT;
  * Подключение FluentPDO
  */
 $pdo = new PDO(
-    "mysql:dbname=" . $API::$configs[ "db" ][ "name" ] . ";charset=UTF8",
+    "mysql:host={$API::$configs[ "db" ][ "host" ]};dbname={$API::$configs[ "db" ][ "name" ]};charset=UTF8;port=3306",
     $API::$configs[ "db" ][ "user" ],
     $API::$configs[ "db" ][ "password" ],
     [ PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ]

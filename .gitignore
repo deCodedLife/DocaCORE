@@ -18,4 +18,6 @@ Thumbs.db
 uploads
 public-app
 
+db
+vendor
 core/app_configs.php

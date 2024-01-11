@@ -227,6 +227,11 @@ function generateStructureBlock ( $structureBlock ) {
             $responseBlock[ "settings" ][ "data" ] = $formStructure[ "data" ];
 
             /**
+             * Закрытие модального окна при сохранении
+             */
+            $responseBlock[ "settings" ][ "close_after_submit" ] = $structureBlock[ "settings" ][ "close_after_submit" ] ?? true;
+
+            /**
              * Указание областей формы
              */
             $responseBlock[ "settings" ][ "areas" ] = $formStructure[ "areas" ];
