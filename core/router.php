@@ -1,286 +1,212 @@
 <?php
 
 /**
- * @file
- * Маршрутизация
- *
- * Обработка и перенаправление запроса к нужной команде
+ * Получение детальной информации о правиле
  */
+$ruleDetails = $API->DB->from( "workDays" )
+    ->where( "id", $requestData->id )
+    ->fetch( );
+
+$ruleWorkDays = [];
+$ruleWorkDaysDetails = $API->DB->from( "workDaysWeekdays" )
+    ->where( "rule_id", $requestData->id );
+
+foreach ( $ruleWorkDaysDetails as $workDay )
+    $ruleWorkDays[] = $workDay[ "workday" ];
 
 
 /**
- * Настройки запроса
+ * Заполнение информации о правиле
  */
-$requestSettings = [
-
-    /**
-     * Фильтрация.
-     * Массив объектов (ключ - значение)
-     */
-    "filter" => [],
-
-    /**
-     * Связанные фильтры.
-     * Массив объектов (ключ - значение)
-     */
-    "join_filter" => [],
-
-    /**
-     * Ограничение на кол-во затрагиваемых записей.
-     * Если 0 - то ограничение не действует
-     */
-    "limit" => 0,
-
-    /**
-     * Пагинация. Игнорирует limit * page записей.
-     * Если 0 - то пагинация не действует
-     */
-    "page" => 0,
-
-    /**
-     * Св-во, по которому будет проводиться сортировка
-     */
-    "sort_by" => "id",
-
-    /**
-     * Направление сортировки (asc/desc)
-     */
-    "sort_order" => "asc"
-
-];
+$requestData->start_from = $requestData->start_from ?? date( 'Y-m-d', strtotime( $ruleDetails[ "event_from" ] ) );
+$requestData->start_to = $requestData->start_to ?? date( 'Y-m-d', strtotime( $ruleDetails[ "event_to" ] ) );
+$requestData->event_from = $requestData->event_from ?? date( 'H:i:s', strtotime( $ruleDetails[ "event_from" ] ) );
+$requestData->event_to = $requestData->event_to ?? date( 'H:i:s', strtotime( $ruleDetails[ "event_to" ] ) );
 
 
 /**
- * Ответ на запрос
+ * Получение периода
  */
-$response = [
+$begin = DateTime::createFromFormat( "Y-m-d H:i:s", "$requestData->start_from $requestData->event_from" );
+$end = DateTime::createFromFormat( "Y-m-d H:i:s", "$requestData->start_to  $requestData->event_to" );
+$limit = DateTime::createFromFormat( "Y-m-d H:i:s", "$requestData->start_from $requestData->event_from" );
+$limit->modify( "+1 month" );
 
-    /**
-     * Результат выполнения запроса
-     */
-    "data" => true,
-
-    /**
-     * Код статуса запроса
-     */
-    "status" => 200,
-
-    /**
-     * Дополнительная информация о результате выполнения запроса.
-     * Массив объектов (ключ - значение)
-     */
-    "detail" => []
-
-];
 
 
 /**
- * Получение запроса
+ * Перезаписываем объект requestData, чтобы затем использовать для создания записи
+ * $API->DB->insert( "..." )->values( (array) $requestData )
  */
-$API->request = json_decode( file_get_contents( "php://input" ) );
+$requestData->event_from = $begin->format( "Y-m-d H:i:s" );
+$requestData->event_to = $end->format( "Y-m-d H:i:s" );
+unset( $requestData->start_from );
+unset( $requestData->start_to );
 
 
 /**
- * Подключение интеграций
+ * Инициализация значений
  */
+$requestData->work_days = $requestData->work_days ?? $ruleWorkDays;
+$requestData->store_id = $requestData->store_id ?? $ruleDetails[ "store_id" ];
+$requestData->user_id = $requestData->user_id ?? $ruleDetails[ "user_id" ];
 
-if ( file_exists( $API::$configs[ "paths" ][ "core" ] . "/init_integrations.php" ) ) {
 
-    require_once( $API::$configs[ "paths" ][ "core" ] . "/init_integrations.php" );
+if ( !property_exists( $API->request->data, "cabinet_id" ) ) {
+
+    $requestData->cabinet_id = $requestData->cabinet_id ?? $ruleDetails[ "cabinet_id" ];
 
 } else {
 
-    $API->returnResponse( "Интеграции не отвечают", 500 );
-
-} // if. file_exists. /core/init_integrations.php
-
-
-/**
- * Обработка формы с файлами
- */
-
-if ( !$API->request ) {
-
-    /**
-     * Перевод формы в формат OxAPI
-     */
-
-    foreach ( $_POST as $postPropertyKey => $postProperty ) {
-
-        switch ( $postPropertyKey ) {
-
-            case "jwt":
-            case "object":
-            case "command":
-
-                $API->request->$postPropertyKey = $postProperty;
-                break;
-
-            default:
-
-                $API->request->data->$postPropertyKey = $postProperty;
-
-        } // switch. $postPropertyKey
-
-    } // foreach. $_POST
-
-
-    /**
-     * Добавление файлов в тело запроса
-     */
-    foreach ( $_FILES as $propertyArticle => $file )
-        $API->request->data->$propertyArticle = $file;
-
-} // if. !$API->request
-
-
-/**
- * Проверка обязательных параметров
- */
-if ( !$API->request ) $API->returnResponse( "Пустой запрос", 400 );
-if ( !$API->request->object ) $API->returnResponse( "Не указан объект в запросе", 400 );
-if ( !$API->request->command ) $API->returnResponse( "Не указана команда в запросе", 400 );
-
-
-/**
- * Проверка на недоступные символы
- */
-
-if ( !preg_match( "#^[aA-zZ0-9\-_]+$#", $API->request->object ) )
-    $API->returnResponse( "Недопустимые символы в запросе", 400 );
-
-if ( !preg_match( "#^[aA-zZ0-9\-_]+$#", $API->request->command ) )
-    $API->returnResponse( "Недопустимые символы в запросе", 400 );
-
-
-/**
- * Подключение пользовательских схем
- */
-$userSchemePath = $API::$configs[ "paths" ][ "public_user_schemes" ] . "/" . $API::$configs[ "company" ] . ".json";
-$userScheme = json_decode( file_get_contents( $userSchemePath ) );
-
-
-/**
- * Формирование команды для пользовательских схем
- */
-
-$userSchemeCommand = [];
-
-foreach ( $userScheme as $objectArticle => $object )
-    if ( $API->request->object == $objectArticle ) $userSchemeCommand = [
-        "object_scheme" => $objectArticle,
-        "required_permissions" => [],
-        "required_modules" => [],
-        "type" => $API->request->command
-    ];
-
-/**
- * Загрузка схемы метода
- */
-if ( !$userSchemeCommand ) $commandScheme = $API->loadCommandScheme( $API->request->object . "/" . $API->request->command );
-else $commandScheme = $userSchemeCommand;
-
-
-/**
- * Загрузка схемы объекта
- */
-$objectScheme = $API->loadObjectScheme( $commandScheme[ "object_scheme" ] );
-
-/**
- * Пре-обработка тела запроса
- */
-$requestData = $API->requestDataPreprocessor( $objectScheme, $API->request->data, $API->request->command );
-
-
-/**
- * Проверка прав
- */
-if ( $API->request->data->context->block != "form_list" ) {
-    
-    if (
-        ( $API->request->command != "get-system-components" ) &&
-        !$API->validatePermissions( $commandScheme[ "required_permissions" ] )
-    ) $API->returnResponse( "Недостаточно прав", 403 );
+    if ( is_null( $API->request->data->cabinet_id ) ) $requestData->cabinet_id = null;
 
 }
 
-/**
- * Проверка подключения необходимых модулей
- */
-if ( !$API->validateModules( $commandScheme[ "required_modules" ] ) )
-    $API->returnResponse( "Не подключены необходимые модули", 403 );
+$requestData->is_rule = $requestData->is_rule ?? $ruleDetails[ "is_rule" ] ?? 'Y';
+$requestData->is_weekend = $requestData->is_weekend ?? $ruleDetails[ "is_weekend" ];
+
+if ( $begin->format( "Y-m-d" ) == $end->format( "Y-m-d" ) ) $requestData->is_rule = 'N';
+else $requestData->is_rule = 'Y';
 
 
 /**
- * Формирование пути к команде по умолчанию
+ * Валидация времени
  */
-$defaultCommandPath = $API::$configs[ "paths" ][ "default_commands" ] . "/" . $commandScheme[ "type" ] . ".php";
+if ( $end > $limit ) $API->returnResponse( "Расписание можно создать не боле чем на месяц", 402 );
+if ( $begin > $end ) $API->returnResponse( "Период указан некорректно", 402 );
+
+$storeDetails = $API->DB->from( "stores" )
+    ->where( "id", $requestData->store_id )
+    ->fetch( );
+
+
+if ( $requestData->is_weekend !== 'Y' ) {
+
+    if ( strtotime( $storeDetails[ "schedule_from" ] ) > strtotime( $begin->format( "H:i:s" ) ) )
+        $API->returnResponse( "Расписание выходит за рамки графика филиала ${$storeDetails[ "title" ]}", 402 );
+
+    if ( strtotime( $storeDetails[ "schedule_to" ] ) < strtotime( $end->format( "H:i:s" ) ) )
+        $API->returnResponse( "Расписание выходит за рамки графика филиала ${$storeDetails[ "title" ]}", 402 );
+
+}
 
 
 /**
- * Путь к системной/публичной нестандартной команде
+ * Формирование поискового запроса для выявления
+ * корреляций по кабинету и времени в расписании
+ *
+ * В списке также присутствуют графики, которые
+ * частично пересекаются с новым
  */
-$system_customCommandDirPath = $API::$configs[ "paths" ][ "system_custom_commands" ] . "/" . $API->request->object . "/" . $API->request->command;
-$public_customCommandDirPath = $API::$configs[ "paths" ][ "public_custom_commands" ] . "/" . $API->request->object . "/" . $API->request->command;
+$searchQuery = "SELECT * FROM workDays WHERE 
+    (
+        ( event_from >= '$requestData->event_from' and event_from < '$requestData->event_to' ) OR
+        ( event_to > '$requestData->event_from' and event_to < '$requestData->event_to' ) OR
+        ( event_from < '$requestData->event_from' and event_to >= '$requestData->event_to' ) 
+   ) AND 
+    store_id = $requestData->store_id AND
+    ( is_weekend is NULL OR is_weekend = 'N' )";
+
+if ( $requestData->id ) $searchQuery .= " AND NOT id = $requestData->id";
+//if ( $requestData->is_rule === 'Y' ) $searchQuery .= " AND is_rule = 'Y'";
+//else $searchQuery .= " AND is_rule = 'N'";
 
 
 /**
- * Формирование пути к директории нестандартной команды
+ * Поиск корреляций
  */
-
-$customCommandDirPath = "";
-
-if ( is_dir( $system_customCommandDirPath ) ) $customCommandDirPath = $system_customCommandDirPath;
-elseif ( is_dir( $public_customCommandDirPath ) ) $customCommandDirPath = $public_customCommandDirPath;
-
-/**
- * Формирование пути к префиксу команды
- */
-$commandPrefixPath = "$customCommandDirPath/prefix.php";
-if (
-    file_exists( $public_customCommandDirPath . "/prefix.php" ) &&
-    !file_exists( $system_customCommandDirPath . "/prefix.php" )
-) $commandPrefixPath = $public_customCommandDirPath . "/prefix.php";
-
-/**
- * Формирование пути к нестандартной команде
- */
-$customCommandPath = "$customCommandDirPath/custom.php";
-if (
-    file_exists( $public_customCommandDirPath . "/custom.php" ) &&
-    !file_exists( $system_customCommandDirPath . "/custom.php" )
-) $customCommandPath = $public_customCommandDirPath . "/custom.php";
-
-/**
- * Формирование пути к постфиксу команды
- */
-$commandPostfixPath = "$customCommandDirPath/postfix.php";
-if (
-    file_exists( $public_customCommandDirPath . "/postfix.php" ) &&
-    !file_exists( $system_customCommandDirPath . "/postfix.php" )
-) $commandPostfixPath = $public_customCommandDirPath . "/postfix.php";
+$scheduleRules = mysqli_query( $API->DB_connection, $searchQuery );
+$newSchedule = generateRuleEvents( (array) $requestData, $requestData->work_days ?? [] );
 
 
-/**
- * Префикс команды
- */
-if ( file_exists( $commandPrefixPath ) ) require_once( $commandPrefixPath );
+//$API->returnResponse( $newSchedule );
 
 
-/**
- * Инициализация команды
- */
-if ( file_exists( $customCommandPath ) ) require_once( $customCommandPath );
-else if ( file_exists( $defaultCommandPath ) ) require_once( $defaultCommandPath );
-else $API->returnResponse( "Отсутствует тип команды", 500 );
+foreach ( $scheduleRules as $rule ) {
 
-/**
- * Постфикс команды
- */
-if ( file_exists( $commandPostfixPath ) ) require_once( $commandPostfixPath );
+    /**
+     * Не проверяем правила на отмену посещений
+     */
+    if ( $requestData->is_weekend === 'Y' ) break;
+    if ( $rule[ "is_weekend" ] === 'Y' ) continue;
+
+    /**
+     * Получаем список событий коррелирующего правила
+     */
+    $ruleEvents = generateRuleEvents( $rule );
+
+    foreach ( $ruleEvents as $ruleEvent ) {
+
+        /**
+         * Получаем время события коррелирующего правила
+         */
+        $eventStartFrom = strtotime( $ruleEvent[ "event_from" ] );
+        $eventEndsAt = strtotime( $ruleEvent[ "event_to" ] );
+
+        /**
+         * Проходимся по событиям нового правила
+         */
+        foreach ( $newSchedule as $newEvent ) {
+
+            /**
+             * Получаем время события нового правила
+             */
+            $newEventStartFrom = strtotime( $newEvent[ "event_from" ] );
+            $newEventEndsAt = strtotime( $newEvent[ "event_to" ] );
+
+            /**
+             * Находим корреляцию по времени
+             */
+            if (
+                ( $eventStartFrom >= $newEventStartFrom and $eventStartFrom < $newEventEndsAt ) or
+                ( $eventEndsAt > $newEventStartFrom and $eventEndsAt < $newEventEndsAt ) or
+                ( $eventStartFrom < $newEventStartFrom and $eventEndsAt >= $newEventEndsAt )
+            ) {
+
+                if ( $ruleEvent[ "user_id" ] === $newEvent[ "user_id" ] )
+                    if ( $ruleEvent[ "is_rule" ] != $newEvent[ "is_rule" ] ) continue;
 
 
-/**
- * Ответ на запрос
- */
-$API->returnResponse( $response[ "data" ], $response[ "status" ], $response[ "detail" ] );
+                /**
+                 * Проверяем занят ли кабинет
+                 */
+                if ( $ruleEvent[ "cabinet_id" ] == $newEvent[ "cabinet_id" ] && !is_null( $ruleEvent[ "cabinet_id" ] ) ) {
+
+                    /**
+                     * Получаем информацию по сотруднику в событии коррелирующего правила
+                     */
+                    $employeeDetails = $API->DB->from( "users" )
+                        ->where( "id", $ruleEvent[ "user_id" ] )
+                        ->fetch( );
+
+                    $employeeFio = "{$employeeDetails[ "last_name" ]} ";
+                    $employeeFio .= mb_substr( $employeeDetails[ "first_name" ], 0, 1) . ". ";
+                    $employeeFio .= mb_substr( $employeeDetails[ "patronymic" ], 0, 1) . ". ";
+
+                    $API->returnResponse( "Кабинет занимает врач $employeeFio {$ruleEvent[ "id" ]}", 500 );
+
+                } // if ( $ruleEvent[ "cabinet_id" ] == $newEvent[ "cabinet_id" ] ) {
+
+
+                /**
+                 * Если кабинет не занят, то возможной причиной корреляции стало уже
+                 * существующее правило для сотрудника
+                 */
+                if ( $ruleEvent[ "user_id" ] === $newEvent[ "user_id" ] ) {
+
+                    $eventDate = date( "d-m", strtotime( $ruleEvent[ "event_from" ] ) );
+
+                    $eventTimeFrom = date( "H:i", strtotime( $ruleEvent[ "event_from" ] ) );
+                    $eventTimeTo = date( "H:i", strtotime( $ruleEvent[ "event_to"] ) );
+
+                    $API->returnResponse( "У сотрудника уже есть расписание на $eventDate с $eventTimeFrom по $eventTimeTo", 500 );
+
+                } //  if ( $ruleEvent[ "user_id" ] == $newEvent[ "user_id" ] ) {
+
+            } // if ( correlation )
+
+        } // foreach ( $newSchedule as $newEvent ) {
+
+    } // foreach ( $ruleEvents as $ruleEvent ) {
+
+} // foreach ( $scheduleEvents as $event )

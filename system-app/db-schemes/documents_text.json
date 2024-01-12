@@ -4,7 +4,7 @@
     {
       "title": "Тело документа",
       "article": "document_body",
-      "type": "text",
+      "type": "longtext",
       "is_required": false,
       "default": null
     }
