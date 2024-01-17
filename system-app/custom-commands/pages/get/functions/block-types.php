@@ -86,7 +86,6 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
 
     if ( !$fieldDetail[ "require_in_commands" ] ) $fieldDetail[ "require_in_commands" ] = [];
 
-
     /**
      * Проверка обязательности поля
      */
@@ -159,8 +158,12 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
     /**
      * Обработка хуков
      */
+
     if ( $fieldDetail[ "is_hook" ] )
         $blockField[ "hook" ] = $objectScheme[ "table" ];
+
+//    if ( $fieldDetail[ "article" ] == "patronymic" )
+//        $API->returnResponse( [ $blockField, $fieldDetail ], 500 );
 
 
     /**
@@ -677,6 +680,8 @@ function processingBlockType_form ( $structureBlock ) {
      */
     $objectScheme = $API->loadObjectScheme( $structureBlock[ "settings" ][ "object" ] );
     if ( !$objectScheme ) return false;
+
+//    $API->returnResponse( $objectScheme, 500 );
 
 
     /**

@@ -88,5 +88,4 @@ foreach ( $menuScheme[ "side" ] as $menuKey => $menuValue ) {
 
 } // foreach. $menuScheme[ "side" ]
 
-
-$API->returnResponse( $returnMenu[ "side" ] );
+$response[ "data" ] = $returnMenu[ "side" ];
