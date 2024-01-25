@@ -20,15 +20,41 @@ $rowDetail = $API->sendRequest( $requestData->scheme_name, "get", [
     "id" => $requestData->row_id
 ] );
 
+
+
 if ( !$rowDetail ) $API->returnResponse( [] );
 
 $rowDetail = $rowDetail[ 0 ];
+
+$requestBody = (object) [];
+$requestBody->id = $requestData->row_id;
+$requestBody->context->object = $rowDetail;
+$customCommand = $API->sendRequest( $requestData->scheme_name, "variables", (array) $requestBody );
+
+
+if ( $customCommand ) {
+
+    foreach ( $customCommand as $customArticle => $customValue ) {
+
+
+        foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
+
+            if ( $propertyArticle !== $customArticle ) continue;
+            $rowDetail->$propertyArticle = $customValue;
+
+        }
+
+    }
+
+}
+//$API->returnResponse( $rowDetail );
 
 
 /**
  * Обработка значений
  */
 foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
+
 
     /**
      * Сформированное значение св-ва
@@ -68,6 +94,11 @@ foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
 
 
         if ( gettype( $propertyValue->value ) === "integer" ) {
+
+//            if ( !$propertyValue->value ) {
+//                $resultPropertyValue[] = $innerPropertyValue;
+//                continue;
+//            }
 
             /**
              * Таблица внутреннего св-ва
@@ -151,6 +182,11 @@ foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
 
         foreach ( $propertyValue as $innerPropertyValue ) {
 
+            if ( !$innerPropertyValue->value ) {
+                $resultPropertyValue[] = $innerPropertyValue;
+                continue;
+            }
+
             /**
              * Получение значений внутреннего св-ва
              */
@@ -176,6 +212,7 @@ foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
                  */
 
                 foreach ( $innerPropertyRowDetail as $innerPropertyRowArticle => $innerPropertyRow ) {
+
 
                     if (
                         ( gettype( $innerPropertyRow ) === "array" ) ||
