@@ -198,6 +198,7 @@ function generateStructureBlock ( $structureBlock ) {
              */
             if ( $structureBlock[ "type" ] == "list" ) $responseBlock[ "settings" ][ "headers" ] = $listStructure[ "headers" ];
             $responseBlock[ "settings" ][ "filters" ] = (object) $listStructure[ "filters" ];
+            $responseBlock[ "settings" ][ "is_infinite" ] = $structureBlock[ "settings" ][ "is_infinite" ] ?? false;
 
             break;
 
