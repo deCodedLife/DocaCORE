@@ -37,6 +37,20 @@
       "use_in_commands": [ "get", "update" ]
     },
     {
+      "title": "Общий",
+      "article": "is_general",
+      "data_type": "checkbox",
+      "field_type": "string",
+      "is_default_in_list": true,
+      "is_unique": false,
+      "is_autofill": true,
+      "in_search": false,
+      "is_visible": false,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "get", "update" ]
+    },
+    {
       "title": "Артикул",
       "article": "article",
       "data_type": "string",
