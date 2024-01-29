@@ -1,68 +1,35 @@
 {
   "title": "Клиенты",
   "table": "clients",
+  "search": "",
   "is_trash": true,
   "properties": [
     {
-      "title": "ID",
-      "article": "id",
-      "data_type": "integer",
-      "field_type": "integer",
-      "is_default_in_list": true,
-      "is_unique": false,
-      "is_autofill": false,
-      "is_variable": true,
-      "is_visible": false,
-      "use_in_commands": [
-        "update",
-        "get"
-      ],
-      "require_in_commands": [
-        "remove"
-      ]
-    },
-    {
-      "title": "ФИО",
-      "article": "fio",
+      "title": "Имя",
+      "article": "first_name",
       "data_type": "string",
       "field_type": "string",
       "is_default_in_list": true,
       "is_unique": false,
-      "is_autofill": false,
-      "use_in_commands": [],
-      "require_in_commands": []
+      "is_autofill": true,
+      "in_search": true,
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [ "add" ]
     },
     {
       "title": "Фамилия",
       "article": "last_name",
       "data_type": "string",
       "field_type": "string",
-      "is_default_in_list": false,
+      "is_default_in_list": true,
       "is_unique": false,
       "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ],
-      "require_in_commands": [
-        "add"
-      ]
-    },
-    {
-      "title": "Имя",
-      "article": "first_name",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ],
-      "require_in_commands": [
-        "add"
-      ]
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": [ "add" ]
     },
     {
       "title": "Отчество",
@@ -72,27 +39,24 @@
       "is_default_in_list": false,
       "is_unique": false,
       "is_autofill": true,
-      "is_hook": true,
+      "is_hook": false,
       "use_in_commands": [
-        "get",
-        "hook",
         "add",
         "update"
       ]
     },
     {
-      "title": "Дата рождения",
-      "article": "birthday",
-      "data_type": "date",
-      "field_type": "date",
+      "title": "Email",
+      "article": "email",
+      "data_type": "email",
+      "field_type": "email",
       "is_default_in_list": true,
-      "is_unique": false,
+      "is_unique": true,
       "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update",
-        "get"
-      ]
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": []
     },
     {
       "title": "Телефон",
@@ -102,474 +66,10 @@
       "is_default_in_list": true,
       "is_unique": true,
       "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ],
-      "require_in_commands": [
-      ]
-    },
-    {
-      "title": "Email",
-      "article": "email",
-      "data_type": "email",
-      "field_type": "email",
-      "is_default_in_list": true,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Дополнительный телефон",
-      "article": "second_phone",
-      "data_type": "phone",
-      "field_type": "phone",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Адрес",
-      "article": "address",
-      "data_type": "string",
-      "field_type": "dadata_address",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Пол",
-      "article": "gender",
-      "data_type": "string",
-      "field_type": "list",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "hook",
-        "update"
-      ],
-      "custom_list": [
-        {
-          "title": "Мужской",
-          "value": "M"
-        },
-        {
-          "title": "Женский",
-          "value": "W"
-        }
-      ]
-    },
-    {
-      "title": "Серия паспорта",
-      "article": "passport_series",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Номер паспорта",
-      "article": "passport_number",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Кем выдан паспорт",
-      "article": "passport_issued",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Имя представителя",
-      "article": "present_first_name",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_visible": false,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Фамилия представителя",
-      "article": "present_last_name",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_visible": false,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Отчество представителя",
-      "article": "present_patronymic",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_hook": true,
-      "is_visible": false,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Серия паспорта представителя",
-      "article": "present_passport_series",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_visible": false,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Номер паспорта представителя",
-      "article": "present_passport_number",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_visible": false,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Кем выдан паспорт представителя",
-      "article": "present_passport_issued",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_visible": false,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Повторный",
-      "article": "is_repeat",
-      "data_type": "string",
-      "field_type": "list",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": false,
-      "use_in_commands": [],
-      "custom_list": [
-        {
-          "title": "Нет",
-          "value": "N"
-        },
-        {
-          "title": "Да",
-          "value": "Y"
-        }
-      ]
-    },
-    {
-      "title": "Комментарий",
-      "article": "comment",
-      "data_type": "string",
-      "field_type": "textarea",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Дата и время создания",
-      "article": "created_at",
-      "data_type": "datetime",
-      "field_type": "datetime",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update",
-        "get"
-      ]
-    },
-    {
-      "title": "Группы клиента",
-      "article": "client_groups",
-      "data_type": "array",
-      "field_type": "list",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "join": {
-        "connection_table": "clientsGroupsAssociation",
-        "donor_table": "clientGroups",
-        "property_article": "title",
-        "insert_property": "client_id",
-        "filter_property": "clientGroup_id"
-      },
-      "use_in_commands": [
-        "add",
-        "update"
-      ]
-    },
-    {
-      "title": "Есть законный представитель",
-      "article": "is_representative",
-      "data_type": "boolean",
-      "field_type": "checkbox",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "use_in_commands": [
-        "add",
-        "update",
-        "hook"
-      ],
-      "is_hook": true
-    },
-    {
-      "title": "Черный список",
-      "article": "is_blacklist",
-      "data_type": "boolean",
-      "field_type": "checkbox",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_in_search": false,
-      "use_in_commands": [
-        "update",
-        "get"
-      ]
-    },
-    {
-      "title": "Подписан договор",
-      "article": "is_contract",
-      "data_type": "boolean",
-      "field_type": "checkbox",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": false,
-      "is_in_search": false,
-      "use_in_commands": [
-        "get"
-      ]
-    },
-    {
-      "title": "Рекламный канал",
-      "article": "advertise_id",
-      "data_type": "integer",
-      "field_type": "list",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "list_donor": {
-        "table": "advertise",
-        "properties_title": "title"
-      },
-      "require_in_commands": [
-        "add"
-      ],
-      "use_in_commands": [
-        "update",
-        "get",
-        "add",
-        "remove"
-      ]
-    },
-    {
-      "title": "Депозит",
-      "article": "deposit",
-      "data_type": "float",
-      "field_type": "price",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_variable": false,
-      "use_in_commands": [
-        "update",
-        "get",
-        "add",
-        "hook"
-      ]
-    },
-    {
-      "title": "Бонусы",
-      "article": "bonuses",
-      "data_type": "float",
-      "field_type": "integer",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_variable": false,
-      "use_in_commands": [
-        "update",
-        "get",
-        "add",
-        "hook"
-      ]
-    },
-    {
-      "title": "Депозит - пополнение",
-      "article": "deposit_replenishment",
-      "data_type": "float",
-      "field_type": "price",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_variable": false,
-      "use_in_commands": [
-        "update",
-        "get"
-      ]
-    },
-    {
-      "title": "Бонусы - пополнение",
-      "article": "bonuses_replenishment",
-      "data_type": "integer",
-      "field_type": "integer",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_variable": false,
-      "use_in_commands": [
-        "update",
-        "get"
-      ]
-    },
-    {
-      "title": "Геолокация",
-      "article": "geolocation",
-      "data_type": "string",
-      "field_type": "string",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": true,
-      "is_visible": false,
-      "use_in_commands": [
-        "update",
-        "get",
-        "add"
-      ]
-    },
-    {
-      "title": "Действия с бонусами",
-      "article": "bonus_action",
-      "data_type": "string",
-      "field_type": "radio",
-      "is_default_in_list": false,
-      "is_unique": false,
-      "is_autofill": false,
-      "custom_list": [
-        {
-          "title": "Начислить",
-          "value": "increase"
-        },
-        {
-          "title": "Списать",
-          "value": "decrease"
-        }
-      ],
-      "use_in_commands": [
-        "update"
-      ]
-    }
-  ],
-  "action_buttons": [
-    {
-      "type": "href",
-      "settings": {
-        "title": "Изменить",
-        "page": [
-          "clients/update/",
-          ":id"
-        ],
-        "icon": "gear",
-        "background": "dark"
-      }
-    },
-    {
-      "type": "script",
-      "settings": {
-        "title": "Удалить",
-        "background": "dark",
-        "icon": "trash",
-        "object": "clients",
-        "command": "remove",
-        "data": {
-          "id": ":id"
-        }
-      }
-    },
-    {
-      "type": "print",
-      "settings": {
-        "icon": "print",
-        "title": "Печать договора",
-        "background": "dark",
-        "data": {
-          "save_to": {
-            "object": "clientContracts",
-            "properties": {
-              "row_id": ":id"
-            }
-          },
-          "is_edit": true,
-          "document_article": "services_contract",
-          "scheme_name": "clients",
-          "row_id": ":id"
-        }
-      }
+      "required_permissions": [],
+      "required_modules": [],
+      "use_in_commands": [ "add", "update" ],
+      "require_in_commands": []
     }
   ]
 }

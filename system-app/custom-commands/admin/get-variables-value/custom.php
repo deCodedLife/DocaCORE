@@ -213,12 +213,6 @@ foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
 
                 foreach ( $innerPropertyRowDetail as $innerPropertyRowArticle => $innerPropertyRow ) {
 
-
-                    if (
-                        ( gettype( $innerPropertyRow ) === "array" ) ||
-                        ( gettype( $innerPropertyRow ) === "object" )
-                    ) continue;
-
                     $resultInnerPropertyValues[ $innerPropertyRowArticle ] = $innerPropertyRow;
 
                 } // foreach. $innerPropertyRowDetail
