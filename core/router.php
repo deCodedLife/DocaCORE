@@ -1,5 +1,7 @@
 <?php
 
+//ini_set( "display_errors", true );
+
 /**
  * @file
  * Маршрутизация
@@ -195,8 +197,9 @@ $requestData = $API->requestDataPreprocessor( $objectScheme, $API->request->data
 /**
  * Проверка прав
  */
-if ( $API->request->data->context->block != "form_list" ) {
-    
+//
+if ( $API->request->data->context->block != "form_list" && $API->request->data->context->block != "select" ) {
+
     if (
         ( $API->request->command != "get-system-components" ) &&
         !$API->validatePermissions( $commandScheme[ "required_permissions" ] )

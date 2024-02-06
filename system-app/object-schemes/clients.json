@@ -36,13 +36,14 @@
       "article": "patronymic",
       "data_type": "string",
       "field_type": "string",
-      "is_default_in_list": true,
+      "is_default_in_list": false,
       "is_unique": false,
       "is_autofill": true,
-      "required_permissions": [],
-      "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
-      "require_in_commands": []
+      "is_hook": false,
+      "use_in_commands": [
+        "add",
+        "update"
+      ]
     },
     {
       "title": "Email",

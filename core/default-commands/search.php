@@ -21,7 +21,8 @@ if ( !$objectScheme[ "table" ] ) $API->returnResponse( "Отсутствует �
 
 if ( $requestData->is_test ) {
 
-    $API->returnResponse( "test" );
+    $API->returnResponse( $requestData->search, 500 );
+
 
 } else {
 
@@ -34,6 +35,14 @@ if ( $requestData->is_test ) {
     $Sphinx->SetSortMode( SPH_SORT_RELEVANCE );
     $Sphinx->SetArrayResult( true );
 
+
+    if ( substr($requestData->search, 0, 1) == '+' ) {
+        $requestData->search = str_replace( '+', '', $requestData->search );
+        $requestData->search = str_replace( ')', '', $requestData->search );
+        $requestData->search = str_replace( '(', '', $requestData->search );
+        $requestData->search = str_replace( '-', '', $requestData->search );
+        $requestData->search = str_replace( ' ', '', $requestData->search );
+    }
 
     /**
      * Поиск совпадения
@@ -49,12 +58,12 @@ if ( $requestData->is_test ) {
 }
 
 
-
 $searchIdList[ "matches" ][] = [
     "id" => intval( $requestData->search ),
-    "weight" => "1679",
+    "weight" => "1",
     "attrs" => []
 ];
+
 
 unset( $requestData->search );
 
@@ -68,6 +77,7 @@ if ( $searchIdList[ "matches" ] ) {
 
     unset( $searchRequest[ "limit" ] );
     unset( $searchRequest[ "context" ] );
+    unset( $searchRequest[ "select" ] );
 
 //    foreach ( $objectScheme[ "properties" ] as $field )
 //        $propertiesScheme[ $field[ "article" ] ] = $field;
@@ -83,8 +93,8 @@ if ( $searchIdList[ "matches" ] ) {
 
     $searchRequest[ "id" ] = $findRowsId;
     /**
-//     * Получение схемы команды объекта
-//     */
+    //     * Получение схемы команды объекта
+    //     */
 //    $objectName = $property[ "list_donor" ][ "object" ] ?? $property[ "list_donor" ][ "table" ];
 //
 //    /**
@@ -94,7 +104,7 @@ if ( $searchIdList[ "matches" ] ) {
 //    if ( $property[ "list_donor" ][ "table" ] != $donorScheme[ "table" ] )
 //        $objectName = $donorScheme[ "table" ];
 
-    
+
     $rows = $API->DB->from( $objectScheme[ "table" ] )
         ->where( $searchRequest )
         ->limit( $requestData->limit );

@@ -28,6 +28,7 @@ if ( $requestData->page > 1 ) $requestSettings[ "page" ] = $requestData->page - 
  * Выбранные св-ва
  */
 $selectProperties = [];
+$objectProperties = [];
 if ( $requestData->select ) $selectProperties[] = "id";
 
 
@@ -44,6 +45,7 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
     $propertyValue = $requestData->{$propertyArticle};
 
 
+    $objectProperties[ $propertyArticle ] = $schemeProperty;
     /**
      * Учет select
      */
@@ -100,14 +102,11 @@ try {
     /**
      * Обработка списков форм
      */
-    if ( $requestData->context->block == "form_list" ) {
+    if ( $requestData->context->block == "form_list" || $requestData->context->block == "select" ) {
 
         $requestSettings[ "limit" ] = 1000;
+        if ( in_array( "last_name", $requestData->select ) ) $selectProperties = [ "id", "last_name", "first_name", "patronymic" ];
 
-        if (
-            ( $selectProperties[ 1 ] == "first_name" ) ||
-            ( $selectProperties[ 1 ] == "last_name" )
-        ) $selectProperties = [ "id", "last_name", "first_name", "patronymic" ];
 
     } // if. $requestData->context->block == "form_list"
 
@@ -161,7 +160,6 @@ try {
     if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] )
         $requestSettings[ "filter" ][ "is_active" ] = "Y";
 
-
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
     if ( $selectProperties ) $rows->select( null )->select( $selectProperties );
 
@@ -177,25 +175,45 @@ try {
     /**
      * Обработка списков форм
      */
-    if ( $requestData->context->block == "form_list" ) {
+    if ( $requestData->context->block == "form_list" || $requestData->context->block == "select" ) {
 
         /**
          * Сформированный список
          */
         $response[ "data" ] = [];
+        $response = [];
 
+        foreach ( $rows as $row ) $response[ "data" ][] = $row;
 
-        foreach ( $rows as $row ) {
+        if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
+            require $public_customCommandDirPath . "/postfix.php";
 
-            $rowTitle = $row[ $selectProperties[ 1 ] ];
+        foreach ( $response[ "data" ] as $key => $row ) {
 
-            if (
-                ( $selectProperties[ 1 ] == "first_name" ) ||
-                ( $selectProperties[ 1 ] == "last_name" )
-            ) $rowTitle .= " " . $row[ $selectProperties[ 2 ] ] . " " . $row[ $selectProperties[ 3 ] ];
+            $rowTitle = $row[ "last_name" ] ?? "";
+            $titleParts = [];
 
+            foreach ( $selectProperties as $property ) {
 
-            $response[ "data" ][ ] = [
+                if ( $property == "id" ) continue;
+                $rowValue = $row[ $property ];
+
+                switch ( $objectProperties[ $property ][ "field_type" ] ) {
+                    case "price":
+                        $currency = $API::$configs[ "system_components" ][ "currency" ] ?? "₽";
+                        $titleParts[] = "({$rowValue}$currency)";
+                        break;
+
+                    default:
+                        $titleParts[] = $rowValue;
+                }
+
+            }
+            $rowTitle = join( " ", $titleParts );
+
+            if ( !$selectProperties ) $rowTitle = $row[ "title" ];
+
+            $response[ "data" ][ $key ]  = [
                 "title" => $rowTitle,
                 "value" => $row[ "id" ]
             ];
@@ -203,11 +221,7 @@ try {
         } // foreach. $rows
 
 
-        if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
-            require $public_customCommandDirPath . "/postfix.php";
-
-
-        $API->returnResponse( $response[ "data" ] );
+        $API->returnResponse( $response[ "data" ]  );
 
     } // if. $requestData->context->block == "form_list"
 

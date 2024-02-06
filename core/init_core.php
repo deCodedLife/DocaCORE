@@ -264,6 +264,7 @@ class API {
 
                 $property[ "is_default_in_list" ] = $objectSchemeProperties[ $property[ "article" ] ][ "is_default_in_list" ];
                 $property[ "is_autofill" ] = $objectSchemeProperties[ $property[ "article" ] ][ "is_autofill" ];
+                continue;
 
             } // if. $objectSchemeProperties[ $property[ "article" ] ]
 
