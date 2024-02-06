@@ -35,7 +35,9 @@ foreach ( $resultSchedule as $scheduleDateKey => $scheduleDateDetail ) {
         /**
          * Учет ячеек с событиями
          */
+
         foreach ( $performerSchedule as $performerEvent ) {
+
 
             /**
              * Добавление свободной ячейки перед событием
