@@ -90,6 +90,9 @@ function variablesPushing ( $block, $pageDetail ) {
              */
             $resultBlock[ $propertyKey ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
 
+            if ( $stringVariable === "row_id" && !isset( $pageDetail[ "row_detail" ][ $stringVariable ] ) )
+                $resultBlock[ $propertyKey ] = (int) $pageDetail[ $stringVariable ];
+
         } // if. $property[ 0 ] === ":"
 
 
@@ -528,26 +531,61 @@ function generateStructureBlock ( $structureBlock ) {
                             $pageDetail
                         );
 
-                        foreach ( $structureComponent[ "settings" ][ "data" ] as $scriptPropertyKey => $scriptProperty ) {
+//                        foreach ( $structureComponent[ "settings" ][ "data" ] as $scriptPropertyKey => $scriptProperty ) {
+//
+//                            $scriptBody[ $scriptPropertyKey ] = $scriptProperty;
+//
+//
+//                            /**
+//                             * Подстановка переменных
+//                             */
+//
+//                            if ( $scriptProperty[ 0 ] === ":" ) {
+//
+//                                /**
+//                                 * Обработка переменной
+//                                 */
+//
+//                                /**
+//                                 * Получение переменной в строке
+//                                 */
+//                                $stringVariable = substr( $scriptProperty, 1 );
+//
+//
+//                                /**
+//                                 * Получение значения из списка
+//                                 */
+//                                if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+//                                    $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
+//
+//                                /**
+//                                 * Формирование строки
+//                                 */
+//                                $scriptBody[ $scriptPropertyKey ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+//
+//
+//                            } // if. $widgetFilter[ "value" ][ 0 ] === ":"
+//
+//                        } // foreach. $structureComponent[ "settings" ][ "body" ]
 
-                            $scriptBody[ $scriptPropertyKey ] = $scriptProperty;
+
+                        /**
+                         * Обновление схемы запроса
+                         */
+                        $responseComponent[ "settings" ][ "data" ] = $buttonData;
+
+                    } // if. $structureComponent[ "settings" ][ "data" ]
 
 
-                            /**
-                             * Подстановка переменных
-                             */
+                    if ( $structureComponent[ "settings" ][ "page" ] ) {
 
-                            if ( $scriptProperty[ 0 ] === ":" ) {
+                        $crumbles = explode( "/", $structureComponent[ "settings" ][ "page" ] );
 
-                                /**
-                                 * Обработка переменной
-                                 */
+                        foreach ( $crumbles as $key => $crumble ) {
 
-                                /**
-                                 * Получение переменной в строке
-                                 */
-                                $stringVariable = substr( $scriptProperty, 1 );
+                            if ( $crumble[ 0 ] === ":" ) {
 
+                                $stringVariable = substr( $crumble, 1 );
 
                                 /**
                                  * Получение значения из списка
@@ -558,19 +596,25 @@ function generateStructureBlock ( $structureBlock ) {
                                 /**
                                  * Формирование строки
                                  */
-                                $scriptBody[ $scriptPropertyKey ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+                                $crumbles[ $key ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
 
-                            } // if. $widgetFilter[ "value" ][ 0 ] === ":"
+                                if ( $stringVariable === "row_id" && !isset( $pageDetail[ "row_detail" ][ $stringVariable ] ) ) {
+                                    $crumbles[ $key ] = (int) $pageDetail[ $stringVariable ];
+                                }
 
-                        } // foreach. $structureComponent[ "settings" ][ "body" ]
+                            }
+
+                        }
+
+                        $responseComponent[ "settings" ][ "page" ] = implode( "/", $crumbles );
+
+                    }
 
 
-                        /**
-                         * Обновление схемы запроса
-                         */
-                        $responseComponent[ "settings" ][ "data" ] = $buttonData;
-
-                    } // if. $structureComponent[ "settings" ][ "data" ]
+                    $responseComponent[ "settings" ][ "context" ] = variablesPushing(
+                        $structureComponent[ "settings" ][ "context" ],
+                        $pageDetail
+                    );
 
 
                     /**

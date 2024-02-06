@@ -77,6 +77,7 @@ if ( $searchIdList[ "matches" ] ) {
 
     unset( $searchRequest[ "limit" ] );
     unset( $searchRequest[ "context" ] );
+    unset( $searchRequest[ "select" ] );
 
 //    foreach ( $objectScheme[ "properties" ] as $field )
 //        $propertiesScheme[ $field[ "article" ] ] = $field;

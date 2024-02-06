@@ -180,7 +180,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
         if ( $fieldDetail[ "join" ][ "donor_table" ] ) {
 
             $blockField[ "settings" ][ "object" ] = $fieldDetail[ "join" ][ "donor_table" ];
-            $blockField[ "settings" ][ "select" ] = $fieldDetail[ "join" ][ "property_article" ];
+            $blockField[ "settings" ][ "select" ] = $fieldDetail[ "join" ][ "select" ] ?? $fieldDetail[ "join" ][ "property_article" ];
 
         } else {
 
