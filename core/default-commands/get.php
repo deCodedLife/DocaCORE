@@ -196,8 +196,13 @@ try {
             foreach ( $selectProperties as $property ) {
 
                 if ( $property == "id" ) continue;
+                if ( !isset( $row[ $property ] ) || $row[ $property ] == "null" ) continue;
+
                 $rowValue = $row[ $property ];
 
+                /**
+                 * TODO: Implement all types
+                 */
                 switch ( $objectProperties[ $property ][ "field_type" ] ) {
                     case "price":
                         $currency = $API::$configs[ "system_components" ][ "currency" ] ?? "₽";
@@ -206,9 +211,10 @@ try {
 
                     default:
                         $titleParts[] = $rowValue;
-                }
+                } // switch ( $objectProperties[ $property ][ "field_type" ] )
 
-            }
+            } // foreach ( $selectProperties as $property )
+
             $rowTitle = join( " ", $titleParts );
 
             if ( !$selectProperties ) $rowTitle = $row[ "title" ];
@@ -218,7 +224,7 @@ try {
                 "value" => $row[ "id" ]
             ];
 
-        } // foreach. $rows
+        } // foreach ( $response[ "data" ] as $key => $row )
 
 
         $API->returnResponse( $response[ "data" ]  );
