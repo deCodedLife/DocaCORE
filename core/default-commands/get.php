@@ -28,7 +28,6 @@ if ( $requestData->page > 1 ) $requestSettings[ "page" ] = $requestData->page - 
  * Выбранные св-ва
  */
 $selectProperties = [];
-$objectProperties = [];
 if ( $requestData->select ) $selectProperties[] = "id";
 
 
@@ -177,57 +176,7 @@ try {
      */
     if ( $requestData->context->block == "form_list" || $requestData->context->block == "select" ) {
 
-        /**
-         * Сформированный список
-         */
-        $response[ "data" ] = [];
-        $response = [];
-
-        foreach ( $rows as $row ) $response[ "data" ][] = $row;
-
-        if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
-            require $public_customCommandDirPath . "/postfix.php";
-
-        foreach ( $response[ "data" ] as $key => $row ) {
-
-            $rowTitle = $row[ "last_name" ] ?? "";
-            $titleParts = [];
-
-            foreach ( $selectProperties as $property ) {
-
-                if ( $property == "id" ) continue;
-                if ( !isset( $row[ $property ] ) || $row[ $property ] == "null" ) continue;
-
-                $rowValue = $row[ $property ];
-
-                /**
-                 * TODO: Implement all types
-                 */
-                switch ( $objectProperties[ $property ][ "field_type" ] ) {
-                    case "price":
-                        $currency = $API::$configs[ "system_components" ][ "currency" ] ?? "₽";
-                        $titleParts[] = "({$rowValue}$currency)";
-                        break;
-
-                    default:
-                        $titleParts[] = $rowValue;
-                } // switch ( $objectProperties[ $property ][ "field_type" ] )
-
-            } // foreach ( $selectProperties as $property )
-
-            $rowTitle = join( " ", $titleParts );
-
-            if ( !$selectProperties ) $rowTitle = $row[ "title" ];
-
-            $response[ "data" ][ $key ]  = [
-                "title" => $rowTitle,
-                "value" => $row[ "id" ]
-            ];
-
-        } // foreach ( $response[ "data" ] as $key => $row )
-
-
-        $API->returnResponse( $response[ "data" ]  );
+        $API->selectHandler( $rows, $objectScheme, $selectProperties );
 
     } // if. $requestData->context->block == "form_list"
 

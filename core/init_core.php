@@ -126,6 +126,85 @@ class API {
 
     } // function. loadScheme
 
+
+    public function selectHandler( $rows, $objectScheme, $selectProperties ) {
+
+        global $response, $public_customCommandDirPath;
+
+        $objectProperties = [];
+        foreach ( $objectScheme[ "properties" ] as $schemeProperty )
+            $objectProperties[ $schemeProperty[ "article" ] ] = $schemeProperty;
+
+
+        /**
+         * Сформированный список
+         */
+        $response[ "data" ] = [];
+        $response = [];
+
+        foreach ( $rows as $row ) $response[ "data" ][] = $row;
+
+        if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
+            require $public_customCommandDirPath . "/postfix.php";
+
+        foreach ( $response[ "data" ] as $key => $row ) {
+
+            $titleParts = [];
+
+            foreach ( $selectProperties as $property ) {
+
+                if ( $property == "id" ) continue;
+                if (
+                    !isset( $row[ $property ] ) ||
+                    $row[ $property ] == "null" ||
+                    $row[ $property ] == ""
+                ) continue;
+
+                $rowValue = $row[ $property ];
+
+                /**
+                 * TODO: Implement all types
+                 */
+                switch ( $objectProperties[ $property ][ "field_type" ] ) {
+                    case "price":
+                        $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
+                        $titleParts[] = "({$rowValue}$currency)";
+                        break;
+                    case "phone":
+                        $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
+                            (\d{1})?\D* # optional country code
+                            (\d{3})?\D* # optional area code
+                            (\d{3})\D*  # first three
+                            (\d{2})     # last 2
+                            (\d{2})     # last 2
+                            (?:\D+|$)   # extension delimiter or EOL
+                            (\d*)       # optional extension
+                        /x";
+
+                        if( preg_match( $phoneRegexp, $rowValue, $matches ) )
+                            $titleParts[] = "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}";
+                        else $titleParts[] = "+$rowValue";
+                        break;
+                    default:
+                        $titleParts[] = $rowValue;
+                        break;
+                } // switch ( $objectProperties[ $property ][ "field_type" ] )
+
+            } // foreach ( $selectProperties as $property )
+
+            $rowTitle = join( " ", $titleParts );
+            if ( !$selectProperties ) $rowTitle = $row[ "title" ];
+
+            $response[ "data" ][ $key ]  = [
+                "title" => $rowTitle,
+                "value" => $row[ "id" ]
+            ];
+
+        } // foreach ( $response[ "data" ] as $key => $row )
+        
+        $this->returnResponse( $response[ "data" ]  );
+    }
+
     /**
      * Получение публичных и системных схем
      *

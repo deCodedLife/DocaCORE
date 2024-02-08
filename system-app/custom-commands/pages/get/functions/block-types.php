@@ -622,7 +622,7 @@ function processingBlockType_list ( $structureBlock ) {
         if ( $property[ "is_default_in_list" ] ) $listHeaders[] = [
             "title" => $property[ "title" ],
             "article" => $property[ "article" ],
-            "type" => $property[ "field_type" ]
+            "type" => $structureBlock[ "headers" ][ $property[ "article" ] ] ?? $property[ "field_type" ]
         ];
 
     } // foreach. $objectScheme[ "properties" ]
