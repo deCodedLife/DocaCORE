@@ -129,7 +129,9 @@ class API {
 
     public function selectHandler( $rows, $objectScheme, $selectProperties ) {
 
-        global $response, $public_customCommandDirPath;
+        global $response, $public_customCommandDirPath, $API;
+
+        $API = $this;
 
         $objectProperties = [];
         foreach ( $objectScheme[ "properties" ] as $schemeProperty )

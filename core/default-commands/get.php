@@ -156,7 +156,7 @@ try {
         ->orderBy( $requestSettings[ "sort_by" ] . " " . $requestSettings[ "sort_order" ] );
 
 
-    if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] )
+    if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] && $requestData->context->block != "select" )
         $requestSettings[ "filter" ][ "is_active" ] = "Y";
 
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
