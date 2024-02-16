@@ -19,6 +19,13 @@ $requestSettings[ "limit" ] = 15;
 if ( gettype( $requestData->limit ) === "integer" ) $requestSettings[ "limit" ] = $requestData->limit;
 if ( $commandScheme[ "no_limit" ] ) $requestSettings[ "limit" ] = 0;
 
+if ( $requestData->limit == 0 ) {
+
+    unset( $requestSettings[ "limit" ] );
+    unset( $requestData->limit );
+
+}
+
 /**
  * Страница вывода
  */
@@ -176,7 +183,7 @@ try {
      */
     if ( $requestData->context->block == "form_list" || $requestData->context->block == "select" ) {
 
-        $API->selectHandler( $rows, $objectScheme, $selectProperties );
+        $API->selectHandler( $rows, $objectScheme );
 
     } // if. $requestData->context->block == "form_list"
 
@@ -187,7 +194,7 @@ try {
 
     $response[ "detail" ][ "rows_count" ] = $rows->count();
 
-    if ( $requestSettings[ "limit" ] )
+    if ( $requestSettings[ "limit" ] != 0 )
         $response[ "detail" ][ "pages_count" ] = ceil(
             $response[ "detail" ][ "rows_count" ] / $requestSettings[ "limit" ]
         );

@@ -40,7 +40,10 @@ function addListToForm ( $fieldDetail, $blockField ) {
     if ( $blockField[ "list_donor" ] ) {
 
         $blockField[ "settings" ][ "object" ] = $blockField[ "list_donor" ][ "table" ];
-        $blockField[ "settings" ][ "select" ] = $blockField[ "list_donor" ][ "properties_title" ];
+
+        $select = $fieldDetail[ "list_donor" ][ "select" ] ?? $blockField[ "list_donor" ][ "properties_title" ];
+        $blockField[ "settings" ][ "select" ] = $select;
+        if ( $fieldDetail[ "list_donor" ][ "select_menu" ] ) $blockField[ "settings" ][ "select_menu" ] = $fieldDetail[ "list_donor" ][ "select_menu" ];
 
         unset( $blockField[ "list_donor" ] );
 
@@ -176,18 +179,23 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
 
         $blockField = addListToForm( $fieldDetail, $blockField );
 
-
         if ( $fieldDetail[ "join" ][ "donor_table" ] ) {
 
             $blockField[ "settings" ][ "object" ] = $fieldDetail[ "join" ][ "donor_table" ];
-            $blockField[ "settings" ][ "select" ] = $fieldDetail[ "join" ][ "select" ] ?? $fieldDetail[ "join" ][ "property_article" ];
+            $select = $fieldDetail[ "join" ][ "select" ] ?? $fieldDetail[ "join" ][ "property_article" ];
+            $select_menu = $fieldDetail[ "join" ][ "select_menu" ];
 
         } else {
 
             $blockField[ "settings" ][ "object" ] = $fieldDetail[ "list_donor" ][ "table" ];
-            $blockField[ "settings" ][ "select" ] = $fieldDetail[ "list_donor" ][ "properties_title" ];
+            $select = $fieldDetail[ "list_donor" ][ "select" ] ?? $fieldDetail[ "list_donor" ][ "properties_title" ];
+            $select_menu = $fieldDetail[ "list_donor" ][ "select_menu" ];
 
         } // if. $fieldDetail[ "join" ][ "donor_table" ]
+
+
+        $blockField[ "settings" ][ "select" ] = $select;
+        if ( $select_menu ) $blockField[ "settings" ][ "select_menu" ] = $select_menu;
 
     }
 

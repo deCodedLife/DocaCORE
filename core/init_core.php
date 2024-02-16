@@ -127,7 +127,57 @@ class API {
     } // function. loadScheme
 
 
-    public function selectHandler( $rows, $objectScheme, $selectProperties ) {
+    public function selectPropertiesHandler( $row, $objectProperties, $selects ): string {
+
+        $titleParts = [];
+
+        foreach ( $selects as $property ) {
+
+            if ( $property == "id" ) continue;
+            if (
+                !isset( $row[ $property ] ) ||
+                $row[ $property ] == "null" ||
+                $row[ $property ] == ""
+            ) continue;
+
+            $rowValue = $row[ $property ];
+
+            /**
+             * TODO: Implement all types
+             */
+            switch ( $objectProperties[ $property ][ "field_type" ] ) {
+                case "price":
+                    $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
+                    $titleParts[] = "({$rowValue}$currency)";
+                    break;
+                case "phone":
+                    $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
+                            (\d{1})?\D* # optional country code
+                            (\d{3})?\D* # optional area code
+                            (\d{3})\D*  # first three
+                            (\d{2})     # last 2
+                            (\d{2})     # last 2
+                            (?:\D+|$)   # extension delimiter or EOL
+                            (\d*)       # optional extension
+                        /x";
+
+                    if( preg_match( $phoneRegexp, $rowValue, $matches ) )
+                        $titleParts[] = "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}";
+                    else $titleParts[] = "+$rowValue";
+                    break;
+                default:
+                    $titleParts[] = $rowValue;
+                    break;
+            } // switch ( $objectProperties[ $property ][ "field_type" ] )
+
+        } // foreach ( $selectProperties as $property )
+
+        return join( " ", $titleParts );
+
+    }
+
+
+    public function selectHandler( $rows, $objectScheme ) {
 
         global $response, $public_customCommandDirPath, $API;
 
@@ -141,8 +191,8 @@ class API {
         /**
          * Сформированный список
          */
+        $selectResponse = [];
         $response[ "data" ] = [];
-        $response = [];
 
         foreach ( $rows as $row ) $response[ "data" ][] = $row;
 
@@ -151,60 +201,17 @@ class API {
 
         foreach ( $response[ "data" ] as $key => $row ) {
 
-            $titleParts = [];
-
-            foreach ( $selectProperties as $property ) {
-
-                if ( $property == "id" ) continue;
-                if (
-                    !isset( $row[ $property ] ) ||
-                    $row[ $property ] == "null" ||
-                    $row[ $property ] == ""
-                ) continue;
-
-                $rowValue = $row[ $property ];
-
-                /**
-                 * TODO: Implement all types
-                 */
-                switch ( $objectProperties[ $property ][ "field_type" ] ) {
-                    case "price":
-                        $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
-                        $titleParts[] = "({$rowValue}$currency)";
-                        break;
-                    case "phone":
-                        $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
-                            (\d{1})?\D* # optional country code
-                            (\d{3})?\D* # optional area code
-                            (\d{3})\D*  # first three
-                            (\d{2})     # last 2
-                            (\d{2})     # last 2
-                            (?:\D+|$)   # extension delimiter or EOL
-                            (\d*)       # optional extension
-                        /x";
-
-                        if( preg_match( $phoneRegexp, $rowValue, $matches ) )
-                            $titleParts[] = "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}";
-                        else $titleParts[] = "+$rowValue";
-                        break;
-                    default:
-                        $titleParts[] = $rowValue;
-                        break;
-                } // switch ( $objectProperties[ $property ][ "field_type" ] )
-
-            } // foreach ( $selectProperties as $property )
-
-            $rowTitle = join( " ", $titleParts );
-            if ( !$selectProperties ) $rowTitle = $row[ "title" ];
-
-            $response[ "data" ][ $key ]  = [
-                "title" => $rowTitle,
+            $selectResponse[ $key ] = [
+                "title" => $this->selectPropertiesHandler( $row, $objectProperties, $API->request->data->select ?? [ "title" ] ),
                 "value" => $row[ "id" ]
             ];
 
+            if ( $this->request->data->select_menu )
+                $selectResponse[ $key ][ "menu_title" ] = $this->selectPropertiesHandler( $row, $objectProperties, $this->request->data->select_menu );
+
         } // foreach ( $response[ "data" ] as $key => $row )
         
-        $this->returnResponse( $response[ "data" ]  );
+        $this->returnResponse( $selectResponse );
     }
 
     /**
