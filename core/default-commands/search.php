@@ -49,6 +49,7 @@ if ( $requestData->is_test ) {
 
     $db_name = $API::$configs[ "db" ][ "name" ];
     if ( $db_name == "doca_demo" ) $db_name = "doca_yazdorov";
+    if ( $db_name == "doca_test" ) $db_name = "doca_yazdorov";
 
     $Sphinx->SetLimits( 0, $requestData->limit );
     $searchIdList = $Sphinx->Query(
@@ -102,3 +103,4 @@ if ( $requestData->select )
 
 
 $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context );
+

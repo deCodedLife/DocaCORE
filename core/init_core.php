@@ -131,7 +131,14 @@ class API {
 
         $titleParts = [];
 
-        foreach ( $selects as $property ) {
+        foreach ( $selects as $key => $property ) {
+
+            if ( $row[ $property ] ) continue;
+            unset( $selects[ $key ] );
+
+        }
+
+        foreach ( $selects as $key => $property ) {
 
             if ( $property == "id" ) continue;
             if (
@@ -141,6 +148,7 @@ class API {
             ) continue;
 
             $rowValue = $row[ $property ];
+            $postfix = $key === array_key_last( $selects ) ? "" : ",";
 
             /**
              * TODO: Implement all types
@@ -148,7 +156,7 @@ class API {
             switch ( $objectProperties[ $property ][ "field_type" ] ) {
                 case "price":
                     $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
-                    $titleParts[] = "({$rowValue}$currency)";
+                    $titleParts[] = "({$rowValue}$currency)$postfix";
                     break;
                 case "phone":
                     $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
@@ -161,8 +169,9 @@ class API {
                             (\d*)       # optional extension
                         /x";
 
+
                     if( preg_match( $phoneRegexp, $rowValue, $matches ) )
-                        $titleParts[] = "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}";
+                        $titleParts[] = "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}$postfix";
                     else $titleParts[] = "+$rowValue";
                     break;
                 default:
