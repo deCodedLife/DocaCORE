@@ -40,6 +40,7 @@ if ( file_exists( $_SERVER[ "DOCUMENT_ROOT" ] . "/core/init_core.php" ) ) {
 } // if. file_exists. /core/init_core.php
 
 
+
 /**
  * Подключение конфигурации API
  */

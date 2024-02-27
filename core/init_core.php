@@ -127,6 +127,37 @@ class API {
     } // function. loadScheme
 
 
+    /**
+     * Рекурсивный импорт файлов
+     *
+     * @param $path
+     * @return void
+     */
+    function require_files( $path ) {
+
+        if ( !is_dir( $path ) ) return;
+        $files = array_diff( scandir( $path ), [ "..", "." ] );
+
+        foreach ( $files as $file ) {
+
+            $filePath = join( '/', [ $path, $file ] );
+
+            if ( is_dir( $filePath ) ) {
+                $this->require_files( $filePath );
+                continue;
+            }
+
+            try {
+                require_once $filePath;
+            } catch ( Throwable $exception ) {
+                $this->returnResponse( "Не удалось загрузить", $file );
+            }
+
+        }
+
+    } // function requeire_files( $path )
+
+
     public function selectPropertiesHandler( $row, $objectProperties, $selects ): string {
 
         $titleParts = [];

@@ -48,8 +48,6 @@ if ( $requestData->is_test ) {
     $requestData->limit = $requestData->limit ?? 50;
 
     $db_name = $API::$configs[ "db" ][ "name" ];
-    if ( $db_name == "doca_demo" ) $db_name = "doca_yazdorov";
-    if ( $db_name == "doca_test" ) $db_name = "doca_yazdorov";
 
     $Sphinx->SetLimits( 0, $requestData->limit );
     $searchIdList = $Sphinx->Query(

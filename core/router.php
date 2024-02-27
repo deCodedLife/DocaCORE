@@ -96,6 +96,11 @@ if ( file_exists( $API::$configs[ "paths" ][ "core" ] . "/init_integrations.php"
 
 } // if. file_exists. /core/init_integrations.php
 
+/**
+ * Импорт библиотек проекта
+ */
+$API->require_files( $API::$configs[ "paths" ][ "public_libs" ] );
+
 
 /**
  * Обработка формы с файлами
@@ -136,10 +141,11 @@ if ( !$API->request ) {
 } // if. !$API->request
 
 
+
 /**
  * Проверка обязательных параметров
  */
-if ( !$API->request ) $API->returnResponse( "Пустой запрос", 400 );
+if ( !$API->request ) $API->returnResponse( ["Пустой запрос 2", json_encode( $API->request )], 400 );
 if ( !$API->request->object ) $API->returnResponse( "Не указан объект в запросе", 400 );
 if ( !$API->request->command ) $API->returnResponse( "Не указана команда в запросе", 400 );
 
@@ -206,6 +212,10 @@ if ( $API->request->data->context->block != "form_list" && $API->request->data->
     ) $API->returnResponse( "Недостаточно прав", 403 );
 
 }
+
+//if ( $API->request->data->trigger ) {
+//    $requestData = $API->request->data->context;
+//}
 
 /**
  * Проверка подключения необходимых модулей
