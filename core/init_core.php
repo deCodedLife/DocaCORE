@@ -128,6 +128,31 @@ class API {
 
 
     /**
+     * Совмещение значений 2-х объектов
+     *
+     * @param $object1
+     * @param $object2
+     * @return mixed|void
+     */
+    function mergeObjects( $object1, $object2 )
+    {
+        if ( !$object1 || !$object2 ) return;
+
+        foreach ( $object2 as $customArticle => $customValue ) {
+
+            foreach ( $object1 as $propertyArticle => $propertyValue ) {
+
+                if ( $propertyArticle !== $customArticle ) continue;
+                $object1->$propertyArticle = $customValue;
+
+            }
+
+        }
+
+        return $object1;
+    }
+
+    /**
      * Рекурсивный импорт файлов
      *
      * @param $path
@@ -2063,7 +2088,7 @@ class API {
      *
      * @return boolean
      */
-    public function validatePermissions ( $permissions ) {
+    public function validatePermissions ( $permissions, $use_available = false ) {
 
         /**
          * Проверка JWT авторизации
@@ -2079,26 +2104,39 @@ class API {
             isset( $this::$userDetail->role_id ) && $this::$userDetail->role_id == 1
         ) return true;
 
+        $hasPermission = true;
+
         foreach ( $permissions as $permission ) {
 
-            $rolePermission = $this->DB->from( "permissions" )
-                ->leftJoin( "roles_permissions ON roles_permissions.permission_id = permissions.id" )
-                ->select( null )->select( [ "permissions.id" ] )
-                ->where( [
-                    "roles_permissions.role_id" => $this::$userDetail->role_id,
-                    "permissions.article" => $permission
-                ] )
-                ->limit( 1 )
-                ->fetch();
-
-            if ( !$rolePermission ) return false;
+            if ( !$this->hasPermisson( $permission ) ) {
+                $hasPermission = false;
+                continue;
+            };
+            if ( $use_available ) return true;
 
         } // foreach. $permissions
 
 
-        return true;
+        return $hasPermission;
 
     } // function. validatePermissions
+
+
+
+    public function hasPermisson( $permission ) {
+
+        $rolePermission = $this->DB->from( "permissions" )
+            ->leftJoin( "roles_permissions ON roles_permissions.permission_id = permissions.id" )
+            ->select( null )->select( [ "permissions.id" ] )
+            ->where( [
+                "roles_permissions.role_id" => $this::$userDetail->role_id,
+                "permissions.article" => $permission
+            ] )
+            ->fetch();
+
+        return (bool) $rolePermission[ "id" ];
+    }
+
 
     public function getCurrentUser () {
 
