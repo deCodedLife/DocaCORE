@@ -25,14 +25,12 @@ $requestSettings[ "filter" ] = [
     "start_at <= ?" => $requestData->day . " 23:59:59"
 ];
 
-
 /**
  * @hook
  * Фильтрация записей
  */
 if ( file_exists( $public_customCommandDirPath . "/hooks/events-filter.php" ) )
     require( $public_customCommandDirPath . "/hooks/events-filter.php" );
-
 
 /**
  * Получение записей
@@ -69,7 +67,7 @@ foreach ( $events as $event ) {
      */
     $eventDetails[ "time" ] = date( "H:i", strtotime( $event[ $requestData->time_from_property ] ) );
     $eventDetails[ "time" ] .= " - " . date( "H:i", strtotime( $event[ $requestData->time_to_property ] ) );
-    
+
 
     /**
      * @hook
@@ -86,4 +84,14 @@ foreach ( $events as $event ) {
 } // foreach. $events
 
 
+/**
+ * @hook
+ * Отработка стандартного get запроса
+ */
+if ( file_exists( $public_customCommandDirPath . "/hooks/after-get-command.php" ) )
+    require( $public_customCommandDirPath . "/hooks/after-get-command.php" );
+
+
+
 $API->returnResponse( $response[ "data" ] );
+

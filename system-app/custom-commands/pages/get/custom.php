@@ -952,10 +952,18 @@ if ( !$API->validatePermissions( $pageScheme[ "required_permissions" ] ) )
 /**
  * Получение детальной информации о запрошенной записи
  */
+$requestObject = $pageDetail[ "section" ];
+
+if ( $pageDetail[ "section" ] == "profile" ) {
+
+    $requestObject = "users";
+    $pageDetail[ "row_id" ] = $API::$userDetail->id;
+
+}
 
 if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
     $pageDetail[ "row_detail" ] = (array) $API->sendRequest(
-        $pageDetail[ "section" ],
+        $requestObject,
         "get",
         [ "id" => (int) $pageDetail[ "row_id" ] ],
         $_SERVER[ "SERVER_NAME" ]

@@ -50,6 +50,11 @@ foreach ( $menuScheme[ "side" ] as $menuKey => $menuValue ) {
     if ( !$API->validatePermissions( $menuValue[ "required_permissions" ] ) )
         continue;
 
+    if ( !$API->validatePermissions( $menuValue[ "available_permissions" ], true ) )
+        continue;
+
+
+
 
     /**
      * Локализация заголовка

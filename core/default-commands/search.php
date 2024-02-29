@@ -17,8 +17,6 @@ $rows = [];
  */
 if ( !$objectScheme[ "table" ] ) $API->returnResponse( "Отсутствует таблица в схеме запроса", 500 );
 
-//$API->returnResponse( $objectScheme );
-
 if ( $requestData->is_test ) {
 
     $API->returnResponse( $requestData->search, 500 );
@@ -49,14 +47,15 @@ if ( $requestData->is_test ) {
      */
     $requestData->limit = $requestData->limit ?? 50;
 
+    $db_name = $API::$configs[ "db" ][ "name" ];
+
     $Sphinx->SetLimits( 0, $requestData->limit );
     $searchIdList = $Sphinx->Query(
         $requestData->search,
-        str_replace( "-", "_", $API::$configs[ "db" ][ "name" ] ) . "_" . $objectScheme[ "table" ]
+        str_replace( "-", "_", $db_name ) . "_" . $objectScheme[ "table" ]
     );
 
 }
-
 
 $searchIdList[ "matches" ][] = [
     "id" => intval( $requestData->search ),
@@ -79,32 +78,7 @@ if ( $searchIdList[ "matches" ] ) {
     unset( $searchRequest[ "context" ] );
     unset( $searchRequest[ "select" ] );
 
-//    foreach ( $objectScheme[ "properties" ] as $field )
-//        $propertiesScheme[ $field[ "article" ] ] = $field;
-//
-//    $API->returnResponse( $requestData );
-//    foreach ( (object) $searchRequest as $key => $value ) {
-//
-//        $API->returnResponse( $key );
-////        $API->returnResponse( $propertiesScheme[ $key ] );
-//
-//    }
-
-
     $searchRequest[ "id" ] = $findRowsId;
-    /**
-    //     * Получение схемы команды объекта
-    //     */
-//    $objectName = $property[ "list_donor" ][ "object" ] ?? $property[ "list_donor" ][ "table" ];
-//
-//    /**
-//     * Если таблица не совпадает со схемой объекта,
-//     * то приоритетной считается та, что из объекта
-//     */
-//    if ( $property[ "list_donor" ][ "table" ] != $donorScheme[ "table" ] )
-//        $objectName = $donorScheme[ "table" ];
-
-
     $rows = $API->DB->from( $objectScheme[ "table" ] )
         ->where( $searchRequest )
         ->limit( $requestData->limit );
@@ -122,4 +96,9 @@ $response[ "detail" ][ "pages_count" ] = ceil(
     $response[ "detail" ][ "rows_count" ] / $requestData->limit
 );
 
+if ( $requestData->select )
+    $API->selectHandler( $rows, $objectScheme, $requestData->select );
+
+
 $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context );
+

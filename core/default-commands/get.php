@@ -19,6 +19,13 @@ $requestSettings[ "limit" ] = 15;
 if ( gettype( $requestData->limit ) === "integer" ) $requestSettings[ "limit" ] = $requestData->limit;
 if ( $commandScheme[ "no_limit" ] ) $requestSettings[ "limit" ] = 0;
 
+if ( $requestData->limit == 0 ) {
+
+    unset( $requestSettings[ "limit" ] );
+    unset( $requestData->limit );
+
+}
+
 /**
  * Страница вывода
  */
@@ -28,7 +35,6 @@ if ( $requestData->page > 1 ) $requestSettings[ "page" ] = $requestData->page - 
  * Выбранные св-ва
  */
 $selectProperties = [];
-$objectProperties = [];
 if ( $requestData->select ) $selectProperties[] = "id";
 
 
@@ -157,7 +163,7 @@ try {
         ->orderBy( $requestSettings[ "sort_by" ] . " " . $requestSettings[ "sort_order" ] );
 
 
-    if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] )
+    if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] && $requestData->context->block != "select" )
         $requestSettings[ "filter" ][ "is_active" ] = "Y";
 
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
@@ -177,51 +183,7 @@ try {
      */
     if ( $requestData->context->block == "form_list" || $requestData->context->block == "select" ) {
 
-        /**
-         * Сформированный список
-         */
-        $response[ "data" ] = [];
-        $response = [];
-
-        foreach ( $rows as $row ) $response[ "data" ][] = $row;
-
-        if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
-            require $public_customCommandDirPath . "/postfix.php";
-
-        foreach ( $response[ "data" ] as $key => $row ) {
-
-            $rowTitle = $row[ "last_name" ] ?? "";
-            $titleParts = [];
-
-            foreach ( $selectProperties as $property ) {
-
-                if ( $property == "id" ) continue;
-                $rowValue = $row[ $property ];
-
-                switch ( $objectProperties[ $property ][ "field_type" ] ) {
-                    case "price":
-                        $currency = $API::$configs[ "system_components" ][ "currency" ] ?? "₽";
-                        $titleParts[] = "({$rowValue}$currency)";
-                        break;
-
-                    default:
-                        $titleParts[] = $rowValue;
-                }
-
-            }
-            $rowTitle = join( " ", $titleParts );
-
-            if ( !$selectProperties ) $rowTitle = $row[ "title" ];
-
-            $response[ "data" ][ $key ]  = [
-                "title" => $rowTitle,
-                "value" => $row[ "id" ]
-            ];
-
-        } // foreach. $rows
-
-
-        $API->returnResponse( $response[ "data" ]  );
+        $API->selectHandler( $rows, $objectScheme );
 
     } // if. $requestData->context->block == "form_list"
 
@@ -232,7 +194,7 @@ try {
 
     $response[ "detail" ][ "rows_count" ] = $rows->count();
 
-    if ( $requestSettings[ "limit" ] )
+    if ( $requestSettings[ "limit" ] != 0 )
         $response[ "detail" ][ "pages_count" ] = ceil(
             $response[ "detail" ][ "rows_count" ] / $requestSettings[ "limit" ]
         );

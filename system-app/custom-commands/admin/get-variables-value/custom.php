@@ -30,24 +30,7 @@ $requestBody = (object) [];
 $requestBody->id = $requestData->row_id;
 $requestBody->context->object = $rowDetail;
 $customCommand = $API->sendRequest( $requestData->scheme_name, "variables", (array) $requestBody );
-
-
-if ( $customCommand ) {
-
-    foreach ( $customCommand as $customArticle => $customValue ) {
-
-
-        foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
-
-            if ( $propertyArticle !== $customArticle ) continue;
-            $rowDetail->$propertyArticle = $customValue;
-
-        }
-
-    }
-
-}
-//$API->returnResponse( $rowDetail );
+$API->mergeObjects( $rowDetail, $customCommand );
 
 
 /**
@@ -80,6 +63,9 @@ foreach ( $rowDetail as $propertyArticle => $propertyValue ) {
 
     if ( $propertyArticle === "service_id" && $requestData->scheme_name == "equipmentVisits" )
         $propertyArticle = "services_id";
+
+    if ( $propertyArticle === "client_id" && $requestData->scheme_name == "equipmentVisits" )
+        $propertyArticle = "clients_id";
 
     /**
      * Обработка кастомных списков

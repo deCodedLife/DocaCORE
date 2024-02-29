@@ -126,6 +126,159 @@ class API {
 
     } // function. loadScheme
 
+
+    /**
+     * Совмещение значений 2-х объектов
+     *
+     * @param $object1
+     * @param $object2
+     * @return mixed|void
+     */
+    function mergeObjects( $object1, $object2 )
+    {
+        if ( !$object1 || !$object2 ) return;
+
+        foreach ( $object2 as $customArticle => $customValue ) {
+
+            foreach ( $object1 as $propertyArticle => $propertyValue ) {
+
+                if ( $propertyArticle !== $customArticle ) continue;
+                $object1->$propertyArticle = $customValue;
+
+            }
+
+        }
+
+        return $object1;
+    }
+
+    /**
+     * Рекурсивный импорт файлов
+     *
+     * @param $path
+     * @return void
+     */
+    function require_files( $path ) {
+
+        if ( !is_dir( $path ) ) return;
+        $files = array_diff( scandir( $path ), [ "..", "." ] );
+
+        foreach ( $files as $file ) {
+
+            $filePath = join( '/', [ $path, $file ] );
+
+            if ( is_dir( $filePath ) ) {
+                $this->require_files( $filePath );
+                continue;
+            }
+
+            try {
+                require_once $filePath;
+            } catch ( Throwable $exception ) {
+                $this->returnResponse( "Не удалось загрузить", $file );
+            }
+
+        }
+
+    } // function requeire_files( $path )
+
+
+    public function selectPropertiesHandler( $row, $objectProperties, $selects ): string {
+
+        $titleParts = [];
+
+        foreach ( $selects as $key => $property ) {
+
+            if ( $row[ $property ] ) continue;
+            unset( $selects[ $key ] );
+
+        }
+
+        foreach ( $selects as $key => $property ) {
+
+            if ( $property == "id" ) continue;
+            if (
+                !isset( $row[ $property ] ) ||
+                $row[ $property ] == "null" ||
+                $row[ $property ] == ""
+            ) continue;
+
+            $rowValue = $row[ $property ];
+            $postfix = $key === array_key_last( $selects ) ? "" : ",";
+
+            /**
+             * TODO: Implement all types
+             */
+            switch ( $objectProperties[ $property ][ "field_type" ] ) {
+                case "price":
+                    $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
+                    $titleParts[] = "({$rowValue}$currency)$postfix";
+                    break;
+                case "phone":
+                    $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
+                            (\d{1})?\D* # optional country code
+                            (\d{3})?\D* # optional area code
+                            (\d{3})\D*  # first three
+                            (\d{2})     # last 2
+                            (\d{2})     # last 2
+                            (?:\D+|$)   # extension delimiter or EOL
+                            (\d*)       # optional extension
+                        /x";
+
+
+                    if( preg_match( $phoneRegexp, $rowValue, $matches ) )
+                        $titleParts[] = "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}$postfix";
+                    else $titleParts[] = "+$rowValue";
+                    break;
+                default:
+                    $titleParts[] = $rowValue;
+                    break;
+            } // switch ( $objectProperties[ $property ][ "field_type" ] )
+
+        } // foreach ( $selectProperties as $property )
+
+        return join( " ", $titleParts );
+
+    }
+
+
+    public function selectHandler( $rows, $objectScheme ) {
+
+        global $response, $public_customCommandDirPath, $API;
+
+        $API = $this;
+
+        $objectProperties = [];
+        foreach ( $objectScheme[ "properties" ] as $schemeProperty )
+            $objectProperties[ $schemeProperty[ "article" ] ] = $schemeProperty;
+
+
+        /**
+         * Сформированный список
+         */
+        $selectResponse = [];
+        $response[ "data" ] = [];
+
+        foreach ( $rows as $row ) $response[ "data" ][] = $row;
+
+        if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
+            require $public_customCommandDirPath . "/postfix.php";
+
+        foreach ( $response[ "data" ] as $key => $row ) {
+
+            $selectResponse[ $key ] = [
+                "title" => $this->selectPropertiesHandler( $row, $objectProperties, $API->request->data->select ?? [ "title" ] ),
+                "value" => $row[ "id" ]
+            ];
+
+            if ( $this->request->data->select_menu )
+                $selectResponse[ $key ][ "menu_title" ] = $this->selectPropertiesHandler( $row, $objectProperties, $this->request->data->select_menu );
+
+        } // foreach ( $response[ "data" ] as $key => $row )
+        
+        $this->returnResponse( $selectResponse );
+    }
+
     /**
      * Получение публичных и системных схем
      *
@@ -1935,7 +2088,7 @@ class API {
      *
      * @return boolean
      */
-    public function validatePermissions ( $permissions ) {
+    public function validatePermissions ( $permissions, $use_available = false ) {
 
         /**
          * Проверка JWT авторизации
@@ -1951,26 +2104,39 @@ class API {
             isset( $this::$userDetail->role_id ) && $this::$userDetail->role_id == 1
         ) return true;
 
+        $hasPermission = true;
+
         foreach ( $permissions as $permission ) {
 
-            $rolePermission = $this->DB->from( "permissions" )
-                ->leftJoin( "roles_permissions ON roles_permissions.permission_id = permissions.id" )
-                ->select( null )->select( [ "permissions.id" ] )
-                ->where( [
-                    "roles_permissions.role_id" => $this::$userDetail->role_id,
-                    "permissions.article" => $permission
-                ] )
-                ->limit( 1 )
-                ->fetch();
-
-            if ( !$rolePermission ) return false;
+            if ( !$this->hasPermisson( $permission ) ) {
+                $hasPermission = false;
+                continue;
+            };
+            if ( $use_available ) return true;
 
         } // foreach. $permissions
 
 
-        return true;
+        return $hasPermission;
 
     } // function. validatePermissions
+
+
+
+    public function hasPermisson( $permission ) {
+
+        $rolePermission = $this->DB->from( "permissions" )
+            ->leftJoin( "roles_permissions ON roles_permissions.permission_id = permissions.id" )
+            ->select( null )->select( [ "permissions.id" ] )
+            ->where( [
+                "roles_permissions.role_id" => $this::$userDetail->role_id,
+                "permissions.article" => $permission
+            ] )
+            ->fetch();
+
+        return (bool) $rolePermission[ "id" ];
+    }
+
 
     public function getCurrentUser () {
 
