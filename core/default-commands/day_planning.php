@@ -1,5 +1,7 @@
 <?php
 
+ini_set("display_errors", true);
+
 /**
  * @file Стандартная команда day_planning.
  * Используется блоком "Дневное планирование"
@@ -18,6 +20,11 @@ if ( !$objectScheme[ "table" ] ) $API->returnResponse( "Отсутствует �
 $response[ "data" ] = [];
 
 /**
+ * Строка запроса записей;
+ */
+$requestSettings[ "sqlQuery" ] = "";
+
+/**
  * Фильтр записей
  */
 $requestSettings[ "filter" ] = [
@@ -32,16 +39,29 @@ $requestSettings[ "filter" ] = [
 if ( file_exists( $public_customCommandDirPath . "/hooks/events-filter.php" ) )
     require( $public_customCommandDirPath . "/hooks/events-filter.php" );
 
-/**
- * Получение записей
- */
+if ( $requestSettings[ "sqlQuery" ] != "" ) {
 
-$events = $API->DB->from( $objectScheme[ "table" ] )
-    ->orderBy( "start_at asc" );
+    /**
+     * Получение записей
+     */
+    $events = mysqli_query(
+        $API->DB_connection,
+        $requestSettings[ "sqlQuery" ]
+    );
 
-if ( $objectScheme[ "is_trash" ] ) $requestSettings[ "filter" ][ "is_active" ] = "Y";;
-$events->where( $requestSettings[ "filter" ] );
+} else {
 
+    /**
+     * Получение записей
+     */
+
+    $events = $API->DB->from( $objectScheme[ "table" ] )
+        ->orderBy( "start_at asc" );
+
+    if ( $objectScheme[ "is_trash" ] ) $requestSettings[ "filter" ][ "is_active" ] = "Y";;
+    $events->where( $requestSettings[ "filter" ] );
+
+}
 
 /**
  * Формирование списка записей
@@ -51,7 +71,6 @@ foreach ( $events as $event ) {
 
     $isContinue = false;
 
-
     /**
      * Сформированная запись
      */
@@ -59,7 +78,9 @@ foreach ( $events as $event ) {
         "id" => $event[ "id" ],
         "body" => "",
         "color" => "primary",
-        "links" => []
+        "links" => [],
+        "user_id" => $event[ "user_id" ],
+        "assist_id" => $event[ "assist_id" ]
     ];
 
     /**
