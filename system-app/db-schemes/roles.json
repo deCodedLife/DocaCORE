@@ -29,6 +29,11 @@
       "title": "Директор",
       "article": "director",
       "is_system": "Y"
+    },
+    {
+      "title": "Сайт",
+      "article": "public",
+      "is_system": "Y"
     }
   ]
 }

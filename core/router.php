@@ -213,9 +213,7 @@ if ( $API->request->data->context->block != "form_list" && $API->request->data->
 
 }
 
-//if ( $API->request->data->trigger ) {
-//    $requestData = $API->request->data->context;
-//}
+
 
 /**
  * Проверка подключения необходимых модулей
@@ -235,6 +233,12 @@ $defaultCommandPath = $API::$configs[ "paths" ][ "default_commands" ] . "/" . $c
  */
 $system_customCommandDirPath = $API::$configs[ "paths" ][ "system_custom_commands" ] . "/" . $API->request->object . "/" . $API->request->command;
 $public_customCommandDirPath = $API::$configs[ "paths" ][ "public_custom_commands" ] . "/" . $API->request->object . "/" . $API->request->command;
+
+
+if ( $API->request->data->context->trigger ) {
+    $trigger_hook = $public_customCommandDirPath . "/{$API->request->data->context->trigger}.php";
+    if ( file_exists( $trigger_hook ) ) require_once $trigger_hook;
+}
 
 
 /**

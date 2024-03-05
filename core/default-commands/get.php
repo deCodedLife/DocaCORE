@@ -183,6 +183,7 @@ try {
      */
     if ( $requestData->context->block == "form_list" || $requestData->context->block == "select" ) {
 
+        $rows->where( "is_active", 'Y' );
         $API->selectHandler( $rows, $objectScheme );
 
     } // if. $requestData->context->block == "form_list"

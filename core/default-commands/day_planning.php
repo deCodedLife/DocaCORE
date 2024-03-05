@@ -80,7 +80,8 @@ foreach ( $events as $event ) {
         "color" => "primary",
         "links" => [],
         "user_id" => $event[ "user_id" ],
-        "assist_id" => $event[ "assist_id" ]
+        "assist_id" => $event[ "assist_id" ],
+        "dateIssueCoupon" => $event[ "dateIssueCoupon" ]
     ];
 
     /**
