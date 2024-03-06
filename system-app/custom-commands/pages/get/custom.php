@@ -293,6 +293,10 @@ function generateStructureBlock ( $structureBlock ) {
                     continue;
 
                 } // if. !$API->validatePermissions( $tab[ "required_permissions" ] )
+                
+
+                if ( !array_key_exists( "is_visible", $tab[ "settings" ] ) )
+                    $structureBlock[ "settings" ][ $tabKey ][ "settings" ][ "is_visible" ] = true;
 
 
                 /**
@@ -384,7 +388,8 @@ function generateStructureBlock ( $structureBlock ) {
 
 
                     unset( $structureBlock[ "settings" ][ $tabKey ][ "is_counter" ] );
-                    $structureBlock[ "settings" ][ $tabKey ][ "counter" ] = $tabCounter;
+                    $structureBlock[ "settings" ][ $tabKey ][ "settings" ][ "counter" ] = $tabCounter;
+
 
                 } // if. $tab[ "is_counter" ]
 
