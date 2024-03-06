@@ -1,6 +1,5 @@
 <?php
 
-ini_set("display_errors", true);
 
 /**
  * @file Стандартная команда day_planning.
