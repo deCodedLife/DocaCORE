@@ -98,7 +98,14 @@ foreach ( $generatedDBScheme as $tableArticle => $tableScheme ) {
 
         $tablePropertyTitle = "$tablePropertyArticle " . $tableProperty[ "type" ];
 
-        if ( $tableProperty[ "is_required" ] ) $tablePropertyTitle .= " NOT NULL";
+//        if (
+//            $tableProperty[ "is_required" ] ||
+//            $tableProperty[ "is_required" ] != "N"
+//        ) $tablePropertyTitle .= " NOT NULL";
+
+        if ( $tableProperty[ "is_required" ] == "Y" )  $tablePropertyTitle .= " NOT NULL";
+        else if ( $tableProperty[ "is_required" ] == "N" ) $tablePropertyTitle .= " NULL";
+        else if ( $tableProperty ) $tablePropertyTitle .= " NOT NULL";
         else $tablePropertyTitle .= " NULL";
 
 

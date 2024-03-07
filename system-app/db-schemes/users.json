@@ -83,6 +83,16 @@
       "role_id": 1,
       "is_system": "Y",
       "is_active": "Y"
+    },
+    {
+      "first_name": "Сайт",
+      "last_name": "OxBox",
+      "email": "public@oxbox.ru",
+      "password": "36bae73a097c392739d9f5bfcfb2f067",
+      "phone": "78005114825",
+      "role_id": 3,
+      "is_system": "Y",
+      "is_active": "Y"
     }
   ]
 }
