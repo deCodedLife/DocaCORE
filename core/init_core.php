@@ -1420,6 +1420,138 @@ class API {
                 fclose( $buffer );
                 exit();
 
+            case "exel":
+
+                header ( "Expires: Mon, 1 Apr 1974 05:00:00 GMT" );
+                header ( "Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT" );
+                header ( "Cache-Control: no-cache, must-revalidate" );
+                header ( "Pragma: no-cache" );
+                header ( "Content-type: application/vnd.ms-excel" );
+                header ( "Content-Disposition: attachment; filename=matrix.xls" );
+
+
+                /**
+                 * Подключение библиотеки для работы с Exel
+                 */
+                require_once( $this::$configs[ "paths" ][ "libs" ] . "/phpExcel.php" );
+                require_once( $this::$configs[ "paths" ][ "libs" ] . "/PHPExcel/Writer/Excel5.php" );
+
+
+                /**
+                 * Алфавит.
+                 * Используется для вставки значений в ячейки
+                 */
+                $alphabet = [
+                    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+                    "T", "U", "V", "W", "X", "Y", "Z"
+                ];
+
+
+                /**
+                 * Создание Excel объекта
+                 */
+                $excelObject = new PHPExcel();
+
+                /**
+                 * Установка индекса активного листа
+                 */
+                $excelObject->setActiveSheetIndex( 0 );
+
+                /**
+                 * Получение активного листа
+                 */
+                $excelSheet = $excelObject->getActiveSheet();
+
+
+                /**
+                 * Заголовок таблицы
+                 */
+                $excelSheet->setTitle( $objectScheme[ "title" ] );
+
+
+                /**
+                 * Запрос get на объект
+                 */
+                $request = (array) $this->request->data;
+                $request[ "context" ]->block = "list";
+                unset( $request[ "select" ] );
+                $objects = $this->sendRequest( $this->request->object, $this->request->command, $request );
+
+
+                /**
+                 * Формирование хэш таблицы на артикулы полей объект(а)ов
+                 */
+                foreach ( $objectScheme[ "properties" ] as $schemeProperty )
+                    $objectSchemeProperties[ $schemeProperty[ "article" ] ] = $schemeProperty;
+
+                if ( $this->request->object != $objectScheme[ "table" ] ) {
+
+                    $additionalScheme = $this->loadObjectScheme( $objectScheme[ "table" ] );
+                    foreach ( $additionalScheme[ "properties" ] as $schemeProperty )
+                        $objectSchemeProperties[ $schemeProperty[ "article" ] ] = $schemeProperty;
+
+                }
+
+
+                /**
+                 * Формирование заголовков
+                 */
+                $propertyKey = 0;
+                array_unshift( $this->request->select, "id" );
+
+
+                foreach ( $this->request->data->select as $property ) {
+
+                    $excelSheet->setCellValue(
+                        $alphabet[ $propertyKey ] . "1",
+                        $objectSchemeProperties[ $property ][ "title" ] ?? ""
+                    );
+
+                    $propertyKey++;
+
+                } // foreach. $response[ 0 ]
+
+
+
+                /**
+                 * Формирование тела отчета
+                 */
+                foreach ( $objects as $rowKey => $row ) {
+
+                    $propertyKey = 0;
+
+
+                    /**
+                     * Запись объекта в таблицу
+                     */
+                    foreach ( $this->request->data->select as $property ) {
+
+                        $data = property_exists( $row, $property ) ? $row->$property : "";
+
+                        if ( is_object( $data ) )  $excelSheet->setCellValue( $alphabet[ $propertyKey ] . ( $rowKey + 2 ), (string) $data->title );
+                        elseif ( is_array( $data ) ) {
+
+                            /**
+                             * Преобразования списка объектов в строку
+                             */
+                            $collected_array = join( ', ', array_map( fn ( $item ) => $item->title ?? "", $data ) );
+                            $excelSheet->setCellValue( $alphabet[ $propertyKey ] . ( $rowKey + 2 ), $collected_array );
+
+                        }
+                        else $excelSheet->setCellValue( $alphabet[ $propertyKey ] . ( $rowKey + 2 ), (string) $data );
+
+                        $propertyKey++;
+
+                    }
+
+                } // foreach. $response
+
+
+                $objWriter = new PHPExcel_Writer_Excel5( $excelObject );
+                $objWriter->save( "php://output" );
+
+                exit();
+
                 break;
 
         } // switch. $context->block

@@ -5,7 +5,6 @@
  * Привязка событий к расписанию
  */
 
-
 /**
  * Добавление события в расписание
  *
@@ -20,8 +19,6 @@ function addEventIntoSchedule ( $event, $performerId ) {
     global $resultSchedule;
     global $performersDetail;
     global $public_customCommandDirPath;
-
-
 
     /**
      * Игнорирование записей, у сотрудников, которые не выводятся в расписании
