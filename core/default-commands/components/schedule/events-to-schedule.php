@@ -81,7 +81,7 @@ function addEventIntoSchedule ( $event, $performerId ) {
     $resultSchedule[ $eventDate ][ $performerId ][ "schedule" ][ $eventStartStep ] = [
         "steps" => [ $eventStartStep, $eventEndStep ],
         "status" => "busy",
-        "event" => [
+        "event" => $event ? [
             "id" => $event[ "id" ],
             "start_at" => $event[ "start_at" ],
             "end_at" => $event[ "end_at" ],
@@ -89,7 +89,7 @@ function addEventIntoSchedule ( $event, $performerId ) {
             "color" => $event[ "color" ],
             "details" => $eventDetails,
             "icons" => $event[ "icons" ]
-        ]
+        ] : null
     ];
 
     return true;
