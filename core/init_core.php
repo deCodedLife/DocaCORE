@@ -2213,6 +2213,26 @@ class API {
 
     } // function. validateJWT
 
+
+    /**
+     * Определение является ли аккаунт публичным
+     * @return bool
+     */
+    function isPublicAccount(): bool {
+
+        /**
+         * Получение роли
+         */
+        $roleDetails = $this->DB->from( "roles" )
+            ->where( "id", $this::$userDetail->role_id )
+            ->fetch();
+
+        if ( !$roleDetails ) return false;
+        return $roleDetails[ "article" ] === "public";
+
+    } // function isPublicAccount(): bool
+
+
     /**
      * Проверка прав
      *
