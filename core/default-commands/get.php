@@ -38,6 +38,9 @@ $selectProperties = [];
 if ( $requestData->select ) $selectProperties[] = "id";
 
 
+$requestData->select = array_map( fn( $item ) => join( "", $item ), $requestData->select );
+
+
 /**
  * Формирование фильтра
  */
@@ -165,6 +168,7 @@ try {
 
     if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] && $requestData->context->block != "select" )
         $requestSettings[ "filter" ][ "is_active" ] = "Y";
+
 
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
     if ( $selectProperties ) $rows->select( null )->select( $selectProperties );

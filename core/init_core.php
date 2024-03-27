@@ -183,39 +183,50 @@ class API {
     } // function requeire_files( $path )
 
 
-    public function selectPropertiesHandler( $row, $objectProperties, $selects ): string {
+    public function selectPropertiesHandler( $property, $object, $types, $exclusion = true ): string {
 
-        $titleParts = [];
+        if ( $property == "id" ) return "";
+        if ( is_array( $property ) ) {
 
-        foreach ( $selects as $key => $property ) {
+            $handled_properties = [];
 
-            if ( $row[ $property ] ) continue;
-            unset( $selects[ $key ] );
+            foreach ( $property  as $item ) {
+
+                $value = $this->selectPropertiesHandler( $item, $object, $types );
+
+                if ( empty( $value ) ) continue;
+                if ( $exclusion ) return $value;
+                $handled_properties[] = $value;
+
+            }
+
+            return join( " ", $handled_properties );
 
         }
+        if (
+            !isset( $object[ $property ] ) ||
+            $object[ $property ] == "null" ||
+            $object[ $property ] == ""
+        ) return "";
 
-        foreach ( $selects as $key => $property ) {
+        $rowValue = $object[ $property ];
+        return $this->typesHandler( $types[ $property ][ "field_type" ], $rowValue, ',' );
 
-            if ( $property == "id" ) continue;
-            if (
-                !isset( $row[ $property ] ) ||
-                $row[ $property ] == "null" ||
-                $row[ $property ] == ""
-            ) continue;
+    }
 
-            $rowValue = $row[ $property ];
-            $postfix = $key === array_key_last( $selects ) ? "" : ",";
 
-            /**
-             * TODO: Implement all types
-             */
-            switch ( $objectProperties[ $property ][ "field_type" ] ) {
-                case "price":
-                    $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
-                    $titleParts[] = "({$rowValue}$currency)$postfix";
-                    break;
-                case "phone":
-                    $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
+    function typesHandler( $type, $data, $postfix = "" ): string
+    {
+        /**
+         * TODO: Implement all types
+         */
+        switch ( $type ) {
+            case "price":
+                $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
+                return "({$data}$currency)$postfix";
+
+            case "phone":
+                $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
                             (\d{1})?\D* # optional country code
                             (\d{3})?\D* # optional area code
                             (\d{3})\D*  # first three
@@ -226,19 +237,14 @@ class API {
                         /x";
 
 
-                    if( preg_match( $phoneRegexp, $rowValue, $matches ) )
-                        $titleParts[] = "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}$postfix";
-                    else $titleParts[] = "+$rowValue";
-                    break;
-                default:
-                    $titleParts[] = $rowValue;
-                    break;
-            } // switch ( $objectProperties[ $property ][ "field_type" ] )
+                if( preg_match( $phoneRegexp, $data, $matches ) )
+                    return "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}$postfix";
+                else return "+$data";
 
-        } // foreach ( $selectProperties as $property )
+            default:
+                return $data;
 
-        return join( " ", $titleParts );
-
+        } // switch ( $objectProperties[ $property ][ "field_type" ] )
     }
 
 
@@ -249,6 +255,7 @@ class API {
         $API = $this;
 
         $objectProperties = [];
+
         foreach ( $objectScheme[ "properties" ] as $schemeProperty )
             $objectProperties[ $schemeProperty[ "article" ] ] = $schemeProperty;
 
@@ -267,12 +274,12 @@ class API {
         foreach ( $response[ "data" ] as $key => $row ) {
 
             $selectResponse[ $key ] = [
-                "title" => $this->selectPropertiesHandler( $row, $objectProperties, $API->request->data->select ?? [ "title" ] ),
+                "title" => $this->selectPropertiesHandler( $API->request->data->select ?? (object) [ [ "title" ] ], $row, $objectProperties, false ),
                 "value" => $row[ "id" ]
             ];
 
             if ( $this->request->data->select_menu )
-                $selectResponse[ $key ][ "menu_title" ] = $this->selectPropertiesHandler( $row, $objectProperties, $this->request->data->select_menu );
+                $selectResponse[ $key ][ "menu_title" ] = $this->selectPropertiesHandler( $this->request->data->select_menu, $row, $objectProperties, false );
 
         } // foreach ( $response[ "data" ] as $key => $row )
         
