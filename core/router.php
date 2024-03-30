@@ -192,12 +192,24 @@ else $commandScheme = $userSchemeCommand;
 /**
  * Загрузка схемы объекта
  */
-$objectScheme = $API->loadObjectScheme( $commandScheme[ "object_scheme" ] );
+if ( is_array( $commandScheme[ "object_scheme" ] ) ) {
+    $objectScheme = [];
+    foreach ( $commandScheme[ "object_scheme" ] as $scheme ) {
+
+        $objectScheme = array_merge(
+            $objectScheme,
+            $API->loadObjectScheme( $scheme )
+        );
+
+    }
+} else $objectScheme = $API->loadObjectScheme( $commandScheme[ "object_scheme" ] );
 
 /**
  * Пре-обработка тела запроса
  */
+
 $requestData = $API->requestDataPreprocessor( $objectScheme, $API->request->data, $API->request->command );
+
 
 
 /**

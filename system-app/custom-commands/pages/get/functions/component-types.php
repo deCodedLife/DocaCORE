@@ -62,10 +62,17 @@ function processingComponentType_filter ( $structureComponent ) {
     /**
      * Получение записей из таблицы донора
      */
+    $request = [];
+    $request[ "context" ][ "block" ] = "select";
+    $request[ "limit" ] = 100;
+
+    if ( $structureComponent[ "settings" ][ "select" ] ) $request[ "select" ] = $structureComponent[ "settings" ][ "select" ];
+    else $structureComponent[ "settings" ][ "select" ] = $request[ "select" ] = $structureComponent[ "settings" ][ "donor_property_title" ];
+    if ( $structureComponent[ "settings" ][ "select_menu" ] ) $request[ "select_menu" ] = $structureComponent[ "settings" ][ "select_menu" ];
+
     $donorRows = $API->DB->from( $structureComponent[ "settings" ][ "donor_object" ] );
     if ( $objectScheme[ "is_trash" ] ) $donorRows->where( "is_active", "Y" );
     $donorRows->limit( 100 );
-
 
     /**
      * Фильтрация записей
@@ -86,59 +93,68 @@ function processingComponentType_filter ( $structureComponent ) {
     } // if. $structureComponent[ "recipient_property" ]
 
 
-    /**
-     * Обработка записей из таблицы донора
-     */
-
-    if ( !$structureComponent[ "settings" ][ "is_search" ] ) foreach ( $donorRows as $donorRowKey => $donorRow ) {
-
-        /**
-         * Получение детальной информации о св-ве записи
-         */
-
-        $propertyDetail = $objectProperties[ $structureComponent[ "settings" ][ "donor_property_value" ] ];
-
-        if ( $structureComponent[ "settings" ][ "donor_property_value" ] === "id" )
-            $propertyDetail[ "data_type" ] = "integer";
-
-        if ( !$propertyDetail ) continue;
+    foreach ( $donorRows as $row ) $ids[] = $row[ "id" ];
 
 
-        /**
-         * Обработка нестандартных св-в
-         */
+    $request[ "id" ] = $ids ?? [ 0 ];
 
-        switch ( $structureComponent[ "settings" ][ "donor_property_title" ] ) {
-
-            case "first_name":
-            case "last_name":
-
-                $fio = $donorRow[ "last_name" ] . " " . $donorRow[ "first_name" ];
-                if ( $donorRow[ "patronymic" ] ) $fio .= " " .  $donorRow[ "patronymic" ];
-
-                $donorRow[ $structureComponent[ "settings" ][ "donor_property_title" ] ] = $fio;
-
-        } // switch. $structureComponent[ "settings" ][ "donor_property_title" ]
+    $donorRows = $API->sendRequest( $structureComponent[ "settings" ][ "donor_object" ], "get", $request );
+    $filterList = (array) $donorRows;
 
 
-        /**
-         * Сформированный фильтр
-         */
-
-        settype(
-            $donorRow[ $structureComponent[ "settings" ][ "donor_property_value" ] ],
-            $propertyDetail[ "data_type" ]
-        );
-
-        $filterResult = [
-            "title" => $donorRow[ $structureComponent[ "settings" ][ "donor_property_title" ] ],
-            "value" => $donorRow[ $structureComponent[ "settings" ][ "donor_property_value" ] ]
-        ];
-
-
-        $filterList[] = $filterResult;
-
-    } // foreach. $donorRows
+//    /**
+//     * Обработка записей из таблицы донора
+//     */
+//
+//    if ( !$structureComponent[ "settings" ][ "is_search" ] ) foreach ( $donorRows as $donorRowKey => $donorRow ) {
+//
+//        /**
+//         * Получение детальной информации о св-ве записи
+//         */
+//
+//        $propertyDetail = $objectProperties[ $structureComponent[ "settings" ][ "donor_property_value" ] ];
+//
+//        if ( $structureComponent[ "settings" ][ "donor_property_value" ] === "id" )
+//            $propertyDetail[ "data_type" ] = "integer";
+//
+//        if ( !$propertyDetail ) continue;
+//
+//
+//        /**
+//         * Обработка нестандартных св-в
+//         */
+//
+//        switch ( $structureComponent[ "settings" ][ "donor_property_title" ] ) {
+//
+//            case "first_name":
+//            case "last_name":
+//
+//                $fio = $donorRow[ "last_name" ] . " " . $donorRow[ "first_name" ];
+//                if ( $donorRow[ "patronymic" ] ) $fio .= " " .  $donorRow[ "patronymic" ];
+//
+//                $donorRow[ $structureComponent[ "settings" ][ "donor_property_title" ] ] = $fio;
+//
+//        } // switch. $structureComponent[ "settings" ][ "donor_property_title" ]
+//
+//
+//        /**
+//         * Сформированный фильтр
+//         */
+//
+//        settype(
+//            $donorRow[ $structureComponent[ "settings" ][ "donor_property_value" ] ],
+//            $propertyDetail[ "data_type" ]
+//        );
+//
+//        $filterResult = [
+//            "title" => $donorRow[ $structureComponent[ "settings" ][ "donor_property_title" ] ],
+//            "value" => $donorRow[ $structureComponent[ "settings" ][ "donor_property_value" ] ]
+//        ];
+//
+//
+//        $filterList[] = $filterResult;
+//
+//    } // foreach. $donorRows
 
 
     return $filterList;

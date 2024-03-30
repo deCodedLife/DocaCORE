@@ -172,10 +172,13 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
          */
         if ( $propertyValue !== null ) {
 
-            if ( !$schemeProperty[ "join" ] ) $updateValues[ $propertyName ] = $propertyValue;
-            else $join_updateValues[ $propertyName ][ "data" ] = $propertyValue;
+//            if ( !$schemeProperty[ "join" ] ) $updateValues[ $propertyName ] = $propertyValue;
+//            else $join_updateValues[ $propertyName ][ "data" ] = $propertyValue;
 
         } // if. $propertyValue !== null
+
+        if ( !$schemeProperty[ "join" ] ) $updateValues[ $propertyName ] = $propertyValue;
+        else $join_updateValues[ $propertyName ][ "data" ] = $propertyValue;
 
 
         /**
@@ -220,7 +223,7 @@ if ( $userScheme ) {
  */
 
 try {
-
+    
     if ( $updateValues ) $API->DB->update( $objectScheme[ "table" ] )
         ->set( $updateValues )
         ->where( [

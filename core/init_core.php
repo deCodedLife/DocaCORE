@@ -183,16 +183,25 @@ class API {
     } // function requeire_files( $path )
 
 
-    public function selectPropertiesHandler( $property, $object, $types, $exclusion = true ): string {
+    /**
+     * Рекурсивная функция для сборки select параметров
+     *
+     * @param $property
+     * @param $object
+     * @param $properties
+     * @param $exclusion
+     * @return string
+     */
+    public function selectPropertiesHandler( $property, $object, $properties, $exclusion = true ): string {
 
-        if ( $property == "id" ) return "";
+//        if ( $property == "id" ) return "";
         if ( is_array( $property ) ) {
 
             $handled_properties = [];
 
-            foreach ( $property  as $item ) {
+            foreach ( $property as $item ) {
 
-                $value = $this->selectPropertiesHandler( $item, $object, $types );
+                $value = $this->selectPropertiesHandler( $item, $object, $properties );
 
                 if ( empty( $value ) ) continue;
                 if ( $exclusion ) return $value;
@@ -200,7 +209,7 @@ class API {
 
             }
 
-            return join( " ", $handled_properties );
+            return join( ", ", $handled_properties );
 
         }
         if (
@@ -210,20 +219,34 @@ class API {
         ) return "";
 
         $rowValue = $object[ $property ];
-        return $this->typesHandler( $types[ $property ][ "field_type" ], $rowValue, ',' );
+
+        return $this->typesHandler( (array) $properties[ $property ], $rowValue );
 
     }
 
 
-    function typesHandler( $type, $data, $postfix = "" ): string
+    /**
+     *
+     *
+     * @param $properties
+     * @param $data
+     * @return string
+     */
+    function typesHandler( $properties, $data ): string
     {
+        $postfix = '';
+
         /**
          * TODO: Implement all types
          */
-        switch ( $type ) {
+        switch ( $properties[ "field_type" ] ) {
             case "price":
                 $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
                 return "({$data}$currency)$postfix";
+
+            case "list":
+                return $data[ "title" ];
+
 
             case "phone":
                 $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
@@ -235,7 +258,6 @@ class API {
                             (?:\D+|$)   # extension delimiter or EOL
                             (\d*)       # optional extension
                         /x";
-
 
                 if( preg_match( $phoneRegexp, $data, $matches ) )
                     return "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}$postfix";
@@ -251,40 +273,32 @@ class API {
     public function selectHandler( $rows, $objectScheme ) {
 
         global $response, $public_customCommandDirPath, $API;
-
-        $API = $this;
-
         $objectProperties = [];
 
         foreach ( $objectScheme[ "properties" ] as $schemeProperty )
             $objectProperties[ $schemeProperty[ "article" ] ] = $schemeProperty;
 
-
-        /**
-         * Сформированный список
-         */
-        $selectResponse = [];
-        $response[ "data" ] = [];
-
-        foreach ( $rows as $row ) $response[ "data" ][] = $row;
+        $response[ "data" ] = $rows;
 
         if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
             require $public_customCommandDirPath . "/postfix.php";
 
         foreach ( $response[ "data" ] as $key => $row ) {
 
-            $selectResponse[ $key ] = [
-                "title" => $this->selectPropertiesHandler( $API->request->data->select ?? (object) [ [ "title" ] ], $row, $objectProperties, false ),
+            $response[ "data" ][ $key ] = [
+                "title" => $this->selectPropertiesHandler( $this->request->data->select ?? [ [ "title" ] ], $row, $objectProperties, false ),
                 "value" => $row[ "id" ]
             ];
 
             if ( $this->request->data->select_menu )
-                $selectResponse[ $key ][ "menu_title" ] = $this->selectPropertiesHandler( $this->request->data->select_menu, $row, $objectProperties, false );
+                $response[ "data" ][ $key ][ "menu_title" ] = $this->selectPropertiesHandler( $this->request->data->select_menu, $row, $objectProperties, false );
 
-        } // foreach ( $response[ "data" ] as $key => $row )
-        
-        $this->returnResponse( $selectResponse );
+        }
+
+        return $response[ "data" ];
+
     }
+
 
     /**
      * Получение публичных и системных схем
@@ -601,6 +615,7 @@ class API {
         /**
          * Обход св-в в схеме объекта
          */
+        //1
         foreach ( $objectScheme[ "properties" ] as $objectProperty ) {
 
             if ( !$objectProperty[ "require_in_commands" ] ) $objectProperty[ "require_in_commands" ] = [];
@@ -628,6 +643,9 @@ class API {
                         400
                     );
 
+                if ( property_exists( $requestData, $objectProperty[ "article" ] ) )
+                    $processedRequest[ $objectProperty[ "article" ] ] = $requestData->{ $objectProperty[ "article" ] };
+
             } else {
 
                 /**
@@ -645,7 +663,6 @@ class API {
                 /**
                  * Обработка нестандартных типов
                  */
-
                 switch ( $objectProperty[ "data_type" ] ) {
 
                     case "boolean":
@@ -699,6 +716,7 @@ class API {
                         /**
                          * Проверка правильности заполнения email
                          */
+
                         if ( !filter_var( $requestData->{ $objectProperty[ "article" ] }, FILTER_VALIDATE_EMAIL ) )
                             $this->returnResponse(
                                 "Неправильно заполнен email",
@@ -757,8 +775,9 @@ class API {
 
                 } // switch. $objectProperty[ "data_type" ]
 
+                
                 if ( $isContinue ) continue;
-
+                // 2
 
                 /**
                  * Проверка типов св-в
@@ -841,6 +860,8 @@ class API {
 
                         case "array":
 
+                            $is_error = false;
+
                             if (
                                 ( $objectProperty[ "data_type" ] === "image" ) ||
                                 ( $objectProperty[ "data_type" ] === "file" )
@@ -859,7 +880,6 @@ class API {
 
                     } // switch. gettype( $requestProperty )
 
-
                     /**
                      * Не проверять пустые значения
                      */
@@ -867,7 +887,7 @@ class API {
 
 
                     if ( $is_error ) $this->returnResponse(
-                        "Неверный тип параметра '{$objectProperty[ "title" ]}' ",
+                        "Неверный тип параметра '{$objectProperty[ "title" ]}' " . gettype( $requestProperty ),
                         400
                     );
 
@@ -969,7 +989,7 @@ class API {
 
         } // foreach. $objectScheme[ "properties" ]
 
-
+//        $this->returnResponse( $processedRequest );
         return (object) $processedRequest;
 
     } // function. requestDataPreprocessor
@@ -1363,22 +1383,6 @@ class API {
 
                     break;
 
-                /**
-                 * Поля типа "select"
-                 */
-                case "select":
-
-                    if ( $row[ "first_name" ] ) $row[ "title" ] = $row[ "last_name" ] . " " . $row[ "first_name" ] . " " . $row[ "patronymic" ];
-
-
-                    $row = [
-                        "title" => $row[ "title" ],
-                        "value" => $row[ "id" ],
-                        "menu_title" => $row[ "title" ]
-                    ];
-
-                    break;
-
             } // switch. $context->block
 
 
@@ -1386,7 +1390,12 @@ class API {
 
         } // foreach. $rows
 
+        if ( $context->block == "select" )
+            $response = $this->selectHandler( $response, $objectScheme );
+
         $listHeaders = array_unique( $listHeaders );
+
+
 
 
         /**

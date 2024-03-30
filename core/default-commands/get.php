@@ -34,8 +34,23 @@ if ( $requestData->page > 1 ) $requestSettings[ "page" ] = $requestData->page - 
 /**
  * Выбранные св-ва
  */
+$propertyList = [];
 $selectProperties = [];
 if ( $requestData->select ) $selectProperties[] = "id";
+
+foreach ( $requestData->select as $property ) {
+
+    if ( is_array( $property ) ) {
+
+        foreach ( $property as $item )
+            $selectProperties[] = $item;
+
+        continue;
+
+    } else $selectProperties[] = $property;
+
+}
+$selectProperties = array_unique( $selectProperties );
 
 
 $requestData->select = array_map( fn( $item ) => join( "", $item ), $requestData->select );
@@ -49,6 +64,8 @@ if ( $requestData->id && ( gettype( $requestData->id ) === "integer" ) )
     $requestSettings[ "filter" ][ "id" ] = $requestData->id;
 
 foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
+
+    $propertyList[ $schemeProperty[ "article" ] ] = $schemeProperty;
 
     $propertyArticle = $schemeProperty[ "article" ];
     $propertyValue = $requestData->{$propertyArticle};
@@ -114,7 +131,10 @@ try {
     if ( $requestData->context->block == "form_list" || $requestData->context->block == "select" ) {
 
         $requestSettings[ "limit" ] = 1000;
-        if ( in_array( "last_name", $requestData->select ) ) $selectProperties = [ "id", "last_name", "first_name", "patronymic" ];
+        if ( in_array( "last_name", $requestData->select ) ) $selectProperties = array_merge(
+            $selectProperties,
+            [ "id", "last_name", "first_name", "patronymic" ]
+        );
 
 
     } // if. $requestData->context->block == "form_list"
@@ -171,6 +191,14 @@ try {
 
 
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
+
+    foreach ( $selectProperties as $key => $property ) {
+
+        if ( !in_array( $property, array_keys( $propertyList ) ) ) continue;
+        if ( !key_exists( "join", $propertyList[ $property ] ) && $propertyList[ $property ][ "is_autofill" ] ) continue;
+        unset( $selectProperties[ $key ] );
+
+    }
     if ( $selectProperties ) $rows->select( null )->select( $selectProperties );
 
     $rows->where( $requestSettings[ "filter" ] );
@@ -180,17 +208,7 @@ try {
      * Множественные фильтры
      */
     if ( $requestSettings[ "multiply_filter" ] ) $rows->where( $requestSettings[ "multiply_filter" ] );
-
-
-    /**
-     * Обработка списков форм
-     */
-    if ( $requestData->context->block == "form_list" || $requestData->context->block == "select" ) {
-
-        if ( $objectScheme[ "is_trash" ] ) $rows->where( "is_active", 'Y' );
-        $API->selectHandler( $rows, $objectScheme );
-
-    } // if. $requestData->context->block == "form_list"
+    
 
 
     /**
