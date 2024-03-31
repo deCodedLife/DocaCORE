@@ -1,0 +1,47 @@
+{
+  "title": "Крон задачи",
+  "properties": [
+    {
+      "title": "Название",
+      "article": "title",
+      "type": "varchar(255)",
+      "default": null,
+      "is_required": "Y"
+    },
+    {
+      "title": "Объект",
+      "article": "object",
+      "type": "varchar(255)",
+      "default": null,
+      "is_required": "Y"
+    },
+    {
+      "title": "Команда",
+      "article": "command",
+      "type": "varchar(255)",
+      "default": null,
+      "is_required": "Y"
+    },
+    {
+      "title": "Тип запуска",
+      "article": "run_configuration",
+      "type": "varchar(75)",
+      "default": "period",
+      "is_required": "Y"
+    },
+    {
+      "title": "Дата и время запуска",
+      "article": "start_at",
+      "type": "datetime",
+      "default": null,
+      "is_required": "N"
+    },
+    {
+      "title": "Период ( мин * часы * дни )",
+      "article": "period",
+      "type": "int",
+      "default": null,
+      "is_required": "N"
+    }
+  ]
+}

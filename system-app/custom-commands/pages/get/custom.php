@@ -994,8 +994,12 @@ $hookPath = $pageDetail[ "section" ];
 if ( isset( $pageDetail[ "url" ][ 1 ] ) ) $hookPath .= "/" . $pageDetail[ "url" ][ 1 ];
 else $hookPath .= "/index";
 
+
+
 if ( file_exists( $public_customCommandDirPath . "/hooks/$hookPath/field-values.php" ) )
     require( $public_customCommandDirPath . "/hooks/$hookPath/field-values.php" );
+else if ( file_exists( $system_customCommandDirPath . "/hooks/$hookPath/field-values.php" ) )
+    require( $system_customCommandDirPath . "/hooks/$hookPath/field-values.php" );
 
 
 /**

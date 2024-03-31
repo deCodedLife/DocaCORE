@@ -287,7 +287,7 @@ class API {
 
             $response[ "data" ][ $key ] = [
                 "title" => $this->selectPropertiesHandler( $this->request->data->select ?? [ [ "title" ] ], $row, $objectProperties, false ),
-                "value" => $row[ "id" ]
+                "value" => $row[ "value" ] ?? $row[ "id" ]
             ];
 
             if ( $this->request->data->select_menu )
@@ -1043,6 +1043,8 @@ class API {
              * Обработка нестандартных типов данных
              */
             foreach ( $objectScheme[ "properties" ] as $property ) {
+
+                if ( !in_array( "get", $property[ "use_in_commands" ] ) ) continue;
 
                 /**
                  * Учет select

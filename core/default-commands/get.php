@@ -183,7 +183,7 @@ try {
      */
 
     $rows = $API->DB->from( $objectScheme[ "table" ] )
-        ->orderBy( $requestSettings[ "sort_by" ] . " " . $requestSettings[ "sort_order" ] );
+        ->orderBy( $requestSettings[ "sort_by" ] . " " . $requestSettings[ "sort_order" ] ) ?? [];
 
 
     if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] && $requestData->context->block != "select" )
