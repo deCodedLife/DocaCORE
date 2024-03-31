@@ -86,6 +86,8 @@ foreach ( $menuScheme[ "side" ] as $menuKey => $menuValue ) {
 
     } // foreach. $menuValue[ "children" ]
 
+
+    if ( !empty( $menuValue[ "children" ] ) && empty( $returnMenuChildren ) ) continue;
     $menuValue[ "children" ] = $returnMenuChildren;
 
 
