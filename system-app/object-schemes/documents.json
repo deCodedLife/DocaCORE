@@ -19,8 +19,16 @@
       "in_search": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update", "search", "get" ],
-      "require_in_commands": [ "add" ]
+      "use_in_commands": [
+        "get",
+        "add",
+        "update",
+        "search",
+        "get"
+      ],
+      "require_in_commands": [
+        "add"
+      ]
     },
     {
       "title": "Дата последнего изменения",
@@ -34,7 +42,11 @@
       "is_visible": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "get", "update" ]
+      "use_in_commands": [
+        "get",
+        "get",
+        "update"
+      ]
     },
     {
       "title": "Общий",
@@ -48,7 +60,11 @@
       "is_visible": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "get", "update" ]
+      "use_in_commands": [
+        "get",
+        "get",
+        "update"
+      ]
     },
     {
       "title": "Артикул",
@@ -61,7 +77,9 @@
       "in_search": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "get" ],
+      "use_in_commands": [
+        "get"
+      ],
       "require_in_commands": []
     },
     {
@@ -75,7 +93,10 @@
       "in_search": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add" ],
+      "use_in_commands": [
+        "get",
+        "add"
+      ],
       "require_in_commands": []
     },
     {
@@ -92,7 +113,11 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [
+        "get",
+        "add",
+        "update"
+      ],
       "require_in_commands": [],
       "list_donor": {
         "table": "documentTypes",
@@ -110,7 +135,11 @@
       "in_search": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [
+        "get",
+        "add",
+        "update"
+      ],
       "require_in_commands": []
     },
     {
@@ -124,7 +153,11 @@
       "in_search": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [
+        "get",
+        "add",
+        "update"
+      ],
       "require_in_commands": []
     },
     {
@@ -138,7 +171,10 @@
       "in_search": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "print" ],
+      "use_in_commands": [
+        "get",
+        "print"
+      ],
       "require_in_commands": []
     }
   ],

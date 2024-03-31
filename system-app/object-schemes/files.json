@@ -15,8 +15,13 @@
       "in_search": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "remove" ],
-      "require_in_commands": [ "remove" ]
+      "use_in_commands": [
+        "get",
+        "remove"
+      ],
+      "require_in_commands": [
+        "remove"
+      ]
     },
     {
       "title": "Запись",
@@ -29,8 +34,13 @@
       "in_search": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "remove" ],
-      "require_in_commands": [ "remove" ]
+      "use_in_commands": [
+        "get",
+        "remove"
+      ],
+      "require_in_commands": [
+        "remove"
+      ]
     },
     {
       "title": "Название файла",
@@ -43,8 +53,13 @@
       "in_search": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "remove" ],
-      "require_in_commands": [ "remove" ]
+      "use_in_commands": [
+        "get",
+        "remove"
+      ],
+      "require_in_commands": [
+        "remove"
+      ]
     }
   ]
 }
