@@ -1049,7 +1049,7 @@ class API {
                 /**
                  * Учет select
                  */
-                if ( $requestData->select && !in_array( $property[ "article" ], $requestData->select ) ) continue;
+//                if ( $requestData->select && !in_array( $property[ "article" ], $requestData->select ) ) continue;
 
                 /**
                  * Заполнение заголовков списка

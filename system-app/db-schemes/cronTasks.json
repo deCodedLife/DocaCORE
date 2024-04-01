@@ -33,15 +33,36 @@
       "title": "Дата и время запуска",
       "article": "start_at",
       "type": "datetime",
-      "default": null,
+      "default": "0",
       "is_required": "N"
     },
     {
-      "title": "Период ( мин * часы * дни )",
-      "article": "period",
-      "type": "int",
-      "default": null,
-      "is_required": "N"
+      "title": "Месяцы",
+      "article": "month",
+      "type": "varchar(75)",
+      "default": "*",
+      "is_required": "Y"
+    },
+    {
+      "title": "Дни",
+      "article": "days",
+      "type": "varchar(75)",
+      "default": "*",
+      "is_required": "Y"
+    },
+    {
+      "title": "Часы",
+      "article": "hours",
+      "type": "varchar(75)",
+      "default": "*",
+      "is_required": "Y"
+    },
+    {
+      "title": "minutes",
+      "article": "minutes",
+      "type": "varchar(75)",
+      "default": "*",
+      "is_required": "Y"
     }
   ]
 }

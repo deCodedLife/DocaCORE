@@ -25,10 +25,10 @@ $execCommand = [
 ];
 $execCommand = join( ' ', $execCommand );
 
-$minutes = $taskDetails[ "minutes" ] !== 0 ? "*/{$taskDetails[ "minutes" ]}" : "*";
-$hours = $taskDetails[ "hours" ] !== 0 ? "*/{$taskDetails[ "hours" ]}" : "*";
-$days = $taskDetails[ "days" ] !== 0 ? "*/{$taskDetails[ "days" ]}" : "*";
-$month = "*";
+$minutes = $taskDetails[ "minutes" ] ?? "*";
+$hours = $taskDetails[ "hours" ] ?? "*";
+$days = $taskDetails[ "days" ] ?? "*";
+$month = $taskDetails[ "month" ] ?? "*";
 $weekdays =  "*";
 
 shell_exec( "crontab -l > tasks" );

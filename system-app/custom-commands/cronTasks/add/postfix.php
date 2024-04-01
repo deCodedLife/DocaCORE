@@ -13,11 +13,11 @@ $execCommand = [
 ];
 $execCommand = join( ' ', $execCommand );
 
-$requestData->minutes = $requestData->minutes ? "*/$requestData->minutes" : "*";
-$requestData->hours = $requestData->hours ? "*/$requestData->hours" : "*";
-$requestData->days = $requestData->days ? "*/$requestData->days" : "*";
-$requestData->month = $requestData->month ? "*/$requestData->month" : "*";
-$requestData->weekdays = $requestData->weekdays ? "*/$requestData->weekdays" : "*";
+$requestData->minutes = $requestData->minutes ?? "*";
+$requestData->hours = $requestData->hours ?? "*";
+$requestData->days = $requestData->days ?? "*";
+$requestData->month = $requestData->month ?? "*";
+$requestData->weekdays = $requestData->weekdays ?? "*";
 
 shell_exec( "crontab -l > tasks" );
 $cronJobs = file_get_contents( "tasks" );
