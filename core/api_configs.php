@@ -48,6 +48,7 @@ $API::$configs[ "paths" ][ "public_custom_commands" ] = $API::$configs[ "paths" 
 $API::$configs[ "paths" ][ "public_langs" ] = $API::$configs[ "paths" ][ "public_app" ] . "/langs";
 $API::$configs[ "paths" ][ "public_modules" ] = $API::$configs[ "paths" ][ "public_app" ] . "/modules";
 $API::$configs[ "paths" ][ "public_libs" ] = $API::$configs[ "paths" ][ "public_app" ] . "/libs";
+$API::$configs[ "paths" ][ "public_cron" ] = $API::$configs[ "paths" ][ "public_app" ] . "/cron";
 
 $API::$configs[ "paths" ][ "system_db_schemes" ] = $API::$configs[ "paths" ][ "system_app" ] . "/db-schemes";
 $API::$configs[ "paths" ][ "system_command_schemes" ] = $API::$configs[ "paths" ][ "system_app" ] . "/command-schemes";

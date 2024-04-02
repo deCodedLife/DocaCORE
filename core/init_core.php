@@ -183,39 +183,73 @@ class API {
     } // function requeire_files( $path )
 
 
-    public function selectPropertiesHandler( $row, $objectProperties, $selects ): string {
+    /**
+     * Рекурсивная функция для сборки select параметров
+     *
+     * @param $property
+     * @param $object
+     * @param $properties
+     * @param $exclusion
+     * @return string
+     */
+    public function selectPropertiesHandler( $property, $object, $properties, $exclusion = true ): string {
 
-        $titleParts = [];
+//        if ( $property == "id" ) return "";
+        if ( is_array( $property ) ) {
 
-        foreach ( $selects as $key => $property ) {
+            $handled_properties = [];
 
-            if ( $row[ $property ] ) continue;
-            unset( $selects[ $key ] );
+            foreach ( $property as $item ) {
+
+                $value = $this->selectPropertiesHandler( $item, $object, $properties );
+
+                if ( empty( $value ) ) continue;
+                if ( $exclusion ) return $value;
+                $handled_properties[] = $value;
+
+            }
+
+            return join( ", ", $handled_properties );
 
         }
+        if (
+            !isset( $object[ $property ] ) ||
+            $object[ $property ] == "null" ||
+            $object[ $property ] == ""
+        ) return "";
 
-        foreach ( $selects as $key => $property ) {
+        $rowValue = $object[ $property ];
 
-            if ( $property == "id" ) continue;
-            if (
-                !isset( $row[ $property ] ) ||
-                $row[ $property ] == "null" ||
-                $row[ $property ] == ""
-            ) continue;
+        return $this->typesHandler( (array) $properties[ $property ], $rowValue );
 
-            $rowValue = $row[ $property ];
-            $postfix = $key === array_key_last( $selects ) ? "" : ",";
+    }
 
-            /**
-             * TODO: Implement all types
-             */
-            switch ( $objectProperties[ $property ][ "field_type" ] ) {
-                case "price":
-                    $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
-                    $titleParts[] = "({$rowValue}$currency)$postfix";
-                    break;
-                case "phone":
-                    $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
+
+    /**
+     *
+     *
+     * @param $properties
+     * @param $data
+     * @return string
+     */
+    function typesHandler( $properties, $data ): string
+    {
+        $postfix = '';
+
+        /**
+         * TODO: Implement all types
+         */
+        switch ( $properties[ "field_type" ] ) {
+            case "price":
+                $currency = $this::$configs[ "system_components" ][ "currency" ] ?? "₽";
+                return "({$data}$currency)$postfix";
+
+            case "list":
+                return $data[ "title" ];
+
+
+            case "phone":
+                $phoneRegexp = $this::$configs[ "phone_regexp" ] ?? "/
                             (\d{1})?\D* # optional country code
                             (\d{3})?\D* # optional area code
                             (\d{3})\D*  # first three
@@ -225,59 +259,46 @@ class API {
                             (\d*)       # optional extension
                         /x";
 
+                if( preg_match( $phoneRegexp, $data, $matches ) )
+                    return "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}$postfix";
+                else return "+$data";
 
-                    if( preg_match( $phoneRegexp, $rowValue, $matches ) )
-                        $titleParts[] = "+{$matches[1]} ({$matches[2]})-{$matches[3]}-{$matches[4]}-{$matches[5]}$postfix";
-                    else $titleParts[] = "+$rowValue";
-                    break;
-                default:
-                    $titleParts[] = $rowValue;
-                    break;
-            } // switch ( $objectProperties[ $property ][ "field_type" ] )
+            default:
+                return $data;
 
-        } // foreach ( $selectProperties as $property )
-
-        return join( " ", $titleParts );
-
+        } // switch ( $objectProperties[ $property ][ "field_type" ] )
     }
 
 
     public function selectHandler( $rows, $objectScheme ) {
 
         global $response, $public_customCommandDirPath, $API;
-
-        $API = $this;
-
         $objectProperties = [];
+
         foreach ( $objectScheme[ "properties" ] as $schemeProperty )
             $objectProperties[ $schemeProperty[ "article" ] ] = $schemeProperty;
 
-
-        /**
-         * Сформированный список
-         */
-        $selectResponse = [];
-        $response[ "data" ] = [];
-
-        foreach ( $rows as $row ) $response[ "data" ][] = $row;
+        $response[ "data" ] = $rows;
 
         if ( file_exists( $public_customCommandDirPath . "/postfix.php" ) )
             require $public_customCommandDirPath . "/postfix.php";
 
         foreach ( $response[ "data" ] as $key => $row ) {
 
-            $selectResponse[ $key ] = [
-                "title" => $this->selectPropertiesHandler( $row, $objectProperties, $API->request->data->select ?? [ "title" ] ),
-                "value" => $row[ "id" ]
+            $response[ "data" ][ $key ] = [
+                "title" => $this->selectPropertiesHandler( $this->request->data->select ?? [ [ "title" ] ], $row, $objectProperties, false ),
+                "value" => $row[ "value" ] ?? $row[ "id" ]
             ];
 
             if ( $this->request->data->select_menu )
-                $selectResponse[ $key ][ "menu_title" ] = $this->selectPropertiesHandler( $row, $objectProperties, $this->request->data->select_menu );
+                $response[ "data" ][ $key ][ "menu_title" ] = $this->selectPropertiesHandler( $this->request->data->select_menu, $row, $objectProperties, false );
 
-        } // foreach ( $response[ "data" ] as $key => $row )
-        
-        $this->returnResponse( $selectResponse );
+        }
+
+        return $response[ "data" ];
+
     }
+
 
     /**
      * Получение публичных и системных схем
@@ -594,6 +615,7 @@ class API {
         /**
          * Обход св-в в схеме объекта
          */
+        //1
         foreach ( $objectScheme[ "properties" ] as $objectProperty ) {
 
             if ( !$objectProperty[ "require_in_commands" ] ) $objectProperty[ "require_in_commands" ] = [];
@@ -621,6 +643,9 @@ class API {
                         400
                     );
 
+                if ( property_exists( $requestData, $objectProperty[ "article" ] ) )
+                    $processedRequest[ $objectProperty[ "article" ] ] = $requestData->{ $objectProperty[ "article" ] };
+
             } else {
 
                 /**
@@ -638,7 +663,6 @@ class API {
                 /**
                  * Обработка нестандартных типов
                  */
-
                 switch ( $objectProperty[ "data_type" ] ) {
 
                     case "boolean":
@@ -692,6 +716,7 @@ class API {
                         /**
                          * Проверка правильности заполнения email
                          */
+
                         if ( !filter_var( $requestData->{ $objectProperty[ "article" ] }, FILTER_VALIDATE_EMAIL ) )
                             $this->returnResponse(
                                 "Неправильно заполнен email",
@@ -750,8 +775,9 @@ class API {
 
                 } // switch. $objectProperty[ "data_type" ]
 
+                
                 if ( $isContinue ) continue;
-
+                // 2
 
                 /**
                  * Проверка типов св-в
@@ -834,6 +860,8 @@ class API {
 
                         case "array":
 
+                            $is_error = false;
+
                             if (
                                 ( $objectProperty[ "data_type" ] === "image" ) ||
                                 ( $objectProperty[ "data_type" ] === "file" )
@@ -852,7 +880,6 @@ class API {
 
                     } // switch. gettype( $requestProperty )
 
-
                     /**
                      * Не проверять пустые значения
                      */
@@ -860,7 +887,7 @@ class API {
 
 
                     if ( $is_error ) $this->returnResponse(
-                        "Неверный тип параметра '{$objectProperty[ "title" ]}' ",
+                        "Неверный тип параметра '{$objectProperty[ "title" ]}' " . gettype( $requestProperty ),
                         400
                     );
 
@@ -962,7 +989,7 @@ class API {
 
         } // foreach. $objectScheme[ "properties" ]
 
-
+//        $this->returnResponse( $processedRequest );
         return (object) $processedRequest;
 
     } // function. requestDataPreprocessor
@@ -1017,10 +1044,12 @@ class API {
              */
             foreach ( $objectScheme[ "properties" ] as $property ) {
 
+                if ( !in_array( "get", $property[ "use_in_commands" ] ) ) continue;
+
                 /**
                  * Учет select
                  */
-                if ( $requestData->select && !in_array( $property[ "article" ], $requestData->select ) ) continue;
+//                if ( $requestData->select && !in_array( $property[ "article" ], $requestData->select ) ) continue;
 
                 /**
                  * Заполнение заголовков списка
@@ -1356,22 +1385,6 @@ class API {
 
                     break;
 
-                /**
-                 * Поля типа "select"
-                 */
-                case "select":
-
-                    if ( $row[ "first_name" ] ) $row[ "title" ] = $row[ "last_name" ] . " " . $row[ "first_name" ] . " " . $row[ "patronymic" ];
-
-
-                    $row = [
-                        "title" => $row[ "title" ],
-                        "value" => $row[ "id" ],
-                        "menu_title" => $row[ "title" ]
-                    ];
-
-                    break;
-
             } // switch. $context->block
 
 
@@ -1379,7 +1392,12 @@ class API {
 
         } // foreach. $rows
 
+        if ( $context->block == "select" )
+            $response = $this->selectHandler( $response, $objectScheme );
+
         $listHeaders = array_unique( $listHeaders );
+
+
 
 
         /**
@@ -1418,6 +1436,138 @@ class API {
                 } // foreach. $response
 
                 fclose( $buffer );
+                exit();
+
+            case "exel":
+
+                header ( "Expires: Mon, 1 Apr 1974 05:00:00 GMT" );
+                header ( "Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT" );
+                header ( "Cache-Control: no-cache, must-revalidate" );
+                header ( "Pragma: no-cache" );
+                header ( "Content-type: application/vnd.ms-excel" );
+                header ( "Content-Disposition: attachment; filename=matrix.xls" );
+
+
+                /**
+                 * Подключение библиотеки для работы с Exel
+                 */
+                require_once( $this::$configs[ "paths" ][ "libs" ] . "/phpExcel.php" );
+                require_once( $this::$configs[ "paths" ][ "libs" ] . "/PHPExcel/Writer/Excel5.php" );
+
+
+                /**
+                 * Алфавит.
+                 * Используется для вставки значений в ячейки
+                 */
+                $alphabet = [
+                    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+                    "T", "U", "V", "W", "X", "Y", "Z"
+                ];
+
+
+                /**
+                 * Создание Excel объекта
+                 */
+                $excelObject = new PHPExcel();
+
+                /**
+                 * Установка индекса активного листа
+                 */
+                $excelObject->setActiveSheetIndex( 0 );
+
+                /**
+                 * Получение активного листа
+                 */
+                $excelSheet = $excelObject->getActiveSheet();
+
+
+                /**
+                 * Заголовок таблицы
+                 */
+                $excelSheet->setTitle( $objectScheme[ "title" ] );
+
+
+                /**
+                 * Запрос get на объект
+                 */
+                $request = (array) $this->request->data;
+                $request[ "context" ]->block = "list";
+                unset( $request[ "select" ] );
+                $objects = $this->sendRequest( $this->request->object, $this->request->command, $request );
+
+
+                /**
+                 * Формирование хэш таблицы на артикулы полей объект(а)ов
+                 */
+                foreach ( $objectScheme[ "properties" ] as $schemeProperty )
+                    $objectSchemeProperties[ $schemeProperty[ "article" ] ] = $schemeProperty;
+
+                if ( $this->request->object != $objectScheme[ "table" ] ) {
+
+                    $additionalScheme = $this->loadObjectScheme( $objectScheme[ "table" ] );
+                    foreach ( $additionalScheme[ "properties" ] as $schemeProperty )
+                        $objectSchemeProperties[ $schemeProperty[ "article" ] ] = $schemeProperty;
+
+                }
+
+
+                /**
+                 * Формирование заголовков
+                 */
+                $propertyKey = 0;
+                array_unshift( $this->request->select, "id" );
+
+
+                foreach ( $this->request->data->select as $property ) {
+
+                    $excelSheet->setCellValue(
+                        $alphabet[ $propertyKey ] . "1",
+                        $objectSchemeProperties[ $property ][ "title" ] ?? ""
+                    );
+
+                    $propertyKey++;
+
+                } // foreach. $response[ 0 ]
+
+
+
+                /**
+                 * Формирование тела отчета
+                 */
+                foreach ( $objects as $rowKey => $row ) {
+
+                    $propertyKey = 0;
+
+
+                    /**
+                     * Запись объекта в таблицу
+                     */
+                    foreach ( $this->request->data->select as $property ) {
+
+                        $data = property_exists( $row, $property ) ? $row->$property : "";
+
+                        if ( is_object( $data ) )  $excelSheet->setCellValue( $alphabet[ $propertyKey ] . ( $rowKey + 2 ), (string) $data->title );
+                        elseif ( is_array( $data ) ) {
+
+                            /**
+                             * Преобразования списка объектов в строку
+                             */
+                            $collected_array = join( ', ', array_map( fn ( $item ) => $item->title ?? "", $data ) );
+                            $excelSheet->setCellValue( $alphabet[ $propertyKey ] . ( $rowKey + 2 ), $collected_array );
+
+                        }
+                        else $excelSheet->setCellValue( $alphabet[ $propertyKey ] . ( $rowKey + 2 ), (string) $data );
+
+                        $propertyKey++;
+
+                    }
+
+                } // foreach. $response
+
+
+                $objWriter = new PHPExcel_Writer_Excel5( $excelObject );
+                $objWriter->save( "php://output" );
+
                 exit();
 
                 break;
@@ -2080,6 +2230,26 @@ class API {
         return true;
 
     } // function. validateJWT
+
+
+    /**
+     * Определение является ли аккаунт публичным
+     * @return bool
+     */
+    function isPublicAccount(): bool {
+
+        /**
+         * Получение роли
+         */
+        $roleDetails = $this->DB->from( "roles" )
+            ->where( "id", $this::$userDetail->role_id )
+            ->fetch();
+
+        if ( !$roleDetails ) return false;
+        return $roleDetails[ "article" ] === "public";
+
+    } // function isPublicAccount(): bool
+
 
     /**
      * Проверка прав

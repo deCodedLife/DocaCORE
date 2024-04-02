@@ -5,7 +5,6 @@
  * Привязка событий к расписанию
  */
 
-
 /**
  * Добавление события в расписание
  *
@@ -20,8 +19,6 @@ function addEventIntoSchedule ( $event, $performerId ) {
     global $resultSchedule;
     global $performersDetail;
     global $public_customCommandDirPath;
-
-
 
     /**
      * Игнорирование записей, у сотрудников, которые не выводятся в расписании
@@ -84,7 +81,7 @@ function addEventIntoSchedule ( $event, $performerId ) {
     $resultSchedule[ $eventDate ][ $performerId ][ "schedule" ][ $eventStartStep ] = [
         "steps" => [ $eventStartStep, $eventEndStep ],
         "status" => "busy",
-        "event" => [
+        "event" => $event ? [
             "id" => $event[ "id" ],
             "start_at" => $event[ "start_at" ],
             "end_at" => $event[ "end_at" ],
@@ -92,7 +89,7 @@ function addEventIntoSchedule ( $event, $performerId ) {
             "color" => $event[ "color" ],
             "details" => $eventDetails,
             "icons" => $event[ "icons" ]
-        ]
+        ] : null
     ];
 
     return true;

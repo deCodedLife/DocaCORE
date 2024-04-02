@@ -214,6 +214,9 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
      */
     if ( $fieldDetail[ "field_type" ] == "smart_list" ) {
 
+        if ( !key_exists( "is_headers_shown", $fieldDetail[ "settings" ] ) )
+            $blockField[ "settings" ][ "is_headers_shown" ] = true;
+
         foreach ( $fieldDetail[ "settings" ][ "properties" ] as $propertyKey => $property ) {
 
             /**

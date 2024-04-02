@@ -15,8 +15,14 @@
       "in_search": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
-      "require_in_commands": [ "add" ]
+      "use_in_commands": [
+        "get",
+        "add",
+        "update"
+      ],
+      "require_in_commands": [
+        "add"
+      ]
     },
     {
       "title": "Артикул",
@@ -29,8 +35,14 @@
       "in_search": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
-      "require_in_commands": [ "add" ]
+      "use_in_commands": [
+        "get",
+        "add",
+        "update"
+      ],
+      "require_in_commands": [
+        "add"
+      ]
     }
   ]
 }

@@ -15,7 +15,7 @@
       "is_variable": false,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [ "get", "add", "update" ],
       "require_in_commands": [],
       "settings": {
         "is_multiply": false
@@ -32,7 +32,7 @@
       "in_search": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [ "get", "add", "update" ],
       "require_in_commands": [ "add" ]
     },
     {
@@ -45,7 +45,7 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [ "get", "add", "update" ],
       "require_in_commands": [ "add" ]
     },
     {
@@ -58,7 +58,7 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [ "get", "add", "update" ],
       "require_in_commands": []
     },
     {
@@ -71,7 +71,7 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update", "sign-in", "sign-up", "forgot-password" ],
+      "use_in_commands": [ "get", "add", "update", "sign-in", "sign-up", "forgot-password" ],
       "require_in_commands": [ "add", "sign-in", "sign-up", "forgot-password" ]
     },
     {
@@ -84,7 +84,7 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update", "sign-in", "sign-up" ],
+      "use_in_commands": [ "get", "add", "update", "sign-in", "sign-up" ],
       "require_in_commands": [ "add", "sign-in", "sign-up" ]
     },
     {
@@ -101,7 +101,7 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update", "get" ],
+      "use_in_commands": [ "get", "add", "update", "get" ],
       "require_in_commands": [ "add" ],
       "list_donor": {
         "table": "roles",

@@ -31,5 +31,13 @@
     }
   ],
   "rows_key": "article",
-  "rows": []
+  "rows": [
+    {
+      "id": 1,
+      "title": "Поддержка",
+      "article": "support",
+      "description": "Для служебного пользования",
+      "group_id": 1
+    }
+  ]
 }

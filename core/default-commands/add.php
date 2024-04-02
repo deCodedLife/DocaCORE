@@ -185,6 +185,7 @@ if ( $userScheme ) {
 
 try {
 
+    global $insertId;
     $insertId = $API->DB->insertInto( $objectScheme[ "table" ] )
         ->values( $insertValues )
         ->execute();

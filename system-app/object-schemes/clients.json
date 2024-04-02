@@ -15,8 +15,14 @@
       "in_search": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
-      "require_in_commands": [ "add" ]
+      "use_in_commands": [
+        "get",
+        "add",
+        "update"
+      ],
+      "require_in_commands": [
+        "add"
+      ]
     },
     {
       "title": "Фамилия",
@@ -28,8 +34,14 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
-      "require_in_commands": [ "add" ]
+      "use_in_commands": [
+        "get",
+        "add",
+        "update"
+      ],
+      "require_in_commands": [
+        "add"
+      ]
     },
     {
       "title": "Отчество",
@@ -41,6 +53,7 @@
       "is_autofill": true,
       "is_hook": false,
       "use_in_commands": [
+        "get",
         "add",
         "update"
       ]
@@ -55,7 +68,11 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [
+        "get",
+        "add",
+        "update"
+      ],
       "require_in_commands": []
     },
     {
@@ -68,7 +85,11 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [
+        "get",
+        "add",
+        "update"
+      ],
       "require_in_commands": []
     }
   ]

@@ -96,9 +96,6 @@ $response[ "detail" ][ "pages_count" ] = ceil(
     $response[ "detail" ][ "rows_count" ] / $requestData->limit
 );
 
-if ( $requestData->select )
-    $API->selectHandler( $rows, $objectScheme, $requestData->select );
-
 
 $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context );
 

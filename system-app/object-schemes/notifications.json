@@ -40,7 +40,7 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [],
+      "use_in_commands": [ "get" ],
       "require_in_commands": []
     }
   ]

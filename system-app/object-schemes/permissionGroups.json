@@ -15,7 +15,7 @@
       "in_search": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [ "get", "add", "update" ],
       "require_in_commands": [ "add" ]
     },
     {
@@ -28,7 +28,7 @@
       "is_autofill": true,
       "required_permissions": [],
       "required_modules": [],
-      "use_in_commands": [ "add", "update" ],
+      "use_in_commands": [ "get", "add", "update" ],
       "require_in_commands": [],
       "list_donor": {
         "table": "permissionGroups",

@@ -145,7 +145,7 @@ if ( !$API->request ) {
 /**
  * Проверка обязательных параметров
  */
-if ( !$API->request ) $API->returnResponse( ["Пустой запрос 2", json_encode( $API->request )], 400 );
+if ( !$API->request ) $API->returnResponse( ["Пустой запрос", json_encode( $API->request )], 400 );
 if ( !$API->request->object ) $API->returnResponse( "Не указан объект в запросе", 400 );
 if ( !$API->request->command ) $API->returnResponse( "Не указана команда в запросе", 400 );
 
@@ -192,12 +192,24 @@ else $commandScheme = $userSchemeCommand;
 /**
  * Загрузка схемы объекта
  */
-$objectScheme = $API->loadObjectScheme( $commandScheme[ "object_scheme" ] );
+if ( is_array( $commandScheme[ "object_scheme" ] ) ) {
+    $objectScheme = [];
+    foreach ( $commandScheme[ "object_scheme" ] as $scheme ) {
+
+        $objectScheme = array_merge(
+            $objectScheme,
+            $API->loadObjectScheme( $scheme )
+        );
+
+    }
+} else $objectScheme = $API->loadObjectScheme( $commandScheme[ "object_scheme" ] );
 
 /**
  * Пре-обработка тела запроса
  */
+
 $requestData = $API->requestDataPreprocessor( $objectScheme, $API->request->data, $API->request->command );
+
 
 
 /**
@@ -236,8 +248,12 @@ $public_customCommandDirPath = $API::$configs[ "paths" ][ "public_custom_command
 
 
 if ( $API->request->data->context->trigger ) {
-    $trigger_hook = $public_customCommandDirPath . "/{$API->request->data->context->trigger}.php";
-    if ( file_exists( $trigger_hook ) ) require_once $trigger_hook;
+
+    $public_trigger_hook = $public_customCommandDirPath . "/{$API->request->data->context->trigger}.php";
+    $system_trigger_hook = $system_customCommandDirPath . "/{$API->request->data->context->trigger}.php";
+    if ( file_exists( $system_trigger_hook ) ) require_once $system_trigger_hook;
+    else if ( file_exists( $public_trigger_hook ) ) require_once $public_trigger_hook;
+
 }
 
 
@@ -288,7 +304,7 @@ if ( file_exists( $commandPrefixPath ) ) require_once( $commandPrefixPath );
  * Инициализация команды
  */
 if ( file_exists( $customCommandPath ) ) require_once( $customCommandPath );
-else if ( file_exists( $defaultCommandPath ) ) require_once( $defaultCommandPath );
+else if ( file_exists( $defaultCommandPath ) ) require_once( $defaultCommandPath ); 
 else $API->returnResponse( "Отсутствует тип команды", 500 );
 
 /**
