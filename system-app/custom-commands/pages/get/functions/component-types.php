@@ -98,6 +98,8 @@ function processingComponentType_filter ( $structureComponent ) {
 
     $request[ "id" ] = $ids ?? [ 0 ];
 
+    if ( $structureComponent[ "settings" ][ "is_search" ] ) return [];
+
     $donorRows = $API->sendRequest( $structureComponent[ "settings" ][ "donor_object" ], "get", $request );
     $filterList = (array) $donorRows;
 
