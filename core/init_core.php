@@ -193,8 +193,6 @@ class API {
      * @return string
      */
     public function selectPropertiesHandler( $property, $object, $properties, $exclusion = true ): string {
-
-//        if ( $property == "id" ) return "";
         if ( is_array( $property ) ) {
 
             $handled_properties = [];
@@ -202,6 +200,7 @@ class API {
             foreach ( $property as $item ) {
 
                 $value = $this->selectPropertiesHandler( $item, $object, $properties );
+                if ( $property == "id" ) $value = "№$value";
 
                 if ( empty( $value ) ) continue;
                 if ( $exclusion ) return $value;
@@ -219,6 +218,7 @@ class API {
         ) return "";
 
         $rowValue = $object[ $property ];
+        if ( $property == "id" ) $rowValue = "№$rowValue";
 
         return $this->typesHandler( (array) $properties[ $property ], $rowValue );
 
