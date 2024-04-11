@@ -28,7 +28,7 @@ $ignoreTypes = [
 ];
 
 
-foreach ( $objectScheme[ "properties" ] as $property ) {
+foreach ( ( $objectScheme[ "properties" ] ?? [] ) as $property ) {
 
     if ( !$property[ "is_autofill" ] ) continue;
 
@@ -36,7 +36,7 @@ foreach ( $objectScheme[ "properties" ] as $property ) {
     $is_ignored = false;
 
     if ( in_array( $property[ "field_type" ], $ignoreTypes ) ) $is_ignored = true;
-    if ( in_array( "add", $property[ "require_in_commands" ] ) ) $is_required = true;
+    if ( in_array( "add", ( $property[ "require_in_commands" ] ?? [] ) ) ) $is_required = true;
     if ( $property[ "field_type" ] == "list" && !$property[ "custom_list" ] ) $is_ignored = true;
 
     if ( $is_required && $is_ignored ) {
