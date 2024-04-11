@@ -2,11 +2,13 @@
 # $Id$
 #
 
-import sys, re
+import re
+import sys
 
-if len(sys.argv)!=3:
+if len(sys.argv) != 3:
 	print 'Usage: python resolve.py BACKTRACE SYMBOLS'
 	sys.exit(0)
+
 
 def myopen(name):
 	if name == '-':
@@ -16,6 +18,7 @@ def myopen(name):
 		print 'FATAL: failed to open %s' % name
 		sys.exit(1)
 	return fh
+
 
 syms = []
 fp = myopen(sys.argv[2])
@@ -41,8 +44,8 @@ for line in fp.readlines():
 	if match:
 		addr = int(match.group(1), 16)
 		resolved = '???'
-		for i in range(len(syms)-1):
-			if syms[i][0]<=addr and addr<syms[i+1][0]:
+		for i in range(len(syms) - 1):
+			if syms[i][0] <= addr and addr < syms[i + 1][0]:
 				resolved = '%s+0x%x' % (syms[i][1], addr - syms[i][0])
 				break
 		line += ' ' + resolved

@@ -30,6 +30,8 @@ if ( $requestData->is_test ) {
 
     $Sphinx = new SphinxClient();
 
+
+
     $Sphinx->SetSortMode( SPH_SORT_RELEVANCE );
     $Sphinx->SetArrayResult( true );
 

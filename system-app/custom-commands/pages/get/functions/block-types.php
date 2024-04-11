@@ -93,7 +93,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
      * Проверка обязательности поля
      */
     $isRequired = false;
-    if ( in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "require_in_commands" ] ) ) $isRequired = true;
+    if ( in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "require_in_commands" ] ?? [] ) ) $isRequired = true;
 
     /**
      * Проверка видимости поля
@@ -116,7 +116,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
 
     if (
         ( $fieldDetail[ "is_disabled" ] === true ) ||
-        ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ) )
+        ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ?? [] ) )
     ) $isDisabled = true;
 
 
@@ -307,7 +307,9 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
         /**
          * Перевод значения в указанный в схеме тип
          */
-        settype( $blockField[ "value" ], $fieldDetail[ "data_type" ] );
+        $validTypes = ["bool", "boolean", "int", "integer", "float", "double", "string", "array", "object", "null"];
+        if ( in_array( $fieldDetail[ "field_type" ], $validTypes ) )
+            settype( $blockField[ "value" ], $fieldDetail[ "data_type" ] );
 
 
         /**
@@ -351,10 +353,14 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
             if ( !$fieldDetail[ "list_donor" ][ "table" ] ) continue;
             if ( $joinedTableRow[ "value" ] != $blockField[ "value" ] ) continue;
 
+            $queryParams = $blockField[ "value" ];
+            if ( is_object( $blockField[ "value" ] ) ) $queryParams = $blockField[ "value" ]->value;
+
             $blockField[ "value" ] = $API->DB->from( $fieldDetail[ "list_donor" ][ "table" ] )
-                ->where( "id", $blockField[ "value" ] )
-                ->limit( 1 )
-                ->fetch()[ "id" ];
+                ->where( "id", $queryParams )
+                ->fetch();
+
+            $blockField[ "value" ] = $blockField[ "value" ][ "id" ] ?? null;
 
         } // foreach. $blockField[ "list" ]
 
@@ -370,7 +376,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
     /**
      * Заполнение значения поля из хука
      */
-    if ( $formFieldValues[ $fieldDetail[ "article" ] ] ) {
+    if ( $formFieldValues[ $fieldDetail[ "article" ] ] ?? false ) {
 
         if ( gettype( $formFieldValues[ $fieldDetail[ "article" ] ] ) !== "array" ) {
 
@@ -698,7 +704,13 @@ function processingBlockType_form ( $structureBlock ) {
     $objectScheme = $API->loadObjectScheme( $structureBlock[ "settings" ][ "object" ] );
     if ( !$objectScheme ) return false;
 
-//    $API->returnResponse( $objectScheme, 500 );
+
+    if( $requestData->context->type == "import" ) {
+        $objectScheme = $API->mergeProperties(
+            $objectScheme,
+            $API->loadObjectScheme( "import_template" )
+        );
+    }
 
 
     /**
@@ -974,7 +986,7 @@ function processingBlockType_document ( $structureBlock ) {
          * Проверка обязательности поля
          */
         $isRequired = false;
-        if ( in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "require_in_commands" ] ) ) $isRequired = true;
+        if ( in_array( $pageDetail[ "url" ][ 1 ], $fieldDetail[ "require_in_commands" ] ?? [] ) ) $isRequired = true;
 
         /**
          * Проверка видимости поля
@@ -991,7 +1003,7 @@ function processingBlockType_document ( $structureBlock ) {
 
         if (
             ( $fieldDetail[ "is_disabled" ] === true ) ||
-            ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ) )
+            ( !in_array( $structureBlock[ "settings" ][ "command" ], $fieldDetail[ "use_in_commands" ] ?? [] ) )
         ) $isDisabled = true;
 
 
@@ -1203,7 +1215,7 @@ function processingBlockType_analyticWidgets ( $structureBlock ) {
      */
 
     $isHard = false;
-    if ( $structureBlock[ "settings" ][ "is_hard" ] ) $isHard = true;
+    if ( $structureBlock[ "settings" ][ "is_hard" ] ?? false ) $isHard = true;
 
     $widgetSettings = [
         "is_hard" => $isHard,
@@ -1211,7 +1223,7 @@ function processingBlockType_analyticWidgets ( $structureBlock ) {
         "filters" => []
     ];
 
-    if ( $structureBlock[ "settings" ][ "linked_filter" ] ) $widgetSettings[ "linked_filter" ] = $structureBlock[ "settings" ][ "linked_filter" ];
+    if ( $structureBlock[ "settings" ][ "linked_filter" ] ?? false ) $widgetSettings[ "linked_filter" ] = $structureBlock[ "settings" ][ "linked_filter" ];
 
 
     /**
@@ -1239,13 +1251,13 @@ function processingBlockType_analyticWidgets ( $structureBlock ) {
             /**
              * Получение значения из списка
              */
-            if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ) === "array" )
+            if ( gettype( $pageDetail[ "row_detail" ][ $stringVariable ] ?? "" ) === "array" )
                 $pageDetail[ "row_detail" ][ $stringVariable ] = $pageDetail[ "row_detail" ][ $stringVariable ][ 0 ]->value;
 
             /**
              * Формирование строки
              */
-            $widgetFilter[ "value" ] = (int) $pageDetail[ "row_detail" ][ $stringVariable ];
+            $widgetFilter[ "value" ] = (int) ( $pageDetail[ "row_detail" ][ $stringVariable ] ?? 0 );
 
         } // if. $widgetFilter[ "value" ][ 0 ] === ":"
 

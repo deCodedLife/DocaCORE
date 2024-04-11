@@ -56,7 +56,7 @@ function localizationText ( $text ) {
     /**
      * Подстановка языка
      */
-    if ( $text[ 0 ] === "=" ) {
+    if ( ($text[ 0 ] ?? "") === "=" ) {
 
         /**
          * Ключ фразы

@@ -184,7 +184,7 @@ foreach ( $objectScheme[ "properties" ] as $property ) {
                 "value" => $joinedTableRow[ "id" ]
             ];
 
-            if ( $property[ "joined_field" ] )
+            if ( key_exists( "joined_field", $property ) )
                 $joinedRow[ "joined_field_value" ] = $joinedTableRow[ $property[ "joined_field" ] ];
 
 

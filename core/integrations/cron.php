@@ -1,6 +1,6 @@
 <?php
 
-if ( count( $argv ) > 1 ) {
+if ( count( $argv ?? [] ) > 1 ) {
 
     $cronTask = $API->DB->from( "cronTasks" )
         ->where( "id", intval( $argv[ 3 ] ) )

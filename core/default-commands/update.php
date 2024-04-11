@@ -32,9 +32,12 @@ $smartListProperties = [];
  */
 
 $isFieldsUpdate = false;
-$logDescription = "Изменены поля: ";
 $logJoinedFieldsDescription = "";
-
+$logDescription = "";
+$logDescriptionUpdate = "Изменены поля: ";
+$logDescriptionAdd = "Добавлены поля: ";
+$hasAdditions = false;
+$hasChanges = false;
 
 /**
  * Получение детальной информации о записи
@@ -427,6 +430,49 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
 
 
     /**
+     * Обработка касомных списков
+     */
+     if ( $schemeProperty[ "custom_list" ] ) {
+
+         foreach ( $schemeProperty[ "custom_list" ] as $item ) {
+
+             if ( $item[ "value" ] == $rowDetail[ $schemeProperty[ "article" ] ] ) {
+
+                 $rowDetail[ $schemeProperty[ "article" ] ] = $item[ "title" ];
+
+             }
+
+             if ( $item[ "value" ] == $updateValues[ $schemeProperty[ "article" ] ] ) {
+
+                 $updateValues[ $schemeProperty[ "article" ] ] = $item[ "title" ];
+
+             }
+
+         }
+
+     }
+
+
+    /**
+     * Форматирование даты
+     */
+    if ( strtotime( $rowDetail[ $schemeProperty[ "article" ] ] ) !== false ) {
+        $formattedDate = date( 'd.m.Y', strtotime( $rowDetail[ $schemeProperty[ "article" ] ] ) );
+        if ( strpos( $rowDetail[ $schemeProperty[ "article" ] ], '00:00:00' ) === false ) {
+            $formattedDate .= date(' H:i', strtotime( $rowDetail[ $schemeProperty[ "article" ] ] ) ); // Если дата содержит время
+        }
+        $rowDetail[ $schemeProperty[ "article" ] ] = $formattedDate;
+    }
+
+    if ( strtotime( $updateValues[ $schemeProperty[ "article" ] ] ) !== false ) {
+        $formattedDate = date( 'd.m.Y', strtotime( $updateValues[ $schemeProperty[ "article" ] ] ) );
+        if ( strpos( $updateValues[ $schemeProperty[ "article" ] ], '00:00:00' ) === false ) {
+            $formattedDate .= date(' H:i', strtotime( $updateValues[ $schemeProperty[ "article" ] ] ) ); // Если дата содержит время
+        }
+        $updateValues[ $schemeProperty[ "article" ] ] = $formattedDate;
+    }
+
+    /**
      * Игнорирование технических данных
      */
     if ( $rowDetail[ $schemeProperty[ "article" ] ] == "Array" ) continue;
@@ -442,13 +488,27 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
 
     if ( $schemeProperty[ "ignoreInLogs" ] ) {
 
-        $logDescription .= $schemeProperty["title"] . ", ";
+        $logDescriptionUpdate .= $schemeProperty["title"] . ", ";
         continue;
     }
 
-    $logDescription .= $schemeProperty[ "title" ] . " с [" . $rowDetail[ $schemeProperty[ "article" ] ] . "] на [" . $updateValues[ $schemeProperty[ "article" ] ] . "], ";
+    if ( $rowDetail[ $schemeProperty[ "article" ] ] == null ) {
+
+        $logDescriptionAdd .= $schemeProperty[ "title" ] . " \"" . $updateValues[ $schemeProperty[ "article" ] ] . "\", ";
+        $hasAdditions = true;
+
+    } else {
+
+        $logDescriptionUpdate .= $schemeProperty[ "title" ] . " с \"" . $rowDetail[ $schemeProperty[ "article" ] ] . "\" на \"" . $updateValues[ $schemeProperty[ "article" ] ] . "\", ";
+        $hasChanges = true;
+    }
+
     
 } // foreach. $objectScheme[ "properties" ]
+
+if ( $hasAdditions ) $logDescription .= $logDescriptionAdd;
+if ( $hasChanges ) $logDescription .= $logDescriptionUpdate;
+
 
 if ( !$isFieldsUpdate ) $logDescription = "Обновлена запись ${objectScheme[ "title" ]}";
 else $logDescription = substr( $logDescription, 0, -2 );

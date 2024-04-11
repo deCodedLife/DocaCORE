@@ -28,7 +28,7 @@ $rowDetail = $rowDetail[ 0 ];
 
 $requestBody = (object) [];
 $requestBody->id = $requestData->row_id;
-$requestBody->context->object = $rowDetail;
+$requestBody->context = (object) [ "object" => $rowDetail ];
 $customCommand = $API->sendRequest( $requestData->scheme_name, "variables", (array) $requestBody );
 $API->mergeObjects( $rowDetail, $customCommand );
 

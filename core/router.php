@@ -120,12 +120,18 @@ if ( !$API->request ) {
             case "object":
             case "command":
 
-                $API->request->$postPropertyKey = $postProperty;
+                $API->request = (object) array_merge(
+                    (array) $API->request,
+                    [ $postPropertyKey => $postProperty ]
+                );
                 break;
 
             default:
 
-                $API->request->data->$postPropertyKey = $postProperty;
+                $API->request->data = (object) array_merge(
+                    (array) $API->request->data,
+                    [ $postPropertyKey => $postProperty ]
+                );
 
         } // switch. $postPropertyKey
 
@@ -192,17 +198,27 @@ else $commandScheme = $userSchemeCommand;
 /**
  * Загрузка схемы объекта
  */
+$objectScheme = $objectScheme ?? [];
+
 if ( is_array( $commandScheme[ "object_scheme" ] ) ) {
-    $objectScheme = [];
+
     foreach ( $commandScheme[ "object_scheme" ] as $scheme ) {
 
-        $objectScheme = array_merge(
-            $objectScheme,
-            $API->loadObjectScheme( $scheme )
+        $objectScheme = $API->mergeProperties(
+            $API->loadObjectScheme( $scheme ),
+            $objectScheme
         );
 
     }
-} else $objectScheme = $API->loadObjectScheme( $commandScheme[ "object_scheme" ] );
+
+} else {
+
+    $objectScheme = $API->mergeProperties(
+        $API->loadObjectScheme( $commandScheme[ "object_scheme" ] ),
+        $objectScheme
+    );
+
+}
 
 /**
  * Пре-обработка тела запроса
