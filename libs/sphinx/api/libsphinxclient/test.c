@@ -3,7 +3,7 @@
 //
 
 //
-// Copyright (c) 2001-2016, Andrew Aksyonoff
+// Copyright (c) 2001-2020, Andrew Aksyonoff
 // Copyright (c) 2008-2016, Sphinx Technologies Inc
 // All rights reserved
 //
@@ -360,7 +360,13 @@ void test_status ( sphinx_client * client )
 	k = 0;
 	for ( i=0; i<num_rows; i++ )
 	{
-		if ( !g_smoke || ( strstr ( status[k], "time" )==NULL && strstr ( status[k], "wall" )==NULL && strstr ( status[k], "wait" )==NULL ) )
+		if ( !g_smoke || 
+		( strstr ( status[k], "time" )==NULL 
+		&& strstr ( status[k], "wall" )==NULL 
+		&& strstr ( status[k], "wait" )==NULL 
+		&& strstr ( status[k], "connect_avg" )==NULL 
+		&& strstr ( status[k], "connect_max")==NULL 
+		&& strstr ( status[k], "connect_count")==NULL ) )
 		{
 			for ( j=0; j<num_cols; j++, k++ )
 				printf ( ( j==0 ) ? "%s:" : " %s", status[k] );
@@ -432,7 +438,6 @@ int main ( int argc, char ** argv )
 	if ( port )
 		sphinx_set_server ( client, "127.0.0.1", port );
 
-	sphinx_set_match_mode ( client, SPH_MATCH_EXTENDED2 );
 	sphinx_set_sort_mode ( client, SPH_SORT_RELEVANCE, NULL );
 
 	// excerpt + keywords
@@ -492,11 +497,6 @@ int main ( int argc, char ** argv )
 	// select
 	title ( "select" );
 	sphinx_set_select ( client, "*, group_id*1000+@id*10 AS q" );
-	test_query ( client, "is", "test1" );
-
-	// override
-	title ( "override" );
-	sphinx_add_override ( client, "group_id", &override_docid, 1, &override_value );
 	test_query ( client, "is", "test1" );
 
 	// group_by (override attr)

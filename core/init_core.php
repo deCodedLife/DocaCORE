@@ -127,6 +127,22 @@ class API {
     } // function. loadScheme
 
 
+    function mergeProperties( $object1, $object2 ): array {
+
+        if ( !$object1 || !$object2 ) return $object1;
+        if ( !$object1[ "properties" ] || !$object2[ "properties" ] ) return $object1;
+
+        $object1[ "properties" ] = array_merge(
+            $object1[ "properties" ],
+            $object2[ "properties" ]
+        );
+
+        return $object1;
+
+    }
+
+
+
     /**
      * Совмещение значений 2-х объектов
      *
@@ -193,8 +209,6 @@ class API {
      * @return string
      */
     public function selectPropertiesHandler( $property, $object, $properties, $exclusion = true ): string {
-
-//        if ( $property == "id" ) return "";
         if ( is_array( $property ) ) {
 
             $handled_properties = [];
@@ -202,6 +216,7 @@ class API {
             foreach ( $property as $item ) {
 
                 $value = $this->selectPropertiesHandler( $item, $object, $properties );
+                if ( $property == "id" ) $value = "№$value";
 
                 if ( empty( $value ) ) continue;
                 if ( $exclusion ) return $value;
@@ -209,7 +224,7 @@ class API {
 
             }
 
-            return join( ", ", $handled_properties );
+            return join( ", ", ( $handled_properties ?? [] ) );
 
         }
         if (
@@ -219,6 +234,7 @@ class API {
         ) return "";
 
         $rowValue = $object[ $property ];
+        if ( $property == "id" ) $rowValue = "№$rowValue";
 
         return $this->typesHandler( (array) $properties[ $property ], $rowValue );
 
@@ -424,7 +440,7 @@ class API {
             $resultScheme[ "table" ] = $objectScheme[ "table" ];
             $resultScheme[ "is_trash" ] = $objectScheme[ "is_trash" ];
 
-            if ( $objectScheme[ "action_buttons" ] )
+            if ( $objectScheme[ "action_buttons" ] ?? false )
                 $resultScheme[ "action_buttons" ] = $objectScheme[ "action_buttons" ];
 
         } // foreach. $objectSchemes
@@ -432,7 +448,7 @@ class API {
         foreach ( $objectSchemes[ "public" ][ "properties" ] as $property )
             $objectSchemeProperties[ $property[ "article" ] ] = $property;
 
-        foreach ( $objectSchemes[ "system" ][ "properties" ] as $property ) {
+        foreach ( ( $objectSchemes[ "system" ][ "properties" ] ?? [] ) as $property ) {
 
             if ( $objectSchemeProperties[ $property[ "article" ] ] ) {
 
@@ -637,13 +653,13 @@ class API {
                  * Проверка обязательных св-в
                  */
 
-                if ( in_array( $command, $objectProperty[ "require_in_commands" ] ) )
+                if ( in_array( $command, $objectProperty[ "require_in_commands" ] ?? [] ) )
                     $this->returnResponse(
                         "Отсутствует обязательное св-во '{$objectProperty[ "title" ]}'",
                         400
                     );
 
-                if ( property_exists( $requestData, $objectProperty[ "article" ] ) )
+                if ( property_exists( $requestData ?? "", $objectProperty[ "article" ] ) )
                     $processedRequest[ $objectProperty[ "article" ] ] = $requestData->{ $objectProperty[ "article" ] };
 
             } else {
@@ -657,7 +673,7 @@ class API {
                 /**
                  * Проверка на использование поля в команде
                  */
-                if ( !in_array( $command, $objectProperty[ "use_in_commands" ] ) ) continue;
+                if ( !in_array( $command, $objectProperty[ "use_in_commands" ] ?? [] ) ) continue;
 
 
                 /**
@@ -1044,7 +1060,7 @@ class API {
              */
             foreach ( $objectScheme[ "properties" ] as $property ) {
 
-                if ( !in_array( "get", $property[ "use_in_commands" ] ) ) continue;
+                if ( !in_array( "get", $property[ "use_in_commands" ] ?? [] ) ) continue;
 
                 /**
                  * Учет select
@@ -1552,7 +1568,7 @@ class API {
                             /**
                              * Преобразования списка объектов в строку
                              */
-                            $collected_array = join( ', ', array_map( fn ( $item ) => $item->title ?? "", $data ) );
+                            $collected_array = join( ', ', ( array_map( fn ( $item ) => $item->title ?? "", $data ?? [] ) ?? [] ) );
                             $excelSheet->setCellValue( $alphabet[ $propertyKey ] . ( $rowKey + 2 ), $collected_array );
 
                         }
@@ -2182,7 +2198,7 @@ class API {
             $filePath = substr( "$path/$file", strpos( "$path/$file", "/uploads" ) );
 
             if ( is_dir( "$path/$file" ) ) continue;
-            elseif ( in_array( $filePath, $currentFiles ) ) continue;
+            elseif ( in_array( $filePath, $currentFiles ?? [] ) ) continue;
             else unlink( "$path/$file" );
 
         } // foreach. $files
@@ -2327,7 +2343,7 @@ class API {
         if ( !$this::$configs[ "settings" ][ "modules" ] ) return false;
 
         foreach ( $modules as $module )
-            if ( !in_array( $module, $this::$configs[ "settings" ][ "modules" ] ) ) return false;
+            if ( !in_array( $module, $this::$configs[ "settings" ][ "modules" ] ?? [] ) ) return false;
 
 
         return true;
@@ -2764,8 +2780,7 @@ class API {
         ) );
 
         $response = json_decode( curl_exec( $curl ) );
-
-
+        
         if ( !$response ) return false;
 
         if ( !$is_full_response ) return $response->data;

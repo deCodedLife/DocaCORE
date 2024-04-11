@@ -4,7 +4,7 @@
  * Java version of Sphinx searchd client (Java API)
  *
  * Copyright (c) 2007, Vladimir Fedorkov
- * Copyright (c) 2007-2016, Andrew Aksyonoff
+ * Copyright (c) 2001-2020, Andrew Aksyonoff
  * Copyright (c) 2008-2016, Sphinx Technologies Inc
  * All rights reserved
  *
@@ -38,18 +38,9 @@ import java.net.SocketAddress.*;
 /** Sphinx client class */
 public class SphinxClient
 {
-	/* matching modes */
-	public final static int SPH_MATCH_ALL			= 0;
-	public final static int SPH_MATCH_ANY			= 1;
-	public final static int SPH_MATCH_PHRASE		= 2;
-	public final static int SPH_MATCH_BOOLEAN		= 3;
-	public final static int SPH_MATCH_EXTENDED		= 4;
-	public final static int SPH_MATCH_FULLSCAN		= 5;
-	public final static int SPH_MATCH_EXTENDED2		= 6;
-
 	/* ranking modes (extended2 only) */
-	public final static int SPH_RANK_PROXIMITY_BM25	= 0;
-	public final static int SPH_RANK_BM25			= 1;
+	public final static int SPH_RANK_PROXIMITY_BM15	= 0;
+	public final static int SPH_RANK_BM15			= 1;
 	public final static int SPH_RANK_NONE			= 2;
 	public final static int SPH_RANK_WORDCOUNT		= 3;
 	public final static int SPH_RANK_PROXIMITY		= 4;
@@ -65,7 +56,6 @@ public class SphinxClient
 	public final static int SPH_SORT_ATTR_ASC		= 2;
 	public final static int SPH_SORT_TIME_SEGMENTS	= 3;
 	public final static int SPH_SORT_EXTENDED		= 4;
-	public final static int SPH_SORT_EXPR			= 5;
 
 	/* grouping functions */
 	public final static int SPH_GROUPBY_DAY			= 0;
@@ -83,8 +73,6 @@ public class SphinxClient
 
 	/* attribute types */
 	public final static int SPH_ATTR_INTEGER		= 1;
-	public final static int SPH_ATTR_TIMESTAMP		= 2;
-	public final static int SPH_ATTR_ORDINAL		= 3;
 	public final static int SPH_ATTR_BOOL			= 4;
 	public final static int SPH_ATTR_FLOAT			= 5;
 	public final static int SPH_ATTR_BIGINT			= 6;
@@ -121,8 +109,6 @@ public class SphinxClient
 
 	private int			_offset;
 	private int			_limit;
-	private int			_mode;
-	private int[]		_weights;
 	private int			_sort;
 	private String		_sortby;
 	private int			_minId;
@@ -138,10 +124,6 @@ public class SphinxClient
 	private int			_cutoff;
 	private int			_retrycount;
 	private int			_retrydelay;
-	private String		_latitudeAttr;
-	private String		_longitudeAttr;
-	private float		_latitude;
-	private float		_longitude;
 
 	private String		_error;
 	private String		_warning;
@@ -154,8 +136,6 @@ public class SphinxClient
 	private String		_rankexpr;
 	private int			_maxQueryTime;
 	private Map			_fieldWeights;
-	private Map			_overrideTypes;
-	private Map			_overrideValues;
 	private String		_select;
 
 	/** Creates a new SphinxClient instance. */
@@ -174,7 +154,6 @@ public class SphinxClient
 
 		_offset	= 0;
 		_limit	= 20;
-		_mode	= SPH_MATCH_EXTENDED2;
 		_sort	= SPH_SORT_RELEVANCE;
 		_sortby	= "";
 		_minId	= 0;
@@ -194,25 +173,17 @@ public class SphinxClient
 		_retrycount		= 0;
 		_retrydelay		= 0;
 
-		_latitudeAttr	= null;
-		_longitudeAttr	= null;
-		_latitude		= 0;
-		_longitude		= 0;
-
 		_error			= "";
 		_warning		= "";
 		_connerror		= false;
 		_timeout		= 1000;
 
 		_reqs			= new ArrayList();
-		_weights		= null;
 		_indexWeights	= new LinkedHashMap();
 		_fieldWeights	= new LinkedHashMap();
-		_ranker			= SPH_RANK_PROXIMITY_BM25;
+		_ranker			= SPH_RANK_PROXIMITY_BM15;
 		_rankexpr		= "";
 
-		_overrideTypes	= new LinkedHashMap();
-		_overrideValues	= new LinkedHashMap();
 		_select			= "*";
 	}
 
@@ -506,21 +477,6 @@ public class SphinxClient
 		_maxQueryTime = maxTime;
 	}
 
-	/** Set matching mode. DEPRECATED */
-	public void SetMatchMode(int mode) throws SphinxException
-	{
-		System.out.println ( "DEPRECATED: Do not call this method or, even better, use SphinxQL instead of an API\n" );
-		myAssert (
-			mode==SPH_MATCH_ALL ||
-			mode==SPH_MATCH_ANY ||
-			mode==SPH_MATCH_PHRASE ||
-			mode==SPH_MATCH_BOOLEAN ||
-			mode==SPH_MATCH_EXTENDED ||
-			mode==SPH_MATCH_FULLSCAN ||
-			mode==SPH_MATCH_EXTENDED2, "unknown mode value; use one of the SPH_MATCH_xxx constants" );
-		_mode = mode;
-	}
-
 	/** Set ranking mode. */
 	public void SetRankingMode ( int ranker, String rankexpr ) throws SphinxException
 	{
@@ -537,23 +493,11 @@ public class SphinxClient
 			mode==SPH_SORT_ATTR_DESC ||
 			mode==SPH_SORT_ATTR_ASC ||
 			mode==SPH_SORT_TIME_SEGMENTS ||
-			mode==SPH_SORT_EXTENDED ||
-			mode==SPH_SORT_EXPR, "unknown mode value; use one of the available SPH_SORT_xxx constants" );
+			mode==SPH_SORT_EXTENDED, "unknown mode value; use one of the available SPH_SORT_xxx constants" );
 		myAssert ( mode==SPH_SORT_RELEVANCE || ( sortby!=null && sortby.length()>0 ), "sortby string must not be empty in selected mode" );
 
 		_sort = mode;
 		_sortby = ( sortby==null ) ? "" : sortby;
-	}
-
-	/** Set per-field weights (all values must be positive). WARNING: DEPRECATED, use SetFieldWeights() instead. */
-	public void SetWeights(int[] weights) throws SphinxException
-	{
-		myAssert ( weights!=null, "weights must not be null" );
-		for (int i = 0; i < weights.length; i++) {
-			int weight = weights[i];
-			myAssert ( weight>0, "all weights must be greater than 0" );
-		}
-		_weights = weights;
 	}
 
 	/**
@@ -642,7 +586,7 @@ public class SphinxClient
 		SetFilter ( attribute, values, exclude );
 	}
 
-	/** Set integer range filter.  Only match records if attribute value is beetwen min and max (inclusive). */
+	/** Set integer range filter.  Only match records if attribute value is between min and max (inclusive). */
 	public void SetFilterRange ( String attribute, long min, long max, boolean exclude ) throws SphinxException
 	{
 		myAssert ( min<=max, "min must be less or equal to max" );
@@ -661,13 +605,13 @@ public class SphinxClient
 		_filterCount++;
 	}
 
-	/** Set integer range filter.  Only match records if attribute value is beetwen min and max (inclusive). */
+	/** Set integer range filter.  Only match records if attribute value is between min and max (inclusive). */
 	public void SetFilterRange ( String attribute, int min, int max, boolean exclude ) throws SphinxException
 	{
 		SetFilterRange ( attribute, (long)min, (long)max, exclude );
 	}
 
-	/** Set float range filter.  Only match records if attribute value is beetwen min and max (inclusive). */
+	/** Set float range filter.  Only match records if attribute value is between min and max (inclusive). */
 	public void SetFilterFloatRange ( String attribute, float min, float max, boolean exclude ) throws SphinxException
 	{
 		myAssert ( min<=max, "min must be less or equal to max" );
@@ -683,18 +627,6 @@ public class SphinxClient
 			myAssert ( false, "IOException: " + e.getMessage() );
 		}
 		_filterCount++;
-	}
-
-	/** Setup geographical anchor point. Required to use @geodist in filters and sorting; distance will be computed to this point. */
-	public void SetGeoAnchor ( String latitudeAttr, String longitudeAttr, float latitude, float longitude ) throws SphinxException
-	{
-		myAssert ( latitudeAttr!=null && latitudeAttr.length()>0, "longitudeAttr string must not be null or empty" );
-		myAssert ( longitudeAttr!=null && longitudeAttr.length()>0, "longitudeAttr string must not be null or empty" );
-
-		_latitudeAttr = latitudeAttr;
-		_longitudeAttr = longitudeAttr;
-		_latitude = latitude;
-		_longitude = longitude;
 	}
 
 	/** Set grouping attribute and function. */
@@ -740,20 +672,6 @@ public class SphinxClient
 		SetRetries ( count, 0 );
 	}
 
-	/**
-	 * DEPRECATED: Set attribute values override (one override list per attribute).
-	 * @param values maps Long document IDs to Int/Long/Float values (as specified in attrtype).
-	 */
-	public void SetOverride ( String attrname, int attrtype, Map values ) throws SphinxException
-	{
-		System.out.println ( "DEPRECATED: Do not call this method. Use SphinxQL REMAP() function instead.\n" );
-		myAssert ( attrname!=null && attrname.length()>0, "attrname must not be empty" );
-		myAssert ( attrtype==SPH_ATTR_INTEGER || attrtype==SPH_ATTR_TIMESTAMP || attrtype==SPH_ATTR_BOOL || attrtype==SPH_ATTR_FLOAT || attrtype==SPH_ATTR_BIGINT,
-			"unsupported attrtype (must be one of INTEGER, TIMESTAMP, BOOL, FLOAT, or BIGINT)" );
-		_overrideTypes.put ( attrname, new Integer ( attrtype ) );
-		_overrideValues.put ( attrname, values );
-	}
-
 	/** Set select-list (attributes or expressions), SQL-like syntax. */
 	public void SetSelect ( String select ) throws SphinxException
 	{
@@ -770,12 +688,6 @@ public class SphinxClient
 		_rawFilters = new ByteArrayOutputStream();
 		_filters = new DataOutputStream(_rawFilters);
 		_filterCount = 0;
-
-		/* reset GEO anchor */
-		_latitudeAttr = null;
-		_longitudeAttr = null;
-		_latitude = 0;
-		_longitude = 0;
 	}
 
 	/** Clear groupby settings (for multi-queries). */
@@ -786,13 +698,6 @@ public class SphinxClient
 		_groupSort = "@group desc";
 		_groupDistinct = "";
 	}
-
-	/** Clear all attribute value overrides (for multi-queries). */
-	public void ResetOverrides ()
-    {
-		_overrideTypes.clear ();
-		_overrideValues.clear ();
-    }
 
 
 
@@ -837,7 +742,7 @@ public class SphinxClient
 			DataOutputStream out = new DataOutputStream(req);
 			out.writeInt(_offset);
 			out.writeInt(_limit);
-			out.writeInt(_mode);
+			out.writeInt(6); // legacy match_mode extended2
 			out.writeInt(_ranker);
 			if ( _ranker == SPH_RANK_EXPR ) {
 				writeNetUTF8(out, _rankexpr);
@@ -845,14 +750,7 @@ public class SphinxClient
 			out.writeInt(_sort);
 			writeNetUTF8(out, _sortby);
 			writeNetUTF8(out, query);
-			int weightLen = _weights != null ? _weights.length : 0;
-
-			out.writeInt(weightLen);
-			if (_weights != null) {
-				for (int i = 0; i < _weights.length; i++)
-					out.writeInt(_weights[i]);
-			}
-
+			out.writeInt(0); // legacy num_unordered_weights
 			writeNetUTF8(out, index);
 			out.writeInt(0);
 			out.writeInt(_minId);
@@ -874,17 +772,8 @@ public class SphinxClient
 
 			writeNetUTF8(out, _groupDistinct);
 
-			/* anchor point */
-			if (_latitudeAttr == null || _latitudeAttr.length() == 0 || _longitudeAttr == null || _longitudeAttr.length() == 0) {
-				out.writeInt(0);
-			} else {
-				out.writeInt(1);
-				writeNetUTF8(out, _latitudeAttr);
-				writeNetUTF8(out, _longitudeAttr);
-				out.writeFloat(_latitude);
-				out.writeFloat(_longitude);
-
-			}
+			/* geoanchor */
+			out.writeInt(0);
 
 			/* per-index weights */
 			out.writeInt(_indexWeights.size());
@@ -912,29 +801,7 @@ public class SphinxClient
 			writeNetUTF8 ( out, comment );
 
 			/* overrides */
-			out.writeInt ( _overrideTypes.size() );
-			for ( Iterator e=_overrideTypes.keySet().iterator(); e.hasNext(); )
-			{
-				String attr = (String) e.next();
-				Integer type = (Integer) _overrideTypes.get ( attr );
-				Map values = (Map) _overrideValues.get ( attr );
-
-				writeNetUTF8 ( out, attr );
-				out.writeInt ( type.intValue() );
-				out.writeInt ( values.size() );
-
-				for ( Iterator e2=values.keySet().iterator(); e2.hasNext(); )
-				{
-					Long id = (Long) e2.next ();
-					out.writeLong ( id.longValue() );
-					switch ( type.intValue() )
-					{
-						case SPH_ATTR_FLOAT:	out.writeFloat ( ( (Float) values.get ( id ) ).floatValue() ); break;
-						case SPH_ATTR_BIGINT:	out.writeLong ( ( (Long)values.get ( id ) ).longValue() ); break;
-						default:				out.writeInt ( ( (Integer)values.get ( id ) ).intValue() ); break;
-					}
-				}
-			}
+			out.writeInt ( 0 );
 
 			/* select-list */
 			writeNetUTF8 ( out, _select );

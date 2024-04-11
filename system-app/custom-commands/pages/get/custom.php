@@ -138,7 +138,7 @@ function generateStructureBlock ( $structureBlock ) {
         "components" => []
     ];
 
-    if ( $structureBlock[ "hook" ] ) $responseBlock[ "hook" ] = $structureBlock[ "hook" ];
+    if ( $structureBlock[ "hook" ] ?? false ) $responseBlock[ "hook" ] = $structureBlock[ "hook" ];
 
 
     /**
@@ -245,7 +245,7 @@ function generateStructureBlock ( $structureBlock ) {
              * Получение типа команды формы
              */
 
-            if ( $formStructure[ "command_type" ] ) {
+            if ( $formStructure[ "command_type" ] ?? false ) {
 
                 $responseBlock[ "settings" ][ "command_type" ] = $formStructure[ "command_type" ];
 
@@ -295,7 +295,7 @@ function generateStructureBlock ( $structureBlock ) {
                 } // if. !$API->validatePermissions( $tab[ "required_permissions" ] )
                 
 
-                if ( !array_key_exists( "is_visible", $tab[ "settings" ] ) )
+                if ( !array_key_exists( "is_visible", $tab[ "settings" ] ?? [] ) )
                     $structureBlock[ "settings" ][ $tabKey ][ "settings" ][ "is_visible" ] = true;
 
 
@@ -303,7 +303,7 @@ function generateStructureBlock ( $structureBlock ) {
                  * Обработка счетчика
                  */
 
-                if ( $tab[ "is_counter" ] ) {
+                if ( $tab[ "is_counter" ] ?? false ) {
 
                     /**
                      * Счетчик таба
@@ -464,7 +464,7 @@ function generateStructureBlock ( $structureBlock ) {
      * Обход типов компонентов
      */
 
-    foreach ( $structureBlock[ "components" ] as $structureComponentType => $structureComponents ) {
+    foreach ( ( $structureBlock[ "components" ] ?? [] ) as $structureComponentType => $structureComponents ) {
 
         /**
          * Обработка одиночных компонентов
@@ -510,7 +510,7 @@ function generateStructureBlock ( $structureBlock ) {
                 "settings" => $structureComponent[ "settings" ]
             ];
 
-            if ( $structureComponent[ "placeholder" ] )
+            if ( ( $structureComponent[ "placeholder" ] ?? false ) )
                 $responseComponent[ "placeholder" ] = $structureComponent[ "placeholder" ];
 
 
@@ -966,7 +966,17 @@ if ( $pageDetail[ "section" ] == "profile" ) {
 
 }
 
-if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
+if ( $requestData->context->type == "import" ) {
+
+    $pageDetail[ "row_detail" ] = (array) $API->sendRequest(
+        $requestObject,
+        "import_headers",
+        $requestData->context,
+        $_SERVER[ "SERVER_NAME" ]
+    )[ 0 ];
+
+} else if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] ) {
+
     $pageDetail[ "row_detail" ] = (array) $API->sendRequest(
         $requestObject,
         "get",
@@ -974,13 +984,23 @@ if ( $pageDetail[ "row_id" ] && $pageDetail[ "section" ] )
         $_SERVER[ "SERVER_NAME" ]
     )[ 0 ];
 
-if ( $pageDetail[ "section" ] === "settings" )
+}
+
+
+if ( $pageDetail[ "section" ] === "settings" ) {
+
+    $data = [];
+    if ( $requestData->context ) $data[ "context" ] = $requestData->context;
+
     $pageDetail[ "row_detail" ] = (array) $API->sendRequest(
         "settings",
         "get",
-        [],
+        $data,
         $_SERVER[ "SERVER_NAME" ]
     );
+
+}
+
 
 //$API->returnResponse( $pageDetail );
 /**

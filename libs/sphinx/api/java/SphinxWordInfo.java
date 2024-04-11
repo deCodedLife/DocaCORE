@@ -13,7 +13,7 @@ public class SphinxWordInfo
 	/** Total amount of matching documents in collection. */
 	public long		docs;
 
-	/** Total amount of hits (occurences) in collection. */
+	/** Total amount of hits (occurrences) in collection. */
 	public long		hits;
 
 	/** Trivial constructor. */

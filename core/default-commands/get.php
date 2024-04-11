@@ -51,9 +51,17 @@ foreach ( $requestData->select as $property ) {
 
 }
 $selectProperties = array_unique( $selectProperties );
+$requestData->select = array_map( function( $item ) {
+    if ( is_array( $item) ) return join( "", $item );
+    else return $item;
+}, $requestData->select ?? [] );
 
+foreach ( ( $API->request->data->select ?? [] ) as $property => $value ) {
 
-$requestData->select = array_map( fn( $item ) => join( "", $item ), $requestData->select );
+    if ( is_array( $value ) ) continue;
+    $API->request->data->select[ $property ] =  [ $value ];
+
+}
 
 
 /**
@@ -191,11 +199,13 @@ try {
 
 
     if ( $requestSettings[ "join_filter" ] ) $requestSettings[ "filter" ][ "id" ] = $joinFilterRows;
+    $selectProperties = array_unique( $selectProperties );
 
     foreach ( $selectProperties as $key => $property ) {
 
         if ( !in_array( $property, array_keys( $propertyList ) ) ) continue;
         if ( !key_exists( "join", $propertyList[ $property ] ) && $propertyList[ $property ][ "is_autofill" ] ) continue;
+        if ( $property == "id" ) continue;
         unset( $selectProperties[ $key ] );
 
     }

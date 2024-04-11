@@ -1,3 +1,0 @@
-rd rd > rdrd
-man > nam nam
-intel e8500 > core 22 duo

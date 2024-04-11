@@ -32,16 +32,16 @@ function processingComponentType_filter ( $structureComponent ) {
     /**
      * Фиксированные значения фильтра
      */
-    if ( $structureComponent[ "settings" ][ "list" ] ) return $structureComponent[ "settings" ][ "list" ];
+    if ( ( $structureComponent[ "settings" ][ "list" ] ?? false ) ) return $structureComponent[ "settings" ][ "list" ];
 
 
     /**
      * Проверка обязательных параметров
      */
     if (
-        !$structureComponent[ "settings" ][ "donor_object" ] ||
-        !$structureComponent[ "settings" ][ "donor_property_title" ] ||
-        !$structureComponent[ "settings" ][ "donor_property_value" ]
+        !( $structureComponent[ "settings" ][ "donor_object" ] ?? false ) ||
+        !( $structureComponent[ "settings" ][ "donor_property_title" ] ?? false ) ||
+        !( $structureComponent[ "settings" ][ "donor_property_value" ] ?? false )
     ) return [];
 
 
@@ -66,9 +66,9 @@ function processingComponentType_filter ( $structureComponent ) {
     $request[ "context" ][ "block" ] = "select";
     $request[ "limit" ] = 100;
 
-    if ( $structureComponent[ "settings" ][ "select" ] ) $request[ "select" ] = $structureComponent[ "settings" ][ "select" ];
+    if ( ( $structureComponent[ "settings" ][ "select" ] ?? false ) ) $request[ "select" ] = $structureComponent[ "settings" ][ "select" ];
     else $structureComponent[ "settings" ][ "select" ] = $request[ "select" ] = $structureComponent[ "settings" ][ "donor_property_title" ];
-    if ( $structureComponent[ "settings" ][ "select_menu" ] ) $request[ "select_menu" ] = $structureComponent[ "settings" ][ "select_menu" ];
+    if ( ( $structureComponent[ "settings" ][ "select_menu" ] ?? false ) ) $request[ "select_menu" ] = $structureComponent[ "settings" ][ "select_menu" ];
 
     $donorRows = $API->DB->from( $structureComponent[ "settings" ][ "donor_object" ] );
     if ( $objectScheme[ "is_trash" ] ) $donorRows->where( "is_active", "Y" );
@@ -80,7 +80,7 @@ function processingComponentType_filter ( $structureComponent ) {
 
     if (
         $structureComponent[ "settings" ][ "recipient_property" ] &&
-        $objectProperties[ $structureComponent[ "settings" ][ "recipient_property" ] ][ "list_donor" ][ "multiply_filter" ]
+        ( $objectProperties[ $structureComponent[ "settings" ][ "recipient_property" ] ][ "list_donor" ][ "multiply_filter" ] ?? false )
     ) {
 
         foreach ( $objectProperties[ $structureComponent[ "settings" ][ "recipient_property" ] ][ "list_donor" ][ "multiply_filter" ] as $filterArticle => $filterValues ) {
@@ -97,6 +97,8 @@ function processingComponentType_filter ( $structureComponent ) {
 
 
     $request[ "id" ] = $ids ?? [ 0 ];
+
+    if ( $structureComponent[ "settings" ][ "is_search" ] ) return [];
 
     $donorRows = $API->sendRequest( $structureComponent[ "settings" ][ "donor_object" ], "get", $request );
     $filterList = (array) $donorRows;

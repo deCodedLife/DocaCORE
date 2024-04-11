@@ -3,7 +3,7 @@
 //
 
 //
-// Copyright (c) 2001-2016, Andrew Aksyonoff
+// Copyright (c) 2001-2020, Andrew Aksyonoff
 // Copyright (c) 2008-2016, Sphinx Technologies Inc
 // All rights reserved
 //
@@ -34,23 +34,11 @@ enum
 	SEARCHD_WARNING			= 3
 };
 
-/// known match modes
-enum
-{
-	SPH_MATCH_ALL			= 0,
-	SPH_MATCH_ANY			= 1,
-	SPH_MATCH_PHRASE		= 2,
-	SPH_MATCH_BOOLEAN		= 3,
-	SPH_MATCH_EXTENDED		= 4,
-	SPH_MATCH_FULLSCAN		= 5,
-	SPH_MATCH_EXTENDED2		= 6
-};
-
 /// known ranking modes (ext2 only)
 enum
 {
-	SPH_RANK_PROXIMITY_BM25	= 0,
-	SPH_RANK_BM25			= 1,
+	SPH_RANK_PROXIMITY_BM15	= 0,
+	SPH_RANK_BM15			= 1,
 	SPH_RANK_NONE			= 2,
 	SPH_RANK_WORDCOUNT		= 3,
 	SPH_RANK_PROXIMITY		= 4,
@@ -61,7 +49,7 @@ enum
 	SPH_RANK_TOTAL			= 9,
 
 
-	SPH_RANK_DEFAULT		= SPH_RANK_PROXIMITY_BM25
+	SPH_RANK_DEFAULT		= SPH_RANK_PROXIMITY_BM15
 };
 
 /// known sort modes
@@ -71,8 +59,7 @@ enum
 	SPH_SORT_ATTR_DESC		= 1,
 	SPH_SORT_ATTR_ASC		= 2,
 	SPH_SORT_TIME_SEGMENTS	= 3,
-	SPH_SORT_EXTENDED		= 4,
-	SPH_SORT_EXPR			= 5
+	SPH_SORT_EXTENDED		= 4
 };
 
 /// known filter types
@@ -87,8 +74,6 @@ enum
 enum
 {
 	SPH_ATTR_INTEGER		= 1,
-	SPH_ATTR_TIMESTAMP		= 2,
-	SPH_ATTR_ORDINAL		= 3,
 	SPH_ATTR_BOOL			= 4,
 	SPH_ATTR_FLOAT			= 5,
 	SPH_ATTR_BIGINT			= 6,
@@ -209,7 +194,6 @@ sphinx_bool					sphinx_close					( sphinx_client * client );
 
 sphinx_bool					sphinx_set_limits				( sphinx_client * client, int offset, int limit, int max_matches, int cutoff );
 sphinx_bool					sphinx_set_max_query_time		( sphinx_client * client, int max_query_time );
-sphinx_bool					sphinx_set_match_mode			( sphinx_client * client, int mode );
 sphinx_bool					sphinx_set_ranking_mode			( sphinx_client * client, int ranker, const char * rankexpr );
 sphinx_bool					sphinx_set_sort_mode			( sphinx_client * client, int mode, const char * sortby );
 sphinx_bool					sphinx_set_field_weights		( sphinx_client * client, int num_weights, const char ** field_names, const int * field_weights );
@@ -220,11 +204,9 @@ sphinx_bool					sphinx_add_filter				( sphinx_client * client, const char * attr
 sphinx_bool					sphinx_add_filter_string		( sphinx_client * client, const char * attr, const char * value, sphinx_bool exclude );
 sphinx_bool					sphinx_add_filter_range			( sphinx_client * client, const char * attr, sphinx_int64_t umin, sphinx_int64_t umax, sphinx_bool exclude );
 sphinx_bool					sphinx_add_filter_float_range	( sphinx_client * client, const char * attr, float fmin, float fmax, sphinx_bool exclude );
-sphinx_bool					sphinx_set_geoanchor			( sphinx_client * client, const char * attr_latitude, const char * attr_longitude, float latitude, float longitude );
 sphinx_bool					sphinx_set_groupby				( sphinx_client * client, const char * attr, int groupby_func, const char * group_sort );
 sphinx_bool					sphinx_set_groupby_distinct		( sphinx_client * client, const char * attr );
 sphinx_bool					sphinx_set_retries				( sphinx_client * client, int count, int delay );
-sphinx_bool					sphinx_add_override				( sphinx_client * client, const char * attr, const sphinx_uint64_t * docids, int num_values, const unsigned int * values );
 sphinx_bool					sphinx_set_select				( sphinx_client * client, const char * select_list );
 
 sphinx_bool					sphinx_set_query_flags			( sphinx_client * client, const char * flag_name, sphinx_bool enabled, int max_predicted_msec );

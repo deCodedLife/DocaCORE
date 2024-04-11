@@ -13,8 +13,8 @@ $docs = array
 	"test number three, without phrase match",
 	"final test, not only without phrase match, but also above limit and with swapped phrase text test as well",
 );
-$words = "мой";
-$index = "author";
+$words = "test text";
+$index = "test1";
 $opts = array
 (
 	"before_match"		=> "<b>",

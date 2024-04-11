@@ -12,7 +12,7 @@ package org.sphx.api;
  */
 public class SphinxResult
 {
-	/** Full-text field namess. */
+	/** Full-text field names. */
 	public String[]			fields;
 
 	/** Attribute names. */

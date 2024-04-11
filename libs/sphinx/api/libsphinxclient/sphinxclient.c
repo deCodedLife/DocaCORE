@@ -3,7 +3,7 @@
 //
 
 //
-// Copyright (c) 2001-2016, Andrew Aksyonoff
+// Copyright (c) 2001-2020, Andrew Aksyonoff
 // Copyright (c) 2008-2016, Sphinx Technologies Inc
 // All rights reserved
 //
@@ -115,15 +115,6 @@ union un_attr_value
 };
 
 
-struct st_override
-{
-	const char *			attr;
-	const sphinx_uint64_t *	docids;
-	int						num_values;
-	const unsigned int *	uint_values;
-};
-
-
 struct st_sphinx_client
 {
 	unsigned short			ver_search;				///< compatibility mode
@@ -139,7 +130,6 @@ struct st_sphinx_client
 	float					timeout;
 	int						offset;
 	int						limit;
-	int						mode;
 	int						num_weights;
 	const int *				weights;
 	int						sort;
@@ -154,10 +144,6 @@ struct st_sphinx_client
 	int						cutoff;
 	int						retry_count;
 	int						retry_delay;
-	const char *			geoanchor_attr_lat;
-	const char *			geoanchor_attr_long;
-	float					geoanchor_lat;
-	float					geoanchor_long;
 	int						num_filters;
 	int						max_filters;
 	struct st_filter *		filters;
@@ -170,9 +156,6 @@ struct st_sphinx_client
 	int						num_field_weights;
 	const char **			field_weights_names;
 	const int *				field_weights_values;
-	int						num_overrides;
-	int						max_overrides;
-	struct st_override *	overrides;
 	const char *			select_list;
 	int						query_flags;
 	int						predicted_time;
@@ -228,7 +211,6 @@ sphinx_client * sphinx_create ( sphinx_bool copy_args )
 	client->timeout					= 0.0f;
 	client->offset					= 0;
 	client->limit					= 20;
-	client->mode					= SPH_MATCH_EXTENDED2;
 	client->num_weights				= 0;
 	client->weights					= NULL;
 	client->sort					= SPH_SORT_RELEVANCE;
@@ -243,10 +225,6 @@ sphinx_client * sphinx_create ( sphinx_bool copy_args )
 	client->cutoff					= 0;
 	client->retry_count				= 0;
 	client->retry_delay				= 0;
-	client->geoanchor_attr_lat		= NULL;
-	client->geoanchor_attr_long		= NULL;
-	client->geoanchor_lat			= 0.0f;
-	client->geoanchor_long			= 0.0f;
 	client->num_filters				= 0;
 	client->max_filters				= 0;
 	client->filters					= NULL;
@@ -259,9 +237,6 @@ sphinx_client * sphinx_create ( sphinx_bool copy_args )
 	client->num_field_weights		= 0;
 	client->field_weights_names		= NULL;
 	client->field_weights_values	= NULL;
-	client->num_overrides			= 0;
-	client->max_overrides			= 0;
-	client->overrides				= NULL;
 	client->select_list				= NULL;
 	client->query_flags				= 1<<6;
 	client->predicted_time			= 0;
@@ -529,25 +504,10 @@ sphinx_bool sphinx_set_max_query_time ( sphinx_client * client, int max_query_ti
 	return SPH_TRUE;
 }
 
-// DEPRECATED
-sphinx_bool sphinx_set_match_mode ( sphinx_client * client, int mode )
-{
-	fprintf ( stderr, "DEPRECATED: Do not call this method or, even better, use SphinxQL instead of an API\n" );
-
-	if ( !client || mode<SPH_MATCH_ALL || mode>SPH_MATCH_EXTENDED2 ) // FIXME?
-	{
-		set_error ( client, "invalid arguments (matching mode %d out of bounds)", mode );
-		return SPH_FALSE;
-	}
-
-	client->mode = mode;
-	return SPH_TRUE;
-}
-
 
 sphinx_bool sphinx_set_ranking_mode ( sphinx_client * client, int ranker, const char * rankexpr )
 {
-	if ( !client || ranker<SPH_RANK_PROXIMITY_BM25 || ranker>=SPH_RANK_TOTAL ) // FIXME?
+	if ( !client || ranker<SPH_RANK_PROXIMITY_BM15 || ranker>=SPH_RANK_TOTAL ) // FIXME?
 	{
 		set_error ( client, "invalid arguments (ranking mode %d out of bounds)", ranker );
 		return SPH_FALSE;
@@ -563,10 +523,10 @@ sphinx_bool sphinx_set_sort_mode ( sphinx_client * client, int mode, const char 
 {
 	if ( !client
 		|| mode<SPH_SORT_RELEVANCE
-		|| mode>SPH_SORT_EXPR
+		|| mode>SPH_SORT_EXTENDED
 		|| ( mode!=SPH_SORT_RELEVANCE && ( !sortby || !sortby[0] ) ) )
 	{
-		if ( mode<SPH_SORT_RELEVANCE || mode>SPH_SORT_EXPR )
+		if ( mode<SPH_SORT_RELEVANCE || mode>SPH_SORT_EXTENDED )
 		{
 			set_error ( client, "invalid arguments (sorting mode %d out of bounds)", mode );
 
@@ -786,26 +746,6 @@ sphinx_bool sphinx_add_filter_float_range ( sphinx_client * client, const char *
 }
 
 
-sphinx_bool sphinx_set_geoanchor ( sphinx_client * client, const char * attr_latitude, const char * attr_longitude, float latitude, float longitude )
-{
-	if ( !client || !attr_latitude || !attr_latitude[0] || !attr_longitude || !attr_longitude[0] )
-	{
-		if ( !attr_latitude || !attr_latitude[0] )			set_error ( client, "invalid arguments (attr_latitude must not be empty)" );
-		else if ( !attr_longitude || !attr_longitude[0] )	set_error ( client, "invalid arguments (attr_longitude must not be empty)" );
-		else												set_error ( client, "invalid arguments" );
-		return SPH_FALSE;
-	}
-
-	unchain ( client, client->geoanchor_attr_lat );
-	unchain ( client, client->geoanchor_attr_long );
-	client->geoanchor_attr_lat = strchain ( client, attr_latitude );
-	client->geoanchor_attr_long = strchain ( client, attr_longitude );
-	client->geoanchor_lat = latitude;
-	client->geoanchor_long = longitude;
-	return SPH_TRUE;
-}
-
-
 sphinx_bool sphinx_set_groupby ( sphinx_client * client, const char * attr, int groupby_func, const char * group_sort )
 {
 	if ( !client || !attr || groupby_func<SPH_GROUPBY_DAY || groupby_func>SPH_GROUPBY_ATTRPAIR )
@@ -861,38 +801,6 @@ sphinx_bool sphinx_set_retries ( sphinx_client * client, int count, int delay )
 
 	client->retry_count = count;
 	client->retry_delay = delay;
-	return SPH_TRUE;
-}
-
-// DEPRECATED
-sphinx_bool sphinx_add_override ( sphinx_client * client, const char * attr, const sphinx_uint64_t * docids, int num_values, const unsigned int * values )
-{
-	struct st_override * p;
-
-	fprintf ( stderr, "DEPRECATED: Do not call this method. Use SphinxQL REMAP() function instead.\n" );
-
-	if ( !client )
-		return SPH_FALSE;
-
-	if ( client->ver_search<0x115 )
-	{
-		set_error ( client, "sphinx_add_override not supported by chosen protocol version" );
-		return SPH_FALSE;
-	}
-
-	if ( client->num_overrides>=client->max_overrides )
-	{
-		client->max_overrides = ( client->max_overrides<=0 ) ? 8 : 2*client->max_overrides;
-		client->overrides = realloc ( client->overrides, client->max_overrides *sizeof(struct st_override) );
-	}
-
-	p = client->overrides + client->num_overrides;
-	client->num_overrides++;
-
-	p->attr = strchain ( client, attr );
-	p->docids = chain ( client, docids, sizeof(sphinx_uint64_t)*num_values );
-	p->num_values = num_values;
-	p->uint_values = chain ( client, values, sizeof(unsigned int)*num_values );
 	return SPH_TRUE;
 }
 
@@ -1132,9 +1040,6 @@ static int calc_req_len ( sphinx_client * client, const char * query, const char
 		}
 	}
 
-	if ( client->geoanchor_attr_lat && client->geoanchor_attr_long )
-		res += 16 + safestrlen ( client->geoanchor_attr_lat ) + safestrlen ( client->geoanchor_attr_long ); // string lat-attr, long-attr; float lat, long
-
 	for ( i=0; i<client->num_index_weights; i++ )
 		res += 8 + safestrlen ( client->index_weights_names[i] ); // string index-name; int index-weight
 
@@ -1142,14 +1047,7 @@ static int calc_req_len ( sphinx_client * client, const char * query, const char
 		res += 8 + safestrlen ( client->field_weights_names[i] ); // string field-name; int field-weight
 
 	if ( client->ver_search>=0x115 )
-	{
 		res += 4; // int overrides-count
-		for ( i=0; i<client->num_overrides; i++ )
-		{
-			res += 8 + safestrlen ( client->overrides[i].attr ); // string attr, int attr-type
-			res += 4 + 12*client->overrides[i].num_values; // int values-count, { uint64 docid, uint32 value }[] override
-		}
-	}
 
 	if ( client->ver_search>=0x116 )
 		res += 4 + safestrlen ( client->select_list ); // string select_list
@@ -1255,7 +1153,7 @@ int sphinx_add_query ( sphinx_client * client, const char * query, const char * 
 
 	send_int ( &req, client->offset );
 	send_int ( &req, client->limit );
-	send_int ( &req, client->mode );
+	send_int ( &req, 6 ); // legacy match_mode extended2
 	send_int ( &req, client->ranker );
 	if ( client->ranker==SPH_RANK_EXPR )
 		send_str ( &req, client->rankexpr );
@@ -1322,17 +1220,7 @@ int sphinx_add_query ( sphinx_client * client, const char * query, const char * 
 	send_int ( &req, client->retry_count );
 	send_int ( &req, client->retry_delay );
 	send_str ( &req, client->group_distinct );
-	if ( client->geoanchor_attr_lat && client->geoanchor_attr_long )
-	{
-		send_int ( &req, 1 );
-		send_str ( &req, client->geoanchor_attr_lat );
-		send_str ( &req, client->geoanchor_attr_long );
-		send_float ( &req, client->geoanchor_lat );
-		send_float ( &req, client->geoanchor_long );
-	} else
-	{
-		send_int ( &req, 0 );
-	}
+	send_int ( &req, 0 ); // geoanchor
 	send_int ( &req, client->num_index_weights );
 	for ( i=0; i<client->num_index_weights; i++ )
 	{
@@ -1349,20 +1237,7 @@ int sphinx_add_query ( sphinx_client * client, const char * query, const char * 
 	send_str ( &req, comment );
 
 	if ( client->ver_search>=0x115 )
-	{
-		send_int ( &req, client->num_overrides );
-		for ( i=0; i<client->num_overrides; i++ )
-		{
-			send_str ( &req, client->overrides[i].attr );
-			send_int ( &req, SPH_ATTR_INTEGER );
-			send_int ( &req, client->overrides[i].num_values );
-			for ( j=0; j<client->overrides[i].num_values; j++ )
-			{
-				send_qword ( &req, client->overrides[i].docids[j] );
-				send_int ( &req, client->overrides[i].uint_values[j] );
-			}
-		}
-	}
+		send_int ( &req, 0 ); // num_overrides
 
 	if ( client->ver_search>=0x116 )
 		send_str ( &req, client->select_list );
