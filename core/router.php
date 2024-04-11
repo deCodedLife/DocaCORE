@@ -142,7 +142,7 @@ if ( !$API->request ) {
      * Добавление файлов в тело запроса
      */
     foreach ( $_FILES as $propertyArticle => $file )
-        $API->request->data->$propertyArticle = $file;
+        $API->request->data = (object) array_merge( (array) $API->request->data, [ $propertyArticle => $file ] );
 
 } // if. !$API->request
 

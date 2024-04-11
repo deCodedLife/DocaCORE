@@ -2,6 +2,8 @@
 
 $import_object = [];
 $htmlTable = "
+<p><b>* - обязательные поля</b></p>
+<br>
 <table>
     <tr>
         <th>Свойство</th>
@@ -37,6 +39,7 @@ foreach ( ( $objectScheme[ "properties" ] ?? [] ) as $property ) {
 
     if ( in_array( $property[ "field_type" ], $ignoreTypes ) ) $is_ignored = true;
     if ( in_array( "add", ( $property[ "require_in_commands" ] ?? [] ) ) ) $is_required = true;
+    if ( !in_array( "import", $property[ "use_in_commands" ] ?? [] ) ) $is_ignored = true;
     if ( $property[ "field_type" ] == "list" && !$property[ "custom_list" ] ) $is_ignored = true;
 
     if ( $is_required && $is_ignored ) {
@@ -86,7 +89,7 @@ foreach ( ( $objectScheme[ "properties" ] ?? [] ) as $property ) {
             break;
 
         case "phone":
-            $dataType = "Номер телефона 11 цифр с символом (+) +7 (800) 241 23 31, +78002412331";
+            $dataType = "Номер телефона 11 цифр с символом (+): +78002412331";
             break;
 
         case "date":
@@ -129,7 +132,10 @@ foreach ( ( $objectScheme[ "properties" ] ?? [] ) as $property ) {
     if ( $property[ "max_value" ] ) $dataType .= ". Максимум {$property[ "max_value" ]}";
     if ( $property[ "min_value" ] ) $dataType .= ". Минимум {$property[ "min_value" ]}";
 
-    $htmlTable .= "<tr><td>{$property[ "title" ]}</td>";
+    $insertTitle = $property[ "title" ];
+    if ( $is_required ) $insertTitle = "<b>*$insertTitle</b>";
+
+    $htmlTable .= "<tr><td>$insertTitle</td>";
     $htmlTable .= "<td>$dataType</td>";
     $htmlTable .= "</tr>";
 

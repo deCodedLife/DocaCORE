@@ -3,7 +3,7 @@
     {
       "title": "Файл",
       "article": "import_file",
-      "data_type": "string",
+      "data_type": "file",
       "field_type": "file",
       "is_default_in_list": false,
       "is_unique": false,

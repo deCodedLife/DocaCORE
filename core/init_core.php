@@ -659,7 +659,10 @@ class API {
                         400
                     );
 
-                if ( property_exists( $requestData ?? "", $objectProperty[ "article" ] ) )
+                $object = (object) ( $requestData ?? "" );
+                $article = $objectProperty[ "article" ] ?? "";
+
+                if ( property_exists( $object, $article ) )
                     $processedRequest[ $objectProperty[ "article" ] ] = $requestData->{ $objectProperty[ "article" ] };
 
             } else {
@@ -779,6 +782,7 @@ class API {
 
                         break;
 
+                    case "file":
                     case "image":
 
                         /**
@@ -789,9 +793,10 @@ class API {
                         $isContinue = true;
                         break;
 
+
                 } // switch. $objectProperty[ "data_type" ]
 
-                
+
                 if ( $isContinue ) continue;
                 // 2
 
@@ -805,7 +810,6 @@ class API {
                      * Ошибка типа св-ва
                      */
                     $is_error = true;
-
 
                     switch ( gettype( $requestProperty ) ) {
 
@@ -885,8 +889,8 @@ class API {
 
                             break;
 
-                        case "object":
                         case "image":
+                        case "object":
 
                             if (
                                 ( $objectProperty[ "data_type" ] === "array" )
@@ -1999,16 +2003,20 @@ class API {
                 $filePath .= ".mp3";
                 break;
 
+            case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                $filePath .= ".xlsx";
+                break;
+
             default:
 
                 return "";
 
         } // switch. $file[ "type" ]
 
-
         /**
          * Сохранение файла на сервер
          */
+
         move_uploaded_file( $file[ "tmp_name" ], $filePath );
 
 
@@ -2780,7 +2788,7 @@ class API {
         ) );
 
         $response = json_decode( curl_exec( $curl ) );
-        
+
         if ( !$response ) return false;
 
         if ( !$is_full_response ) return $response->data;

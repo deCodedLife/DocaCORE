@@ -124,6 +124,6 @@ try {
 
 } catch (Throwable $exception) {
 
-    $API->returnResponse( [ $exception->getMessage(), $exception->getFile(), $exception->getLine() ], 500 );
+    $API->returnResponse( [ $exception->getMessage(), $exception->getFile(), $exception->getLine(), $exception->getTrace() ], 500 );
 
 }
