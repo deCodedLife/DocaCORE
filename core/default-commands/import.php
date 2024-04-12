@@ -63,7 +63,10 @@ if (
         if ( $is_ignored ) continue;
 
         $cellName = $workSheet->getColumnDimensionByColumn( $columnsCount + 1 )->getColumnIndex() . '1';
-        $workSheet->setCellValue( $cellName, $property[ "title" ] );
+
+        $title = $is_required ? "*" . $property[ "title" ] : $property[ "title" ];
+
+        $workSheet->setCellValue( $cellName, $title );
         $devSheet->setCellValue( "A" . $columnsCount + 1, $property[ "article" ] );
 
         $columnsCount++;
@@ -232,5 +235,10 @@ for ( $i = 1; $i < $workSheet->getHighestRow(); $i++ ) {
 }
 
 
-$message = $messageList[ 0 ] ?? "";
-$API->returnResponse( $message, 400 );
+if ( empty( $messageList ) ) $API->returnResponse();
+else {
+
+    $message = $messageList[ 0 ] ?? "";
+    $API->returnResponse( $message, 400 );
+
+}
