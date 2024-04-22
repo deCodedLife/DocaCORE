@@ -145,7 +145,7 @@ foreach ( $generatedDBScheme as $tableArticle => $tableScheme ) {
                 ( $tableProperty[ "default" ] !== "" )
             ) {
 
-                if ( $tableProperty[ "default" ] !== "CURRENT_TIMESTAMP" )
+                if ( !in_array( $tableProperty[ "default" ], [ "CURRENT_TIMESTAMP", "CURDATE()" ] ) )
                     $tableProperty[ "default" ] = "'" . $tableProperty[ "default" ] . "'";
 
                 $addPropertyQuery .= " DEFAULT " . $tableProperty[ "default" ];
@@ -249,7 +249,7 @@ foreach ( $generatedDBScheme as $tableArticle => $tableScheme ) {
 
                 if ( $tableProperty[ "default" ] !== "" ) {
 
-                    if ( $tableProperty[ "default" ] != "CURRENT_TIMESTAMP" )
+                    if ( !in_array( $tableProperty[ "default" ], [ "CURRENT_TIMESTAMP", "CURDATE()" ] ) )
                         $tableProperty[ "default" ] = "'" . $tableProperty[ "default" ] . "'";
 
                     $updateDefaultValueQuery .= " DEFAULT " . $tableProperty[ "default" ];

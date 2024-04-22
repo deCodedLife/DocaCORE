@@ -220,6 +220,24 @@ if ( $userScheme ) {
 
 } // if. $userScheme
 
+/**
+ * Проверка обязательных полей
+ */
+
+foreach ( $updateValues as $propertyArticle => $propertyValue ) {
+
+    foreach ( $objectScheme[ "properties" ] as $property ) {
+
+        if ( $property[ "article" ] == $propertyArticle && in_array("add", $property[ "require_in_commands" ] ?? [] ) && $propertyValue == "null" ) {
+
+            $propertyTitle = $property[ "title" ];
+            $API->returnResponse( "Поле \"$propertyTitle\" не может быть пустым." , 400 );
+
+        }
+
+    }
+
+}
 
 /**
  * Отправка запроса на редактирование записи

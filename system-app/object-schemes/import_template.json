@@ -14,7 +14,15 @@
       "use_in_commands": [
         "get"
       ],
-      "require_in_commands": []
+      "require_in_commands": [],
+      "settings": {
+        "allowed_formats": [
+          "xlx",
+          "xlsx"
+        ],
+        "max_size": 104857600,
+        "is_multiply": false
+      }
     },
     {
       "title": "Поля",

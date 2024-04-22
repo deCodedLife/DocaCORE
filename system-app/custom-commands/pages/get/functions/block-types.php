@@ -243,10 +243,6 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
      * Обработка кастомных списков
      */
     if (
-        (
-            ( $fieldDetail[ "field_type" ] === "list" ) ||
-            ( $fieldDetail[ "field_type" ] === "radio" )
-        ) &&
         $fieldDetail[ "custom_list" ]
     ) {
 

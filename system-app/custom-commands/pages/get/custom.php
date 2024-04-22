@@ -24,6 +24,7 @@ function blockLocalization ( $block ) {
 
         switch ( gettype( $itemValue ) ) {
 
+
             case "string":
                 $itemValue = localizationText( $itemValue );
                 break;
@@ -120,6 +121,8 @@ function variablesPushing ( $block, $pageDetail ) {
  *
  * @return array
  */
+
+;
 function generateStructureBlock ( $structureBlock ) {
 
     global $API;
@@ -171,6 +174,7 @@ function generateStructureBlock ( $structureBlock ) {
         case "list":
         case "logs":
         case "radio":
+        case "color_list":
         case "accordion":
         case "schedule_list":
 
@@ -430,7 +434,7 @@ function generateStructureBlock ( $structureBlock ) {
                 unset( $structureBlock[ "settings" ][ $ignoreTabKey ] );
 
 
-            $structureBlock[ "settings" ] = array_values( $structureBlock[ "settings" ] );
+            $structureBlock[ "settings" ] = $structureBlock[ "settings" ];
             $responseBlock[ "settings" ] = $structureBlock[ "settings" ];
 
             break;
@@ -1041,7 +1045,6 @@ if ( file_exists( $formConstructorHookPath ) )
 foreach ( $pageScheme[ "structure" ] as $structureBlockKey => $structureBlock ) {
 
     if ( !$structureBlock[ "required_permissions" ] ) $structureBlock[ "required_permissions" ] = [];
-
 
     /**
      * Проверка доступов

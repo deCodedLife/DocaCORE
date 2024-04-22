@@ -2,9 +2,15 @@
 
 if ( !$requestData->object ) $API->returnResponse( [] );
 
+$system = scandir( $API::$configs[ "paths" ][ "system_command_schemes" ] . "/$requestData->object" );
+if ( !$system ) $system = [];
+
+$public = scandir( $API::$configs[ "paths" ][ "public_command_schemes" ] . "/$requestData->object" );
+if ( !$public ) $public = [];
+
 $commands = array_merge(
-    array_diff( scandir( $API::$configs[ "paths" ][ "system_command_schemes" ] . "/$requestData->object" ), [ "..", "." ] ) ?? [],
-    array_diff( scandir( $API::$configs[ "paths" ][ "public_command_schemes" ] . "/$requestData->object" ), [ "..", "." ] ) ?? []
+    array_diff( $system, [ "..", "." ] ) ?? [],
+    array_diff( $public, [ "..", "." ] ) ?? []
 );
 
 $objects = array_unique( $commands );
