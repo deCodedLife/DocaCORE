@@ -247,7 +247,7 @@ foreach ( $generatedDBScheme as $tableArticle => $tableScheme ) {
 
                 $updateDefaultValueQuery = "ALTER TABLE `$tableArticle` MODIFY COLUMN $tablePropertyTitle";
 
-                if ( $tableProperty[ "default" ] !== "" ) {
+                if ( $tableProperty[ "default" ] !== "" && $tableProperty[ "default" ] != null ) {
 
                     if ( !in_array( $tableProperty[ "default" ], [ "CURRENT_TIMESTAMP", "CURDATE()" ] ) )
                         $tableProperty[ "default" ] = "'" . $tableProperty[ "default" ] . "'";

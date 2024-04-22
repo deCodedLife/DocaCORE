@@ -475,20 +475,32 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
      * Форматирование даты
      */
     if ( strtotime( $rowDetail[ $schemeProperty[ "article" ] ] ) !== false ) {
-        $formattedDate = date( 'd.m.Y', strtotime( $rowDetail[ $schemeProperty[ "article" ] ] ) );
-        if ( strpos( $rowDetail[ $schemeProperty[ "article" ] ], '00:00:00' ) === false ) {
-            $formattedDate .= date(' H:i', strtotime( $rowDetail[ $schemeProperty[ "article" ] ] ) ); // Если дата содержит время
+        // Проверка на число без разделительных знаков
+        if (!preg_match('/[^\d]/', $rowDetail[ $schemeProperty[ "article" ] ])) {
+            $rowDetail[ $schemeProperty[ "article" ] ] = intval($rowDetail[ $schemeProperty[ "article" ] ]); // Просто сохраняем число без форматирования
+        } else {
+            $formattedDate = date( 'd.m.Y', strtotime( $rowDetail[ $schemeProperty[ "article" ] ] ) );
+            if ( strpos( $rowDetail[ $schemeProperty[ "article" ] ], '00:00:00' ) === false ) {
+                $formattedDate .= date(' H:i', strtotime( $rowDetail[ $schemeProperty[ "article" ] ] ) ); // Если дата содержит время
+            }
+            $rowDetail[ $schemeProperty[ "article" ] ] = $formattedDate;
         }
-        $rowDetail[ $schemeProperty[ "article" ] ] = $formattedDate;
     }
 
     if ( strtotime( $updateValues[ $schemeProperty[ "article" ] ] ) !== false ) {
-        $formattedDate = date( 'd.m.Y', strtotime( $updateValues[ $schemeProperty[ "article" ] ] ) );
-        if ( strpos( $updateValues[ $schemeProperty[ "article" ] ], '00:00:00' ) === false ) {
-            $formattedDate .= date(' H:i', strtotime( $updateValues[ $schemeProperty[ "article" ] ] ) ); // Если дата содержит время
+        // Проверка на число без разделительных знаков
+        if (!preg_match('/[^\d]/', $updateValues[ $schemeProperty[ "article" ] ])) {
+            // Просто сохраняем число без форматирования
+            $updateValues[ $schemeProperty[ "article" ] ] = intval($updateValues[ $schemeProperty[ "article" ] ]);
+        } else {
+            $formattedDate = date( 'd.m.Y', strtotime( $updateValues[ $schemeProperty[ "article" ] ] ) );
+            if ( strpos( $updateValues[ $schemeProperty[ "article" ] ], '00:00:00' ) === false ) {
+                $formattedDate .= date(' H:i', strtotime( $updateValues[ $schemeProperty[ "article" ] ] ) ); // Если дата содержит время
+            }
+            $updateValues[ $schemeProperty[ "article" ] ] = $formattedDate;
         }
-        $updateValues[ $schemeProperty[ "article" ] ] = $formattedDate;
     }
+
 
     /**
      * Игнорирование технических данных

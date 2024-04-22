@@ -2454,7 +2454,8 @@ class API {
         $logDetail[ "clients_id" ] = [];
 
         if ( !$requestData->is_ignore_current_user ) $logDetail[ "users_id" ][] = $this::$userDetail->id;
-
+        if ( $detail[ "table_name" ] == "users" ) $logDetail[ "users_id" ][] = $detail[ "row_id" ];
+        if ( $detail[ "table_name" ] == "clients" ) $logDetail[ "clients_id" ][] = $detail[ "row_id" ];
         if ( $requestData->user_id ) $logDetail[ "users_id" ][] = $requestData->user_id;
         if ( $requestData->client_id ) $logDetail[ "clients_id" ][] = $requestData->client_id;
 
@@ -2466,6 +2467,26 @@ class API {
          * Добавление лога
          */
 
+        if ( is_array( $detail[ "row_id" ] ) ) {
+
+            foreach ( $detail[ "row_id" ] as $rowId ) {
+
+                $currentDetail = $detail;
+                $currentDetail[ "row_id" ] = $rowId;
+                $this->add_log_db( $currentDetail, $logDetail );
+
+            }
+
+        } else $this->add_log_db( $detail, $logDetail );
+
+
+        return true;
+
+    } // function. addLog
+    
+
+    function add_log_db ( $detail, $logDetail )
+    {
         $insertedLogId = $this->DB->insertInto( "logs" )
             ->values( [
                 "table_name" => $detail[ "table_name" ],
@@ -2476,7 +2497,6 @@ class API {
             ->execute();
 
         if ( !$insertedLogId ) return false;
-
         foreach ( $logDetail[ "users_id" ] as $userId )
             $this->DB->insertInto( "logs_users" )
                 ->values( [
@@ -2493,10 +2513,8 @@ class API {
                 ] )
                 ->execute();
 
-
-        return true;
-
-    } // function. addLog
+        return $insertedLogId;
+    }
 
 
     /**
