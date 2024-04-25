@@ -497,6 +497,13 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
 
     if ( $blockField[ "field_type" ] == "image" ) {
 
+        if ( $blockField[ "value" ] != null ) {
+
+            $domain = "https://" . $_SERVER['SERVER_NAME'];
+            $blockField[ "value" ] = $domain . str_replace($domain, "", $blockField[ "value" ]);
+
+        }
+
         $blockField[ "settings" ][ "is_editor" ] = false;
 
     }
@@ -811,9 +818,8 @@ function processingBlockType_form ( $structureBlock ) {
                  */
                 if ( $fieldDetail[ "data_type" ] === "image" ) $formType = "multipart/form-data";
                 if ( $fieldDetail[ "data_type" ] === "file" ) $formType = "multipart/form-data";
-
-
                 $generatedBlock = addFieldToForm( $objectScheme, $objectProperties, $structureBlock, $field, $formFieldValues );
+//                $API->returnResponse([ $generatedBlock ],400);
                 if ( $generatedBlock ) $blockFields[] = $generatedBlock;
 
             } // foreach. $block[ "fields" ]

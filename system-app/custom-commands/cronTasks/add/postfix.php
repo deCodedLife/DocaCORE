@@ -3,7 +3,7 @@
 global $insertId;
 
 $execCommand = [
-    "/opt/php74/bin/php",
+    "/opt/php83/bin/php",
     "{$_SERVER[ "DOCUMENT_ROOT" ]}/index.php",
     $_SERVER[ "DOCUMENT_ROOT" ],
     $API::$configs[ "company" ],

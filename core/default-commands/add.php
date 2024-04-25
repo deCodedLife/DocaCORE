@@ -5,7 +5,24 @@
  * Используется для добавления записей в базу данных
  */
 
+function toInstrumentalCase ( $string ) {
+    $words = explode(' ', $string);
+    $instrumentalWords = [];
 
+    foreach ($words as $word) {
+        $lastChar = mb_substr($word, -1); // получаем последний символ слова
+
+        if (in_array($lastChar, ['а', 'я', 'е', 'о', 'ё', 'э', 'и', 'ы', 'у', 'ю'])) {
+            $instrumentalWords[] = $word . "й"; // для мужского и среднего рода
+        } elseif ($lastChar == 'ь') {
+            $instrumentalWords[] = mb_substr($word, 0, -1) . "ем"; // для женского рода
+        } else {
+            $instrumentalWords[] = $word . "ом"; // для всех остальных случаев
+        }
+    }
+
+    return implode(' ', $instrumentalWords);
+};
 /**
  * Значения для вставки
  */
@@ -157,12 +174,17 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
         $repeatedProperties = $API->DB->from( $objectScheme[ "table" ] )
             ->where( $propertyName, $propertyValue );
 
+
+
         foreach ( $repeatedProperties as $repeatedProperty )
             if ( $repeatedProperty[ "is_active" ] === "N" ) continue;
             else $isDouble = true;
 
         if ( $isDouble )
-            $API->returnResponse( "Запись с таким $propertyName уже существует", 500 );
+
+            $schemePropertyTitle = toInstrumentalCase( $schemeProperty[ "title" ] );
+            $schemePropertyTitle = mb_convert_case( $schemePropertyTitle, MB_CASE_LOWER, "UTF-8");
+            $API->returnResponse( "Пользователь с таким $schemePropertyTitle уже существует", 500 );
 
     } // if. $schemeProperty[ "is_unique" ] && $propertyValue
 

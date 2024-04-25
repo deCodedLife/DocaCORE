@@ -196,7 +196,9 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
                 ->fetch();
 
             if ( $repeatedProperty && ( $repeatedProperty[ "id" ] != $requestData->id ) )
-                $API->returnResponse( "Запись с таким $propertyName уже существует", 500 );
+                $schemePropertyTitle = toInstrumentalCase( $schemeProperty[ "title" ] );
+                $schemePropertyTitle = mb_convert_case( $schemePropertyTitle, MB_CASE_LOWER, "UTF-8");
+                $API->returnResponse( "Пользователь с таким $schemePropertyTitle уже существует", 500 );
 
         } // if. $schemeProperty[ "is_unique" ] && $propertyValue
 
@@ -228,10 +230,25 @@ foreach ( $updateValues as $propertyArticle => $propertyValue ) {
 
     foreach ( $objectScheme[ "properties" ] as $property ) {
 
-        if ( $property[ "article" ] == $propertyArticle && in_array("add", $property[ "require_in_commands" ] ?? [] ) && $propertyValue == "null" ) {
+        if ( $property[ "article" ] == $propertyArticle && in_array("add", $property[ "require_in_commands" ] ?? [] ) && $propertyValue == null ) {
 
             $propertyTitle = $property[ "title" ];
             $API->returnResponse( "Поле \"$propertyTitle\" не может быть пустым." , 400 );
+
+        }
+
+    }
+
+}
+
+foreach ( $join_updateValues as $propertyArticle => $propertyValue ) {
+
+    foreach ($objectScheme["properties"] as $property) {
+
+        if ($property["article"] == $propertyArticle && in_array("add", $property["require_in_commands"] ?? []) && $propertyValue["data"] == null) {
+
+            $propertyTitle = $property["title"];
+            $API->returnResponse("Поле \"$propertyTitle\" не может быть пустым.", 400);
 
         }
 

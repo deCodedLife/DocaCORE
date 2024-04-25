@@ -159,25 +159,12 @@ require( "components/schedule/get-steps.php" );
  */
 require( "components/schedule/dates-to-schedule.php" );
 
-/**
- * Получение роли авторизованного пользователя
- */
-$role = $API->DB->from( "roles" )
-    ->where( "id", $API::$userDetail->role_id )
-    ->limit(1)
-    ->fetch()[ "article" ];
 
 /**
  * Если посещения попадают на сайт - отключаем формирование event
  */
-if ( $role != "public" ) {
 
-    /**
-     * Привязка событий к расписанию
-     */
-    require( "components/schedule/events-to-schedule.php" );
-
-}
+require( "components/schedule/events-to-schedule.php" );
 
 /**
  * Привязка свободных ячеек к расписанию

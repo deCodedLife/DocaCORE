@@ -4,6 +4,10 @@ shell_exec( "crontab -l > tasks" );
 $tasks = file_get_contents( "tasks" );
 $tasks = explode( "\n", $tasks );
 
+$taskDetails = $API->DB->from( "cronTasks" )
+    ->where( "id", $requestData->id )
+    ->fetch();
+
 foreach ( $tasks as $key => $task ) {
 
     $task = explode( "{$API::$configs[ "company" ]} {$taskDetails[ "id" ]}", $task );
@@ -15,7 +19,7 @@ file_put_contents( "tasks", join( "\n", $tasks ) );
 shell_exec( "crontab < tasks | rm tasks" );
 
 $execCommand = [
-    "/opt/php74/bin/php",
+    "/opt/php83/bin/php",
     "{$_SERVER[ "DOCUMENT_ROOT" ]}/index.php",
     $_SERVER[ "DOCUMENT_ROOT" ],
     $API::$configs[ "company" ],
