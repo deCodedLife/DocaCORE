@@ -507,8 +507,7 @@ function addFieldToForm ( $objectScheme, $objectProperties, $structureBlock, $fi
         $blockField[ "settings" ][ "is_editor" ] = false;
 
     }
-
-
+    
     /**
      * Учет поля формы
      */

@@ -17,7 +17,7 @@ if ( count( $argv ?? [] ) > 1 ) {
         foreach ( $cronArgv as $property )
             $request[ "data" ][ $property[ "property" ] ] = $property[ "value" ];
 
-        if ( empty( $API->request ) ) $API->request = (object) [];
+        $API->request = (object) [];
         $API->request->jwt = $argv[ 5 ];
 
         $API->sendRequest( $cronTask[ "object" ], $cronTask[ "command" ], $request ?? [] );
