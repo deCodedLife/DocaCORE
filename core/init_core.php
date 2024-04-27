@@ -1081,9 +1081,7 @@ class API {
 
                     case "boolean":
 
-                        if ( $row[ $property[ "article" ] ] === "Y" ) $row[ $property[ "article" ] ] = true;
-                        else $row[ $property[ "article" ] ] = false;
-
+                        $row[ $property[ "article" ] ] = $row[ $property[ "article" ] ] === "Y";
                         break;
 
                     case "integer":
