@@ -180,11 +180,15 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
             if ( $repeatedProperty[ "is_active" ] === "N" ) continue;
             else $isDouble = true;
 
-        if ( $isDouble )
+        if ( $isDouble ) {
 
             $schemePropertyTitle = toInstrumentalCase( $schemeProperty[ "title" ] );
             $schemePropertyTitle = mb_convert_case( $schemePropertyTitle, MB_CASE_LOWER, "UTF-8");
             $API->returnResponse( "Пользователь с таким $schemePropertyTitle уже существует", 500 );
+
+        }
+
+
 
     } // if. $schemeProperty[ "is_unique" ] && $propertyValue
 
