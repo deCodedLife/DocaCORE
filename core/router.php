@@ -265,8 +265,13 @@ $public_customCommandDirPath = $API::$configs[ "paths" ][ "public_custom_command
 
 if ( $API->request->data->context->trigger ) {
 
-    $public_trigger_hook = $public_customCommandDirPath . "/{$API->request->data->context->trigger}.php";
-    $system_trigger_hook = $system_customCommandDirPath . "/{$API->request->data->context->trigger}.php";
+    if ( str_contains( $API->request->data->context->trigger, "[" ) ) {
+        $trigger = explode( "[", $API->request->data->context->trigger );
+        $trigger = $trigger[ 0 ];
+    } else $trigger = $API->request->data->context->trigger;
+
+    $public_trigger_hook = $public_customCommandDirPath . "/$trigger.php";
+    $system_trigger_hook = $system_customCommandDirPath . "/$trigger.php";
     if ( file_exists( $system_trigger_hook ) ) require_once $system_trigger_hook;
     else if ( file_exists( $public_trigger_hook ) ) require_once $public_trigger_hook;
 

@@ -195,10 +195,11 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
                 ->limit( 1 )
                 ->fetch();
 
-            if ( $repeatedProperty && ( $repeatedProperty[ "id" ] != $requestData->id ) )
+            if ( $repeatedProperty && ( $repeatedProperty[ "id" ] != $requestData->id ) ) {
                 $schemePropertyTitle = toInstrumentalCase( $schemeProperty[ "title" ] );
                 $schemePropertyTitle = mb_convert_case( $schemePropertyTitle, MB_CASE_LOWER, "UTF-8");
                 $API->returnResponse( "Пользователь с таким $schemePropertyTitle уже существует", 500 );
+            }
 
         } // if. $schemeProperty[ "is_unique" ] && $propertyValue
 
