@@ -279,6 +279,17 @@ if ( $API->request->data->context->trigger ) {
 
 
 /**
+ * Формирование пути к хуку фильтра
+ */
+
+if ( $API->request->command == "hook_filters" ) {
+
+    $public_customCommandDirPath = $API::$configs[ "paths" ][ "public_custom_commands" ] . "/" . $API->request->object . "/hook/filters";
+    $system_customCommandDirPath = $API::$configs[ "paths" ][ "system_custom_commands" ] . "/" . $API->request->object . "/hook/filters";
+
+}
+
+/**
  * Формирование пути к директории нестандартной команды
  */
 

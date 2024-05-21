@@ -557,7 +557,6 @@ foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty
 if ( $hasAdditions ) $logDescription .= $logDescriptionAdd;
 if ( $hasChanges ) $logDescription .= $logDescriptionUpdate;
 
-
 if ( !$isFieldsUpdate ) $logDescription = "Обновлена запись ${objectScheme[ "title" ]}";
 else $logDescription = substr( $logDescription, 0, -2 );
 
