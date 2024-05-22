@@ -6,11 +6,18 @@ if ( property_exists( $API->request, "doctor" ) ) {
     $visitDetails = $API->request->appointment;
     $userDetails = $API->request->doctor;
 
+    $jwt = $API->sendRequest( "users", "sign-in", [
+        "email" => "public@oxbox.ru",
+        "password" => "#_!_h%F02@ま45MねこJh5^v*_b2#v"
+    ] );
+    $API->request->jwt = $jwt;
+
     $clientsID = $API->sendRequest( "clients", "search", [ "search" => $clientDetails->mobile_phone ] );
 
     if ( empty( $clientsID ) ) {
 
         $request = [];
+        $request[ "jwt" ] = $jwt;
         $request[ "first_name" ] = $clientDetails->first_name;
         if ( property_exists( $clientDetails, "last_name" ) ) $request[ "last_name" ] =  $clientDetails->last_name;
         if ( property_exists( $clientDetails, "second_name" ) ) $request[ "patronymic" ] =  $clientDetails->second_name;
@@ -52,7 +59,9 @@ if ( property_exists( $API->request, "doctor" ) ) {
 
     }
 
-    $serviceDetails = visits\getFullService( $services_ids[ 0 ], $userDetails->id );
+    $API->request->jwt = $jwt;
+    $serviceDetails = visits\getFullServiceDefault( $services_ids[ 0 ], $userDetails->id );
+
     $visit_end = date( "Y-m-d H:i:s", strtotime( $visitDetails->dt_start . " +{$serviceDetails[ "take_minutes" ]} minutes" ) );
 
 
@@ -97,12 +106,16 @@ if ( property_exists( $API->request, "doctor" ) ) {
     $request[ "send_review" ] = true;
     $request[ "status" ] = "prodoctorov";
     $request[ "price" ] = $serviceDetails[ "price" ];
+    $request[ "jwt" ] = $jwt;
+    $request[ "context" ] = [
+        "from_prodoctorov" => true,
+    ];
 
     if ( $performerWorkSchedule ) $request[ "cabinet_id" ] = $performerWorkSchedule[ "cabinet_id" ];
-
     $status = $API->sendRequest( "visits", "add", $request );
 
-    if ( !$status || gettype( $status ) != "integer" ) exit( json_encode( [ "status_code" => 500 ] ) );
+
+    if ( !$status ) exit( json_encode( [ "status_code" => 423, "detail" => $status ] ) );
     else exit( json_encode( [ "status_code" => 204, "claim_id" => $status ] ) );
 
 }
