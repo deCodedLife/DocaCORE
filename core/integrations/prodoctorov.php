@@ -1,6 +1,6 @@
 <?php
 
-if ( property_exists( $API->request, "doctor" ) ) {
+if ( $API->request && property_exists( $API->request, "doctor" ) ) {
 
     $clientDetails = $API->request->client;
     $visitDetails = $API->request->appointment;
@@ -129,7 +129,7 @@ if ( property_exists( $API->request, "doctor" ) ) {
 
 }
 
-if ( property_exists( $API->request, "claim_id" ) ) {
+if ( $API->request && property_exists( $API->request, "claim_id" ) ) {
 
     $API->sendRequest( "visits", "update", [
         "id" => $API->request->claim_id,
