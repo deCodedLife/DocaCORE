@@ -102,9 +102,17 @@ if ( property_exists( $API->request, "doctor" ) ) {
 
     $status = $API->sendRequest( "visits", "add", $request );
 
-    if ( !$status || gettype( $status ) != "integer" )
-        $API->returnResponse( $status, 500 );
-    else
-        $API->returnResponse( true, 204 );
+    if ( !$status || gettype( $status ) != "integer" ) exit( json_encode( [ "status_code" => 500 ] ) );
+    else exit( json_encode( [ "status_code" => 204, "claim_id" => $status ] ) );
+
+}
+
+if ( property_exists( $API->request, "claim_id" ) ) {
+
+    $API->sendRequest( "visits", "update", [
+        "id" => $API->request->claim_id,
+        "is_active" => false
+    ] );
+    exit( json_encode( [ "status_code" => 204 ] ) );
 
 }
