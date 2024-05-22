@@ -14,27 +14,31 @@ if ( $API->request && property_exists( $API->request, "doctor" ) ) {
 
     $clientsID = $API->sendRequest( "clients", "search", [ "search" => $clientDetails->mobile_phone ] );
 
+    $advirtiseID = $API->DB->from( "advertise" )
+        ->where(
+            "( title like :title OR title like :online)",
+            [
+                ":title" => "Продокторов",
+                ":online" => "Онлайн"
+            ] )
+        ->fetch();
+
+    if ( !empty( $advirtiseID ) ) $advirtiseID = $advirtiseID[ "id" ];
+    else $advirtiseID = 0;
+
     if ( empty( $clientsID ) ) {
 
         $request = [];
         $request[ "jwt" ] = $jwt;
         $request[ "first_name" ] = $clientDetails->first_name;
+        $request[ "advertise_id" ] = $advirtiseID;
+
         if ( property_exists( $clientDetails, "last_name" ) ) $request[ "last_name" ] =  $clientDetails->last_name;
         if ( property_exists( $clientDetails, "second_name" ) ) $request[ "patronymic" ] =  $clientDetails->second_name;
         if ( property_exists( $clientDetails, "mobile_phone" ) ) $request[ "phone" ] =  $clientDetails->mobile_phone;
         if ( property_exists( $clientDetails, "birthday" ) ) $request[ "birthday" ] =  $clientDetails->birthday;
 
-        $advirtiseID = $API->DB->from( "advertise" )
-            ->where(
-                "( title like :title OR title like :online)",
-                [
-                    ":title" => "Продокторов",
-                    ":online" => "Онлайн"
-                ] )
-            ->fetch();
 
-        if ( !empty( $advirtiseID ) ) $request[ "advertise_id" ] = $advirtiseID[ "id" ];
-        else $request[ "advertise_id" ] = 0;
 
         $clientID = $API->sendRequest( "clients", "add", $request );
 
@@ -42,6 +46,11 @@ if ( $API->request && property_exists( $API->request, "doctor" ) ) {
 
         $clientDetails = (array) $clientsID[ 0 ];
         $clientID = $clientDetails[ "id" ];
+
+        $API->DB->update( "clients" )
+            ->set( "advertise_id", $advirtiseID )
+            ->where( "id", $clientID )
+            ->execute();
 
     }
 
@@ -110,7 +119,7 @@ if ( $API->request && property_exists( $API->request, "doctor" ) ) {
     $request[ "clients_id" ] = [ $clientID ];
     $request[ "start_at" ] = date( "Y-m-d H:i:00", strtotime( $visitDetails->dt_start ) );
     $request[ "end_at" ] = $visit_end;
-    $request[ "comment" ] = $visitDetails->comment;
+    $request[ "comment" ] = "Продокторов: " . $visitDetails->comment;
     $request[ "services_id" ] = [ $serviceID ];
     $request[ "notify" ] = true;
     $request[ "send_review" ] = true;
@@ -120,6 +129,8 @@ if ( $API->request && property_exists( $API->request, "doctor" ) ) {
     $request[ "jwt" ] = $jwt;
     $request[ "context" ] = [ "from_prodoctorov" => true ];
 
+
+    if ( $visitDetails->comment == "Клиника может позвонить" ) $request[ "comment" ] = "Продокторов";
     if ( $performerWorkSchedule ) $request[ "cabinet_id" ] = $performerWorkSchedule[ "cabinet_id" ];
     $status = $API->sendRequest( "visits", "add", $request, $_SERVER[ "HTTP_HOST" ], true );
     $status = (array) $status;
