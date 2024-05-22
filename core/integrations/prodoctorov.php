@@ -54,8 +54,18 @@ if ( property_exists( $API->request, "doctor" ) ) {
 
     foreach ( $services as $service ) {
 
-        if ( $visitDetails->is_online && str_contains( $service->title, "онлайн" ) ) $services_ids[] = $service->id;
-        if ( !$visitDetails->is_online && !str_contains( $service->title, "онлайн" ) ) $services_ids[] = $service->id;
+        if ( $visitDetails->is_online && str_contains( $service->title, "онлайн" ) ) {
+            $services_ids[] = $service->id;
+            break;
+        }
+        if (
+            !$visitDetails->is_online &&
+            !str_contains( $service->title, "онлайн" ) &&
+            !str_contains( $service->title, "вызов" )
+        ) {
+            $services_ids[] = $service->id;
+            break;
+        }
 
     }
 
@@ -112,11 +122,11 @@ if ( property_exists( $API->request, "doctor" ) ) {
     ];
 
     if ( $performerWorkSchedule ) $request[ "cabinet_id" ] = $performerWorkSchedule[ "cabinet_id" ];
-    $status = $API->sendRequest( "visits", "add", $request );
-
-
-    if ( !$status ) exit( json_encode( [ "status_code" => 423, "detail" => $status ] ) );
-    else exit( json_encode( [ "status_code" => 204, "claim_id" => $status ] ) );
+    $status = $API->sendRequest( "visits", "add", $request, $_SERVER[ "HTTP_HOST" ], true );
+    $status = (array) $status;
+    
+    if ( $status[ "status" ] != 200 ) exit( json_encode( [ "status_code" => 423, "detail" => $status[ "data" ] ] ) );
+    else exit( json_encode( [ "status_code" => 204, "claim_id" => $status[ "data" ] ] ) );
 
 }
 

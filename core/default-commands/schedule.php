@@ -67,7 +67,7 @@ if ( !$requestData->end_at ) $requestData->end_at = date(
     "Y-m-d", strtotime( "+$daysRange days", strtotime( $requestData->start_at ) )
 );
 
-if ( !$requestData->user_id ) $requestData->end_at = null;
+if ( !$requestData->user_id && !$requestData->users_id ) $requestData->end_at = null;
 
 /**
  * Принудительная сортировка
@@ -119,6 +119,7 @@ function getStepKey ( $time ) {
 /**
  * Отработка стандартного get запроса
  */
+//$API->returnResponse( $requestData );
 require( "get.php" );
 
 

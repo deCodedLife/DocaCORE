@@ -63,7 +63,6 @@ foreach ( ( $API->request->data->select ?? [] ) as $property => $value ) {
 
 }
 
-
 /**
  * Формирование фильтра
  */
@@ -80,6 +79,7 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 
 
     $objectProperties[ $propertyArticle ] = $schemeProperty;
+
     /**
      * Учет select
      */
@@ -213,12 +213,11 @@ try {
 
     $rows->where( $requestSettings[ "filter" ] );
 
-
     /**
      * Множественные фильтры
      */
     if ( $requestSettings[ "multiply_filter" ] ) $rows->where( $requestSettings[ "multiply_filter" ] );
-    
+
 
 
     /**
@@ -254,6 +253,7 @@ try {
 
     $isCheckActive = true;
     if ( $requestSettings[ "filter" ][ "is_active" ] === "N" ) $isCheckActive = false;
+
 
     if ( $API->request->command !== "schedule" ) $response[ "data" ] = $API->getResponseBuilder( $rows, $objectScheme, $requestData->context, $isCheckActive );
     else $response[ "data" ] = $rows->fetchAll();
