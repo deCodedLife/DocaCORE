@@ -50,12 +50,12 @@ if ( property_exists( $API->request, "doctor" ) ) {
         "users_id" => $userDetails->id
     ] );
 
-    $services_ids = [];
+    $serviceID = 0;
 
     foreach ( $services as $service ) {
 
         if ( $visitDetails->is_online && str_contains( $service->title, "онлайн" ) ) {
-            $services_ids[] = $service->id;
+            $serviceID = $service->id;
             break;
         }
         if (
@@ -63,14 +63,14 @@ if ( property_exists( $API->request, "doctor" ) ) {
             !str_contains( $service->title, "онлайн" ) &&
             !str_contains( $service->title, "вызов" )
         ) {
-            $services_ids[] = $service->id;
+            $serviceID = $service->id;
             break;
         }
 
     }
 
     $API->request->jwt = $jwt;
-    $serviceDetails = visits\getFullServiceDefault( $services_ids[ 0 ], $userDetails->id );
+    $serviceDetails = visits\getFullServiceDefault( $serviceID, $userDetails->id );
 
     $visit_end = date( "Y-m-d H:i:s", strtotime( $visitDetails->dt_start . " +{$serviceDetails[ "take_minutes" ]} minutes" ) );
 
@@ -111,15 +111,14 @@ if ( property_exists( $API->request, "doctor" ) ) {
     $request[ "start_at" ] = date( "Y-m-d H:i:00", strtotime( $visitDetails->dt_start ) );
     $request[ "end_at" ] = $visit_end;
     $request[ "comment" ] = $visitDetails->comment;
-    $request[ "services_id" ] = $services_ids;
+    $request[ "services_id" ] = [ $serviceID ];
     $request[ "notify" ] = true;
     $request[ "send_review" ] = true;
     $request[ "status" ] = "prodoctorov";
+    $request[ "service" ] = $serviceID;
     $request[ "price" ] = $serviceDetails[ "price" ];
     $request[ "jwt" ] = $jwt;
-    $request[ "context" ] = [
-        "from_prodoctorov" => true,
-    ];
+    $request[ "context" ] = [ "from_prodoctorov" => true ];
 
     if ( $performerWorkSchedule ) $request[ "cabinet_id" ] = $performerWorkSchedule[ "cabinet_id" ];
     $status = $API->sendRequest( "visits", "add", $request, $_SERVER[ "HTTP_HOST" ], true );
