@@ -82,6 +82,14 @@ $response = [
 $API->request = json_decode( file_get_contents( "php://input" ) );
 
 
+
+/**
+ * Импорт библиотек проекта
+ */
+$API->require_files( $API::$configs[ "paths" ][ "public_libs" ] );
+
+
+
 /**
  * Подключение интеграций
  */
@@ -94,12 +102,7 @@ if ( file_exists( $API::$configs[ "paths" ][ "core" ] . "/init_integrations.php"
 
     $API->returnResponse( "Интеграции не отвечают", 500 );
 
-} // if. file_exists. /core/init_integrations.php
-
-/**
- * Импорт библиотек проекта
- */
-$API->require_files( $API::$configs[ "paths" ][ "public_libs" ] );
+} // if. file_exists. /core/init_integrations.php\
 
 
 /**
