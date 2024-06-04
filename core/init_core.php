@@ -353,6 +353,18 @@ class API {
          * Подключение схем
          */
 
+        $path_elements = explode( "/", $schemePath );
+
+        $project_scheme = $this::$configs[ "company" ] . "_" . $path_elements[ count( $path_elements ) - 1 ];
+        $path_elements[ count( $path_elements ) - 1 ] = $project_scheme;
+        $path_elements = join( "/", $path_elements );
+
+        if (
+            file_exists( $this::$configs[ "paths" ][ "system_app" ] . $path_elements ) ||
+            file_exists( $this::$configs[ "paths" ][ "public_app" ] . $path_elements )
+        ) $schemePath = $path_elements;
+
+
         if ( file_exists( $this::$configs[ "paths" ][ "system_app" ] . $schemePath ) )
             $resultSchemes[ "system" ] = $this->loadScheme( $this::$configs[ "paths" ][ "system_app" ] . $schemePath );
 
@@ -377,6 +389,7 @@ class API {
          * Сформированная схема команды
          */
         $resultScheme = null;
+
 
 
         /**

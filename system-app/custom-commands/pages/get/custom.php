@@ -736,6 +736,13 @@ if ( isset( $pageDetail[ "url" ][ 2 ] ) ) $pageDetail[ "row_id" ] = $pageDetail[
 
 $pageDetail[ "scheme_path" ] = $pageDetail[ "section" ] . "/" . $pageDetail[ "scheme_name" ];
 
+
+$projectSchemePath = join( "/", [
+    $API::$configs[ "paths" ][ "public_page_schemes" ],
+    $pageDetail[ "section" ],
+    $API::$configs[ "company" ] . "_" . $pageDetail[ "scheme_name" ]
+] );
+
 $publicSchemePath = $API::$configs[ "paths" ][ "public_page_schemes" ] . "/" . $pageDetail[ "scheme_path" ];
 $systemSchemePath = $API::$configs[ "paths" ][ "system_page_schemes" ] . "/" . $pageDetail[ "scheme_path" ];
 
@@ -932,9 +939,11 @@ if ( $userScheme ) {
 
 $pageScheme = [];
 
-if ( file_exists( $publicSchemePath ) ) $pageScheme = file_get_contents( $publicSchemePath );
+if ( file_exists( $projectSchemePath ) ) $pageScheme = file_get_contents( $projectSchemePath );
+elseif ( file_exists( $publicSchemePath ) ) $pageScheme = file_get_contents( $publicSchemePath );
 elseif ( file_exists( $systemSchemePath ) ) $pageScheme = file_get_contents( $systemSchemePath );
 else $API->returnResponse( "Отсутствует схема страницы", 500 );
+
 
 
 /**
