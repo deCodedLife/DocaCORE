@@ -176,6 +176,7 @@ function generateStructureBlock ( $structureBlock ) {
         case "radio":
         case "color_list":
         case "accordion":
+        case "mini_list":
         case "schedule_list":
 
             /**
@@ -203,7 +204,7 @@ function generateStructureBlock ( $structureBlock ) {
             /**
              * Указание заголовков списка
              */
-            if ( $structureBlock[ "type" ] == "list" ) $responseBlock[ "settings" ][ "headers" ] = $listStructure[ "headers" ];
+            if ( $structureBlock[ "type" ] == "list" || $structureBlock[ "type" ] == "mini_list" ) $responseBlock[ "settings" ][ "headers" ] = $listStructure[ "headers" ];
             $responseBlock[ "settings" ][ "filters" ] = (object) $listStructure[ "filters" ];
             $responseBlock[ "settings" ][ "is_infinite" ] = $structureBlock[ "settings" ][ "is_infinite" ] ?? false;
 

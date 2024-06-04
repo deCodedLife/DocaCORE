@@ -2001,20 +2001,16 @@ class API {
                 $filePath .= ".mp3";
                 break;
 
-            case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-                $filePath .= ".xlsx";
-                break;
-
             default:
 
                 return "";
 
         } // switch. $file[ "type" ]
 
+
         /**
          * Сохранение файла на сервер
          */
-
         move_uploaded_file( $file[ "tmp_name" ], $filePath );
 
 
@@ -2030,7 +2026,9 @@ class API {
      * @param $files  object   Изображения
      * @param $object  object   Объект
      */
-    public function uploadMultiplyFiles ( $rowId, $files = [], $object = "" ) {
+    public function uploadMultiplyFiles ( $rowId, $files = [], $object = "", $article = "" ) {
+
+        $newfiles = [];
 
         /**
          * Получение пути к директории загрузок
@@ -2055,10 +2053,47 @@ class API {
         $filesDirPath = "$filesDirPath/$rowId";
         mkdir( $filesDirPath );
 
+        if ( $files == null ) {
+
+            $filesToRemove = glob( $filesDirPath );
+
+            foreach( $filesToRemove as $file ){
+
+                if(is_file($file)) {
+
+                    unlink($file);
+
+                }
+            }
+
+        }
 
         /**
          * Загрузка файлов
          */
+        foreach ( $this->request->data->$article as $file ) {
+
+            if ( is_string( $file ) ) {
+
+                $newfiles[] = $file;
+
+            } else {
+
+                $newfiles[] = $file[ "name" ];
+
+            }
+
+        }
+
+        foreach ( scandir($filesDirPath) as $oldFile ) {
+
+            if ( !in_array( $oldFile, $newfiles ) ) {
+
+                unlink($filesDirPath . "/" . $oldFile );
+
+            }
+
+        }
 
         foreach ( $files as $file ) {
 
@@ -2138,7 +2173,11 @@ class API {
              */
 
             $isContinue = false;
-            $imagePath = "$imagesDirPath/$imageKey";
+
+            $hash = $rowId . random_bytes(10);
+            $hash = md5( $hash );
+
+            $imagePath = "$imagesDirPath/$hash";
 
             switch ( $image[ "type" ] ) {
 

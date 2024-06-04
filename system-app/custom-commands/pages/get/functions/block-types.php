@@ -590,7 +590,6 @@ function processingBlockType_list ( $structureBlock ) {
 
     if ( !$objectScheme ) return false;
 
-
     /**
      * Формирование фильтров списка
      */
@@ -630,8 +629,7 @@ function processingBlockType_list ( $structureBlock ) {
         $listFilters[ $listFilter[ "property" ] ] = $listFilter[ "value" ];
 
     } // foreach. $structureBlock[ "settings" ][ "filters" ]
-
-
+    
     /**
      * Формирование заголовков списка
      */

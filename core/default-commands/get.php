@@ -190,8 +190,9 @@ try {
      * Получение записей
      */
 
-    $rows = $API->DB->from( $objectScheme[ "table" ] )
-        ->orderBy( $requestSettings[ "sort_by" ] . " " . $requestSettings[ "sort_order" ] ) ?? [];
+    $rows = $API->DB->from( $objectScheme[ "table" ] );
+
+    $rows->orderBy( $requestSettings[ "sort_by" ] . " " . $requestSettings[ "sort_order" ] ) ?? [];
 
 
     if ( $objectScheme[ "is_trash" ] && !$requestSettings[ "filter" ][ "is_active" ] && $requestData->context->block != "select" )

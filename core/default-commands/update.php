@@ -132,7 +132,7 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
 
                 } else {
 
-                    $requestData->{$schemeProperty[ "article" ]} = $API->uploadMultiplyFiles( $requestData->id, $propertyValue );
+                    $requestData->{$schemeProperty[ "article" ]} = $API->uploadMultiplyFiles( $requestData->id, $propertyValue, "", $schemeProperty[ "article" ] );
 
                 } // if. !$schemeProperty[ "settings" ][ "is_multiply" ]
 

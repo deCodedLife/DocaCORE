@@ -125,7 +125,11 @@ foreach ( $objectScheme[ "properties" ] as $schemeProperty ) {
 
         case "file":
 
+            $isMultiply = false;
+            if ( $schemeProperty[ "settings" ][ "is_multiply" ] ) $isMultiply = true;
+
             $files[] = [
+                "is_multiply" => $isMultiply,
                 "property" => $propertyName,
                 "type" => "file",
                 "value" => $propertyValue
@@ -271,41 +275,34 @@ try {
 
     foreach ( $files as $file ) {
 
-        switch ( $file[ "type" ] ) {
+        if ( $file[ "type" ] == "image" ) {
 
-            case "image":
+            if (!$file[ "is_multiply" ] ) {
 
-                switch ( gettype( $file[ "value" ] ) ) {
+                $API->DB->update( $objectScheme[ "table" ] )
+                    ->set( $file[ "property" ], $API->uploadImagesFromForm( $insertId, $file[ "value" ] ) )
+                    ->where( [
+                        "id" => $insertId,
+                        "is_system" => "N"
+                    ] )
+                    ->execute();
 
-                    case "string":
+            } else {
 
-                        $API->DB->update( $objectScheme[ "table" ] )
-                            ->set( $file[ "property" ], $API->uploadImagesFromForm( $insertId, $file[ "value" ] ) )
-                            ->where( [
-                                "id" => $insertId,
-                                "is_system" => "N"
-                            ] )
-                            ->execute();
+                $API->DB->update( $objectScheme[ "table" ] )
+                    ->set( $file[ "property" ], $API->uploadMultiplyImages( $insertId, $file[ "value" ] ) )
+                    ->where( [
+                        "id" => $insertId,
+                        "is_system" => "N"
+                    ] )
+                    ->execute();
 
-                        break;
+            } // if. !$schemeProperty[ "settings" ][ "is_multiply" ]
 
-                    case "array":
 
-                        $API->DB->update( $objectScheme[ "table" ] )
-                            ->set( $file[ "property" ], $API->uploadMultiplyImages( $insertId, $file[ "value" ] ) )
-                            ->where( [
-                                "id" => $insertId,
-                                "is_system" => "N"
-                            ] )
-                            ->execute();
+        } else if ( $file[ "type" ] == "file" ) {
 
-                        break;
-
-                } // switch. gettype( $file[ "value" ] )
-
-                break;
-
-            case "file":
+            if (!$file[ "is_multiply" ] ) {
 
                 $API->DB->update( $objectScheme[ "table" ] )
                     ->set( $file[ "property" ], $API->uploadFilesFromForm( $insertId, $file[ "value" ] ) )
@@ -315,11 +312,21 @@ try {
                     ] )
                     ->execute();
 
-                break;
+            } else {
 
-        } // switch. $file[ "type" ]
+                $API->DB->update( $objectScheme[ "table" ] )
+                    ->set( $file[ "property" ], $API->uploadMultiplyFiles( $insertId, $file[ "value" ] ) )
+                    ->where( [
+                        "id" => $insertId,
+                        "is_system" => "N"
+                    ] )
+                    ->execute();
 
-    } // foreach. $files
+            } // if. !$schemeProperty[ "settings" ][ "is_multiply" ]
+
+        }
+
+    }
 
 
     /**

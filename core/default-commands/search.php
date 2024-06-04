@@ -83,7 +83,8 @@ if ( $searchIdList[ "matches" ] ) {
     $searchRequest[ "id" ] = $findRowsId;
     $rows = $API->DB->from( $objectScheme[ "table" ] )
         ->where( $searchRequest )
-        ->limit( $requestData->limit );
+        ->limit( $requestData->limit )
+        ->orderBy( $sort ) ?? [];
 
 
 } // if. $searchIdList[ "matches" ]
