@@ -104,7 +104,6 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
 
         } // if ( isset( $schemeProperty[ "required_permissions" ] ) && count( $schemeProperty[ "required_permissions" ] ) != 0 )
 
-
         /**
          * Загрузка файлов
          */
@@ -202,7 +201,7 @@ foreach ( $requestData as $propertyArticle => $propertyValue ) {
             }
 
         } // if. $schemeProperty[ "is_unique" ] && $propertyValue
-
+        
     } // foreach. $objectScheme[ "properties" ]
 
 } // foreach. $requestData
@@ -231,7 +230,7 @@ foreach ( $updateValues as $propertyArticle => $propertyValue ) {
 
     foreach ( $objectScheme[ "properties" ] as $property ) {
 
-        if ( $property[ "article" ] == $propertyArticle && in_array("add", $property[ "require_in_commands" ] ?? [] ) && $propertyValue == null ) {
+        if ( $property[ "article" ] == $propertyArticle && in_array("add", $property[ "require_in_commands" ] ?? [] ) && $propertyValue == "null" ) {
 
             $propertyTitle = $property[ "title" ];
             $API->returnResponse( "Поле \"$propertyTitle\" не может быть пустым." , 400 );
@@ -246,7 +245,7 @@ foreach ( $join_updateValues as $propertyArticle => $propertyValue ) {
 
     foreach ($objectScheme["properties"] as $property) {
 
-        if ($property["article"] == $propertyArticle && in_array("add", $property["require_in_commands"] ?? []) && $propertyValue["data"] == null) {
+        if ($property["article"] == $propertyArticle && in_array("add", $property["require_in_commands"] ?? []) && $propertyValue["data"] == "null") {
 
             $propertyTitle = $property["title"];
             $API->returnResponse("Поле \"$propertyTitle\" не может быть пустым.", 400);
@@ -262,7 +261,7 @@ foreach ( $join_updateValues as $propertyArticle => $propertyValue ) {
  */
 
 try {
-    
+
     if ( $updateValues ) $API->DB->update( $objectScheme[ "table" ] )
         ->set( $updateValues )
         ->where( [
@@ -290,6 +289,7 @@ try {
             $currentRowsList[] = $currentRow[ $join[ "filter_property" ] ];
 
 
+
         /**
          * Очистка старых связей
          */
@@ -297,42 +297,45 @@ try {
             ->where( $join[ "insert_property" ], $requestData->id )
             ->execute();
 
+        if ( $join[ "data" ] != "null" ) {
 
-        foreach ( $join[ "data" ] as $key => $connection_table_value ) {
-
-            /**
-             * Логирование связанной таблицы
-             */
-
-            if ( !in_array( $connection_table_value, $currentRowsList ) ) {
+            foreach ( $join[ "data" ] as $key => $connection_table_value ) {
 
                 /**
-                 * Получение детальной информации о записи
+                 * Логирование связанной таблицы
                  */
-                foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty ) {
 
-                    if ( $schemeProperty[ "article" ] !== $join[ "scheme_property" ] ) continue;
+                if ( !in_array( $connection_table_value, $currentRowsList ) ) {
 
-                    $joinValue = $API->DB->from( $schemeProperty[ "join" ][ "donor_table" ] )
-                        ->where( "id", $connection_table_value )
-                        ->limit( 1 )
-                        ->fetch();
+                    /**
+                     * Получение детальной информации о записи
+                     */
+                    foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty ) {
 
-                    $logJoinedFieldsDescription .= "добавлен " . $schemeProperty[ "title" ] . " '" . $joinValue[ $schemeProperty[ "join" ][ "property_article" ] ] . "', ";
+                        if ( $schemeProperty[ "article" ] !== $join[ "scheme_property" ] ) continue;
 
-                } // foreach. $objectScheme[ "properties" ]
+                        $joinValue = $API->DB->from( $schemeProperty[ "join" ][ "donor_table" ] )
+                            ->where( "id", $connection_table_value )
+                            ->limit( 1 )
+                            ->fetch();
 
-            } // if. !in_array( $connection_table_value, $currentRowsList )
+                        $logJoinedFieldsDescription .= "добавлен " . $schemeProperty[ "title" ] . " '" . $joinValue[ $schemeProperty[ "join" ][ "property_article" ] ] . "', ";
+
+                    } // foreach. $objectScheme[ "properties" ]
+
+                } // if. !in_array( $connection_table_value, $currentRowsList )
 
 
-            $API->DB->insertInto( $join[ "connection_table" ] )
-                ->values( [
-                    $join[ "insert_property" ] => $requestData->id,
-                    $join[ "filter_property" ] => $connection_table_value
-                ] )
-                ->execute();
+                $API->DB->insertInto( $join[ "connection_table" ] )
+                    ->values( [
+                        $join[ "insert_property" ] => $requestData->id,
+                        $join[ "filter_property" ] => $connection_table_value
+                    ] )
+                    ->execute();
 
-        } // foreach. $join[ "data" ]
+            } // foreach. $join[ "data" ]
+
+        }
 
     } // foreach. $join_updateValues
 
@@ -368,7 +371,6 @@ try {
     $API->returnResponse( $e->getMessage(), 500 );
 
 } // try. update
-
 
 foreach ( $objectScheme[ "properties" ] as $schemePropertyKey => $schemeProperty ) {
 

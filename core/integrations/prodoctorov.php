@@ -38,8 +38,6 @@ if ( $API->request && property_exists( $API->request, "doctor" ) ) {
         if ( property_exists( $clientDetails, "mobile_phone" ) ) $request[ "phone" ] =  $clientDetails->mobile_phone;
         if ( property_exists( $clientDetails, "birthday" ) ) $request[ "birthday" ] =  $clientDetails->birthday;
 
-
-
         $clientID = $API->sendRequest( "clients", "add", $request );
 
     } else {
@@ -61,6 +59,7 @@ if ( $API->request && property_exists( $API->request, "doctor" ) ) {
 
     $serviceID = 0;
 
+
     foreach ( $services as $service ) {
 
         if ( $visitDetails->is_online && str_contains( $service->title, "онлайн" ) ) {
@@ -79,8 +78,8 @@ if ( $API->request && property_exists( $API->request, "doctor" ) ) {
     }
 
     $API->request->jwt = $jwt;
-    $serviceDetails = visits\getFullServiceDefault( $serviceID, $userDetails->id );
 
+    $serviceDetails = visits\getFullService( $serviceID, $userDetails->id );
     $visit_end = date( "Y-m-d H:i:s", strtotime( $visitDetails->dt_start . " +{$serviceDetails[ "take_minutes" ]} minutes" ) );
 
 
@@ -128,7 +127,6 @@ if ( $API->request && property_exists( $API->request, "doctor" ) ) {
     $request[ "price" ] = $serviceDetails[ "price" ];
     $request[ "jwt" ] = $jwt;
     $request[ "context" ] = [ "from_prodoctorov" => true ];
-
 
     if ( $visitDetails->comment == "Клиника может позвонить" ) $request[ "comment" ] = "Продокторов";
     if ( $performerWorkSchedule ) $request[ "cabinet_id" ] = $performerWorkSchedule[ "cabinet_id" ];
